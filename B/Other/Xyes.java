@@ -10,6 +10,10 @@ public class Xyes {
      * @param args command line arguments
      */
     public static void main(String[] args) {
+        textline(args);
+    }
+
+    public static void textline(String[] args) {
         String str = "hello world";
         boolean limit = false;
 
