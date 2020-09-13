@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="texline:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/texline_jar</output-path>
+    <root id="archive" name="texline.jar">
+      <element id="module-output" name="texline" />
+    </root>
+  </artifact>
+</component>
