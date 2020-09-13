@@ -1,4 +1,4 @@
-package other;
+package Other;
 
 /*
  * a shell-executable command-line program that echos the command line arguments to standard output
