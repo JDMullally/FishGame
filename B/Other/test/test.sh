@@ -1,5 +1,6 @@
 #!/bin/bash
 
+bash -c 'mkdir -p ../outputfiles'
 
 bash -c '(sleep 1; kill $$) & exec java -jar ../xyes.jar test' > ../outputfiles/out1.txt
 filename='../outputfiles/out1.txt'
