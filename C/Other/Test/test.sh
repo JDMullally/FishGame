@@ -1,3 +1,4 @@
 #!/bin/bash
 
--java jar
+java -jar ../Task/xjson.jar $(cat testfile)
+
