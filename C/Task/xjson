@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo $@
+
+IFS=$'\r\n' GLOBIGNORE='*' command eval  'args=($@)'
+
+java -jar ../Other/xjson.jar "${args[@]}"

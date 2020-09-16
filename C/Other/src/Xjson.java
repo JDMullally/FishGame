@@ -1,3 +1,7 @@
+import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  * The program consumes an arbitrarily long sequence of JSON values from STDIN.
  * When the input stream ends, it outputs two JSON values to STDOUT:
@@ -9,11 +13,6 @@
  * the second one is a JSON list whose first element is the count of JSON values read and the
  * remainder is the sequence of JSON values read in reverse order.
  */
-
-import com.google.gson.Gson;
-import java.util.ArrayList;
-import java.util.Collections;
-
 public class Xjson {
 
     public static void main(String[] args) {
