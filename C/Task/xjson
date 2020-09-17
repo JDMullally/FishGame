@@ -2,4 +2,16 @@
 
 IFS=$'\r\n' GLOBIGNORE='*' command eval  'args=($@)'
 
+
+FILE=${args}
+echo $FILE
+
+if test -f "$FILE"; then
+      IFS=$'\r\n' GLOBIGNORE='*' command eval  'args=($(cat ${FILE}))'
+  else
+      IFS=$'\r\n' GLOBIGNORE='*' command eval  'args=($@)'
+fi
+
+# IFS=$'\r\n' GLOBIGNORE='*' command eval  'args=($(cat ../Test/1-in.json))'
+
 java -jar ../Other/xjson.jar "${args[@]}"
