@@ -6,9 +6,9 @@ xjson consumes an arbitrarily long sequence of JSON values from STDIN. When the 
 Go to the C/Other/Task directory  and  run
 
 ```
-$  ./xjson < yourfile.json
+$  ./xjson [arg1 arg2 ...argN]
 ```
-Which reads your file of well formed JSON values and outputs two JSON values to STDOUT
+Which reads well formed JSON values from STDIN and outputs two JSON values to STDOUT
 
 - the first one is a JSON object with two fields: count and seq. The value of the first field is the number of JSON values read; the value of the second field is a JSON list of all JSON values read in order.
 
