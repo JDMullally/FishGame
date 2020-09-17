@@ -8,6 +8,11 @@ Go to the C/Other/Task directory  and  run
 ```
 $  ./xjson [arg1 arg2 ...argN]
 ```
+or
+```
+$  ./xjson ../directory/yourfile
+```
+
 Which reads well formed JSON values from STDIN and outputs two JSON values to STDOUT
 
 - the first one is a JSON object with two fields: count and seq. The value of the first field is the number of JSON values read; the value of the second field is a JSON list of all JSON values read in order.
