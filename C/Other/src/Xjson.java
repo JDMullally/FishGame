@@ -57,7 +57,6 @@ public class Xjson {
                         array.add(reader.nextString());
                         count++;
                     } else {
-                        System.out.println(reader.peek());
                         break;
                     }
                 }
