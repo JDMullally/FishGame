@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Scanner;
 
 /**
  * The program consumes an arbitrarily long sequence of JSON values from STDIN.
@@ -21,12 +22,14 @@ public class Xjson {
 
     public static void xjson(String[] args) {
         Gson gson = new Gson();
+        Scanner scanner = new Scanner(System.in);
 
         int count = 0;
         ArrayList<String> seq = new ArrayList<>();
-        for (String arg : args) {
-            if (!arg.isEmpty()) {
-                seq.add(arg);
+        while (scanner.hasNext()) {
+            String s = scanner.next();
+            if (!s.isEmpty()) {
+                seq.add(s);
                 count++;
             }
         }
@@ -38,5 +41,4 @@ public class Xjson {
         seq.add(0, Integer.toString(count)); // add count to front of seq list
         System.out.println(gson.toJson(seq));
     }
-
 }

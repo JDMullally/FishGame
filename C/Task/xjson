@@ -1,11 +1,3 @@
 #!/bin/bash
 
-IFS=$'\r\n' GLOBIGNORE='*' command eval  'args=($@)'
-
-
-if test -f "$args"; then
-      IFS=$'\r\n' GLOBIGNORE='*' command eval  'args=($(cat ${args}))'
-fi
-
-
-java -jar ../Other/xjson.jar "${args[@]}"
+java -jar ../Other/xjson.jar
