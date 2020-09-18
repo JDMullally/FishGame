@@ -1,6 +1,13 @@
 import com.google.gson.Gson;
-import java.util.ArrayList;
-import java.util.Collections;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Scanner;
 
 /**
@@ -16,29 +23,63 @@ import java.util.Scanner;
  */
 public class Xjson {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         xjson(args);
     }
 
-    public static void xjson(String[] args) {
-        Gson gson = new Gson();
+    public static void xjson(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
 
         int count = 0;
-        ArrayList<String> seq = new ArrayList<>();
+        JsonArray array = new JsonArray();
         while (scanner.hasNext()) {
             String s = scanner.next();
-            if (!s.isEmpty()) {
-                seq.add(s);
+
+            if (s.charAt(0) == '{' || s.charAt(0) == '[') {
+                JsonReader reader = new JsonReader(new StringReader(s));
+                reader.setLenient(true);
+                array.add(JsonParser.parseReader(reader));
                 count++;
             }
+
+            // parse json
+            JsonReader reader = new JsonReader(new StringReader(s));
+            reader.setLenient(true);
+            try {
+                while (reader.hasNext()) {
+                    if (JsonToken.NUMBER.equals(reader.peek())) {
+                        array.add(reader.nextLong());
+                        count++;
+                    } else if (JsonToken.BOOLEAN.equals(reader.peek())) {
+                        array.add(reader.nextBoolean());
+                        count++;
+                    } else if (JsonToken.STRING.equals(reader.peek())) {
+                        array.add(reader.nextString());
+                        count++;
+                    } else {
+                        System.out.println(reader.peek());
+                        break;
+                    }
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        scanner.close();
 
-        XJsonObject xJsonObject = new XJsonObject(count, seq);
-        System.out.println(gson.toJson(xJsonObject));
+        // print json object
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("count", new JsonPrimitive(count));
+        jsonObject.add("seq", array);
+        System.out.println(jsonObject.toString());
 
-        Collections.reverse(seq); // reverses seq
-        seq.add(0, Integer.toString(count)); // add count to front of seq list
-        System.out.println(gson.toJson(seq));
+        // print json array
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add(new JsonPrimitive(count));
+        for (int i = array.size() - 1; i >= 0; i--) {
+            jsonArray.add(array.get(i));
+        }
+        System.out.println(jsonArray.toString());
     }
 }
