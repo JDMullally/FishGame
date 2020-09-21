@@ -6,7 +6,7 @@ Mark Preschern and Joseph Mullally's CS4500 assignments.
 
 * [B - Command Line](B/Other/README.md)
 
-* [C - Command Line](C/Other/README.md)
+* [C - JSON](C/Other/README.md)
 
-* [D - Command Line](D/Other/README.md)
+* [D - GUI](D/Other/README.md)
 
