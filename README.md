@@ -8,4 +8,5 @@ Mark Preschern and Joseph Mullally's CS4500 assignments.
 
 * [C - Command Line](C/Other/README.md)
 
+* [D - Command Line](D/Other/README.md)
 
