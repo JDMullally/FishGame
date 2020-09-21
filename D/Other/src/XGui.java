@@ -1,18 +1,33 @@
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-public class Xgui extends JFrame {
+public class XGui extends JFrame {
 
     Integer size;
-    public Xgui(Integer size) {
-        super("X Gui");
+    Point point;
+    public XGui(Integer size) {
+        super("XGui");
         setSize(3*size, 2*size); //sets the dimensions of the window to be equal to the input
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //allows the user to exit the window
         this.size = size;
+        this.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent e) { }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                System.out.println(e.getLocationOnScreen().getClass());
+            }
+        });
+
     }
 
     /**
@@ -61,11 +76,11 @@ public class Xgui extends JFrame {
 
     public static void main(String[] args) {
         Integer size = tryParse(args);
-        if (size != null || size > 0) {
+        if (size != null && size > 0) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new Xgui(size).setVisible(true);
+                new XGui(size).setVisible(true);
             }
         });
         } else {
