@@ -1,156 +1,150 @@
-
-import com.sun.xml.internal.bind.v2.TODO;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Line2D;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 
-public class XGui extends JFrame {
+import javax.swing.*;
 
-    Integer size;
-    Point point;
+public class XGui extends JFrame implements MouseListener {
 
-    public XGui(Integer size) {
+    // size of the hexagon
+    private Integer size;
+
+    private XGui(Integer size) {
         super("XGui");
-        setSize(3 * size, 4 * size); //sets the dimensions of the window to be equal to the input
-        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //allows the user to exit the window
+
         this.size = size;
-        this.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                Integer x = e.getLocationOnScreen().x;
-                Integer y = e.getLocationOnScreen().y;
-                if (x >= size && x <= size * 2) {
-                    if (y >= size * Math.sqrt(2) && y <= size * 2 + size * Math.sqrt(2)) {
-                        System.out.println(y);
-                    }
-                } else {
-                    boolean bottom = y >= size * Math.sqrt(2) + size
-                        && y <= size*Math.sqrt(2) + size*2;
-                    boolean top = y <= size * Math.sqrt(2) + size && y >= size * Math.sqrt(2);
-                    if (x > size * 2 && x < size * 3) {
-                        if (bottom && validPoint(x, y, Space.BOTTOM_RIGHT, size)) {
-                            System.out.println(y);
-                        }
-                        else if (top && validPoint(x, y, Space.TOP_RIGHT, size)) {
-                            System.out.println(y);
-                        }
-                    }
-                    else if (x < size && x > 0) {
-                        if (bottom && validPoint(x, y, Space.BOTTOM_LEFT, size)) {
-                            System.out.println(y);
-                        }
-                        else if (top && validPoint(x, y, Space.TOP_LEFT, size)) {
-                            System.out.println(y);
-                        }
-                    }
-                }
-            }
 
-            @Override
-            public void mousePressed(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-        });
-
+        this.setSize(3 * size, 2 * size + 1); //sets the dimensions of the window to be equal to the input
+        this.setResizable(false);
+        this.addMouseListener(this);
+        this.setLayout(null);
+        this.setUndecorated(true);
+        this.setVisible(true);
     }
 
-    /**
-     * Paint method required to paint on the JFrame.
-     *
-     * @param g
+    /*
+     * Entry point for the application
+     * @param args program arguments
      */
-    public void paint(Graphics g) {
-        super.paint(g);
-        makeHexagon(g);
-
-    }
-
-    /**
-     * Makes a hexagon with lines using Graphics2D from swing
-     *
-     * @param g
-     */
-    private void makeHexagon(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-
-        g2d.setColor(Color.RED);
-        g2d.setStroke(new BasicStroke(4));
-        g2d.draw(new Line2D.Double(0, this.size * 2, this.size, this.size));
-        g2d.draw(new Line2D.Double(this.size, this.size, this.size * 2, this.size));
-        g2d.draw(new Line2D.Double(this.size * 2, this.size, this.size * 3, this.size * 2));
-        g2d.draw(new Line2D.Double(this.size * 3, this.size * 2, this.size * 2, this.size * 3));
-        g2d.draw(new Line2D.Double(this.size * 2, this.size * 3, this.size, this.size * 3));
-        g2d.draw(new Line2D.Double(this.size, this.size * 3, 0, this.size * 2));
+    public static void main(String[] args) {
+        Integer size = tryParse(args);
+        if (size != null && size > 0) {
+            new XGui(size);
+        } else {
+            System.out.println("usage: ./xgui positive-integer");
+        }
     }
 
     /**
      * Takes in the arguments for the program and returns either an Integer or null depending on
      * whether the String is an Integer or not.
      *
-     * @param args arguments from main method.
+     * @param args arguments from main method
      * @return Integer
      */
-    public static Integer tryParse(String[] args) {
-        if (args.length > 0) {
-            try {
-                return Integer.parseInt(args[0]);
-            } catch (NumberFormatException e) {
-                return null;
-            }
-        } else {
+    private static Integer tryParse(String[] args) {
+        try {
+            return Integer.parseInt(args[0]);
+        } catch (Exception e) {
             return null;
         }
     }
 
-    public static void main(String[] args) {
-        Integer size = tryParse(args);
-        if (size != null && size > 0) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    new XGui(size).setVisible(true);
-                }
-            });
-        } else {
-            System.out.println("usage: ./xgui positive-integer");
-        }
-    }
-    //TODO Bottom left amd Top Right Detection
-    public static boolean validPoint(Integer x, Integer y, Space space, Integer size) {
-        if (Space.TOP_RIGHT == space) {
-            System.out.println("Top Right");
-            System.out.println("X: " + x);
-            System.out.println("Y: " + y);
-        } else if (Space.TOP_LEFT == space &&
-            x + y > size + size*Math.sqrt(2)) {
-                return true;
-        } else if (Space.BOTTOM_RIGHT == space &&
-            (x + y - size*4 < size*Math.sqrt(2))) {
-                return true;
-        } else if (Space.BOTTOM_LEFT == space) {
-            System.out.println("Bottom Left");
-            System.out.println("X: " + x);
-            System.out.println("Y: " + y);
-        }
-        return false;
+    /**
+     * Paint method required to paint on the JFrame.
+     *
+     * @param g graphics component
+     */
+    public void paint(Graphics g) {
+        super.paint(g);
+        makeHexagon(g);
     }
 
+    /**
+     * Makes a hexagon with lines using Graphics2D from swing
+     *
+     * @param g graphics component
+     */
+    private void makeHexagon(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+
+        g2d.setColor(Color.RED);
+        g2d.setStroke(new BasicStroke(1));
+        g2d.draw(new Line2D.Double(0, this.size, this.size, 0));
+        g2d.draw(new Line2D.Double(this.size, 0, this.size * 2, 0));
+        g2d.draw(new Line2D.Double(this.size * 2, 0, this.size * 3, this.size));
+        g2d.draw(new Line2D.Double(this.size * 3, this.size, this.size * 2, this.size * 2));
+        g2d.draw(new Line2D.Double(this.size * 2, this.size * 2, this.size, this.size * 2));
+        g2d.draw(new Line2D.Double(this.size, this.size * 2, 0, this.size));
+    }
+
+    /*
+     * checks if the x & y is inside the hexagon
+     */
+    private boolean insideHexagon(int x, int y) {
+        // if point is inside middle rectangle
+        if (x > size && x < size * 2 && y > 0 && y < size * 2) {
+            return true;
+        }
+
+        // points of triangle
+        Point[] ps = new Point[]{
+                new Point(0, this.size),
+                new Point(this.size, 0),
+                new Point(this.size, this.size * 2),
+                new Point(this.size * 2, 0),
+                new Point(this.size * 2, this.size * 2),
+                new Point(this.size * 3, this.size),
+        };
+
+        Point p = new Point(x, y);
+        return insideTriangle(p, ps[0], ps[1], ps[2]) || insideTriangle(p, ps[3], ps[4], ps[5]);
+    }
+
+    /*
+     * checks if a point is inside a triangle
+     * used help of: https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
+     */
+    private boolean insideTriangle(Point s, Point a, Point b, Point c)
+    {
+        int as_x = s.x-a.x;
+        int as_y = s.y-a.y;
+
+        boolean s_ab = (b.x-a.x)*as_y-(b.y-a.y)*as_x > 0;
+
+        if((c.x-a.x)*as_y-(c.y-a.y)*as_x > 0 == s_ab) return false;
+
+        if((c.x-b.x)*(s.y-b.y)-(c.y-b.y)*(s.x-b.x) > 0 != s_ab) return false;
+
+        return true;
+    }
+
+    // closes the JFrame and application
+    private void close() {
+        this.setVisible(false);
+        dispose();
+        System.exit(0);
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        int x = e.getX();
+        int y = e.getY();
+        if (this.insideHexagon(x, y)) {
+            this.close();
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) { }
+
+    @Override
+    public void mouseReleased(MouseEvent e) { }
+
+    @Override
+    public void mouseEntered(MouseEvent e) { }
+
+    @Override
+    public void mouseExited(MouseEvent e) { }
 }
