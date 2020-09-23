@@ -11,7 +11,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -62,8 +61,8 @@ public class XTCP  {
             // read json from client
             Scanner scanner = new Scanner(this.socket.getInputStream());
             List<String> list = new ArrayList<>();
-            while (scanner.hasNext()) {
-                list.add(scanner.next());
+            while (scanner.hasNextLine()) {
+                list.add(scanner.nextLine());
             }
 
             return list;
@@ -88,13 +87,11 @@ public class XTCP  {
         OutputStream stdin = process.getOutputStream();
         InputStream stdout = process.getInputStream();
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
-
         // writes json to xjson
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
         for (String j : json) {
             writer.write(j);
-            writer.flush();
+            writer.newLine();
         }
         writer.close();
 
@@ -106,7 +103,6 @@ public class XTCP  {
             System.out.println(s);
             result.add(s);
         }
-        process.destroy(); // terminate xjson
 
         return result;
     }
