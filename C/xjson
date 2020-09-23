@@ -1,4 +1,4 @@
 #!/bin/bash
 
-java -jar ./xjson.jar < "./Test/1-in.json" > "./Test/1-out.json"
+java -jar ./xjson.jar
 
