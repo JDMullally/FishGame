@@ -28,13 +28,20 @@ public class Xjson {
         xjson(args);
     }
 
-    public static void xjson(String[] args) throws IOException {
+    private static void xjson(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
 
         int count = 0;
+        int argCounter = 0;
         JsonArray array = new JsonArray();
-        while (scanner.hasNextLine()) {
-            String s = scanner.nextLine();
+        while (argCounter < args.length || scanner.hasNextLine()) {
+            String s;
+            if (argCounter < args.length) {
+                s = args[argCounter];
+                argCounter++;
+            } else {
+                s = scanner.nextLine();
+            }
 
             if(!s.isEmpty()) {
                 // parse json
@@ -90,7 +97,7 @@ public class Xjson {
         System.out.println(jsonArray.toString());
     }
 
-    public static JsonObject buildObj(JsonReader reader) {
+    private static JsonObject buildObj(JsonReader reader) {
         JsonObject build = new JsonObject();
         try {
             while (reader.hasNext()) {
@@ -128,7 +135,7 @@ public class Xjson {
         return build;
     }
 
-    public static JsonArray buildArr(JsonReader reader) throws IOException {
+    private static JsonArray buildArr(JsonReader reader) throws IOException {
         JsonArray build = new JsonArray();
         try {
             while (reader.hasNext()) {
