@@ -1,2 +1,2 @@
-{"count":11,"seq":["5","str","[ ]","{ }","{ help: \"me\" }","{ \"more\": { \"more\" : \"more\" } }","{ \"more\": { \"more\" : \"more\" }, \"less\": [ ] }","[ 1, 2, 3 ]","[ \"nested\" , [ \"nested\", [\"nested\"] ] ]","null","true"]}
-["11","true","null","[ \"nested\" , [ \"nested\", [\"nested\"] ] ]","[ 1, 2, 3 ]","{ \"more\": { \"more\" : \"more\" }, \"less\": [ ] }","{ \"more\": { \"more\" : \"more\" } }","{ help: \"me\" }","{ }","[ ]","str","5"]
+{"count":13,"seq":[["oof",5,4],{"name":"Danny","home":"Danny"},true,55,{"name":"India","population":1000000,"listOfStates":["Madhya Pradesh","Maharastra","Rajasthan"]},"NULL",{"dan":{"dan":"the","merchant":["man"]}},5555,"help",false,{"home":5},55,[5,5,5]]}
+[13,[5,5,5],55,{"home":5},false,"help",5555,{"dan":{"dan":"the","merchant":["man"]}},"NULL",{"name":"India","population":1000000,"listOfStates":["Madhya Pradesh","Maharastra","Rajasthan"]},55,true,{"name":"Danny","home":"Danny"},["oof",5,4]]
