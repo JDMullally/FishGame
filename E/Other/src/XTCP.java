@@ -14,12 +14,19 @@ import java.util.Scanner;
 
 public class XTCP  {
 
-    private int port;
+    private int port = 4567;
     private ServerSocket server;
     private Socket socket;
 
     /*
-     * Constructor
+     * Default Constructor
+     */
+    private XTCP() throws IOException {
+        this.executeProgram();
+    }
+
+    /*
+     * Constructor takes in port
      */
     private XTCP(int port) throws IOException {
         this.port = port;
@@ -33,7 +40,7 @@ public class XTCP  {
      */
     public static void main(String[] args) throws IOException {
         if (args.length == 0) {
-            new XTCP(4567);
+            new XTCP();
         } else if (args.length > 1) {
             System.out.println("usage: ./xtcp natural-number");
             System.exit(0);
