@@ -1,15 +1,9 @@
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -70,7 +64,7 @@ public class XTCP  {
 
         // read & write to socket
         List<String> json = this.read();
-        List<String> result = this.parseJSON(json);
+        String[] result = new Xjson(json.toArray(new String[0])).xjson();
         this.write(result);
 
         // close socket
@@ -94,45 +88,9 @@ public class XTCP  {
     }
 
     /*
-     * Parses the JSON values and returns a result
-     */
-    private List<String> parseJSON(List<String> json) throws IOException {
-        // file path to execute xjson
-        String filePath = new File(".").getCanonicalPath();
-        filePath = filePath.substring(0, filePath.length() - 1) + "C/";
-
-        // execute xjson
-        ProcessBuilder processBuilder = new ProcessBuilder("./xjson");
-        processBuilder.directory(new File(filePath));
-        Process process = processBuilder.start();
-
-        OutputStream stdin = process.getOutputStream();
-        InputStream stdout = process.getInputStream();
-
-        // writes json to xjson
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
-        for (String j : json) {
-            writer.write(j);
-            writer.newLine();
-        }
-        writer.close(); // closes input side, i.e. EOF
-
-        // reads json from xjson
-        Scanner scanner = new Scanner(stdout);
-        List<String> result = new ArrayList<>();
-        while (scanner.hasNext()) {
-            result.add(scanner.next());
-        }
-
-        process.destroy(); // terminates the process
-
-        return result;
-    }
-
-    /*
      * Writes the JSON result to the client
      */
-    private void write(List<String> result) throws IOException {
+    private void write(String[] result) throws IOException {
         PrintWriter writer = new PrintWriter(this.socket.getOutputStream(), true);
         for (String s : result) {
             writer.write(s + "\n");
