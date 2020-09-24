@@ -123,6 +123,8 @@ public class XTCP  {
             result.add(scanner.next());
         }
 
+        process.destroy(); // terminates the process
+
         return result;
     }
 
