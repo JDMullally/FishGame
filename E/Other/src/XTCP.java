@@ -1,9 +1,7 @@
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -16,6 +14,7 @@ import java.util.Scanner;
 
 public class XTCP  {
 
+    private int port;
     private ServerSocket server;
     private Socket socket;
 
@@ -23,9 +22,8 @@ public class XTCP  {
      * Constructor
      */
     private XTCP(int port) throws IOException {
-        List<String> json = this.read(port);
-        List<String> result = this.parseJSON(json);
-        this.write(result);
+        this.port = port;
+        this.executeProgram();
     }
 
     /*
@@ -50,20 +48,36 @@ public class XTCP  {
     }
 
     /*
-     * Creates a socket with the specified port and reads JSON values from the input side of a TCP connection
+     * Creates a socket, reads & writes to the socket, and closes the socket
+     */
+    private void executeProgram() throws IOException {
+        // create socket
+        this.server = new ServerSocket(this.port);
+        this.server.setSoTimeout(3000); // sets connection timeout to 3 seconds
+        this.socket = this.server.accept();
+
+        // read & write to socket
+        List<String> json = this.read(this.port);
+        List<String> result = this.parseJSON(json);
+        this.write(result);
+
+        // close socket
+        this.socket.close();
+        this.server.close();
+    }
+
+    /*
+     * Reads JSON values from the input side of a TCP connection
      */
     private List<String> read(int port) throws IOException {
         try {
-            this.server = new ServerSocket(port);
-            this.server.setSoTimeout(3000); // sets connection timeout to 3 seconds
-            this.socket = this.server.accept();
-
             // read json from client
             Scanner scanner = new Scanner(this.socket.getInputStream());
             List<String> list = new ArrayList<>();
             while (scanner.hasNextLine()) {
                 list.add(scanner.nextLine());
             }
+            this.socket.shutdownInput(); // closes input side of socket
 
             return list;
         } catch (SocketTimeoutException e) {
@@ -77,13 +91,13 @@ public class XTCP  {
     private List<String> parseJSON(List<String> json) throws IOException {
         // file path to execute xjson
         String filePath = new File(".").getCanonicalPath();
-        filePath = filePath.substring(0, filePath.length() - 1) + "C/xjson";
+        filePath = filePath.substring(0, filePath.length() - 1) + "C/";
 
-        // execute xjson with json arguments
-        ProcessBuilder processBuilder = new ProcessBuilder(filePath);
+        // execute xjson
+        ProcessBuilder processBuilder = new ProcessBuilder("./xjson");
+        processBuilder.directory(new File(filePath));
         Process process = processBuilder.start();
 
-        // writes & reads from xjson
         OutputStream stdin = process.getOutputStream();
         InputStream stdout = process.getInputStream();
 
@@ -93,15 +107,13 @@ public class XTCP  {
             writer.write(j);
             writer.newLine();
         }
-        writer.close();
+        writer.close(); // closes input side, i.e. EOF
 
         // reads json from xjson
         Scanner scanner = new Scanner(stdout);
         List<String> result = new ArrayList<>();
         while (scanner.hasNext()) {
-            String s = scanner.next();
-            System.out.println(s);
-            result.add(s);
+            result.add(scanner.next());
         }
 
         return result;
@@ -111,14 +123,12 @@ public class XTCP  {
      * Writes the JSON result to the client
      */
     private void write(List<String> result) throws IOException {
-        PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+        PrintWriter writer = new PrintWriter(this.socket.getOutputStream(), true);
         for (String s : result) {
             writer.write(s + "\n");
         }
         writer.flush();
         writer.close();
-        this.socket.close();
-        this.server.close();
     }
 
 }
