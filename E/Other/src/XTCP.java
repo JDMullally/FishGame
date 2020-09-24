@@ -9,6 +9,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -58,13 +59,17 @@ public class XTCP  {
      * Creates a socket, reads & writes to the socket, and closes the socket
      */
     private void executeProgram() throws IOException {
-        // create socket
-        this.server = new ServerSocket(this.port);
-        this.server.setSoTimeout(3000); // sets connection timeout to 3 seconds
-        this.socket = this.server.accept();
+        try {
+            // create socket
+            this.server = new ServerSocket(this.port);
+            this.server.setSoTimeout(3000); // sets connection timeout to 3 seconds
+            this.socket = this.server.accept();
+        } catch (SocketTimeoutException e) {
+            throw new SocketTimeoutException("Timeout: client didn't connect to server in 3 seconds");
+        }
 
         // read & write to socket
-        List<String> json = this.read(this.port);
+        List<String> json = this.read();
         List<String> result = this.parseJSON(json);
         this.write(result);
 
@@ -76,20 +81,16 @@ public class XTCP  {
     /*
      * Reads JSON values from the input side of a TCP connection
      */
-    private List<String> read(int port) throws IOException {
-        try {
-            // read json from client
-            Scanner scanner = new Scanner(this.socket.getInputStream());
-            List<String> list = new ArrayList<>();
-            while (scanner.hasNextLine()) {
-                list.add(scanner.nextLine());
-            }
-            this.socket.shutdownInput(); // closes input side of socket
-
-            return list;
-        } catch (SocketTimeoutException e) {
-            throw new SocketTimeoutException("Timeout: client didn't connect to server in 3 seconds");
+    private List<String> read() throws IOException {
+        // read json from client
+        Scanner scanner = new Scanner(this.socket.getInputStream());
+        List<String> list = new ArrayList<>();
+        while (scanner.hasNextLine()) {
+            list.add(scanner.nextLine());
         }
+        this.socket.shutdownInput(); // closes input side of socket
+
+        return list;
     }
 
     /*
