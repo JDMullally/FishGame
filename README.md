@@ -10,3 +10,5 @@ Mark Preschern and Joseph Mullally's CS4500 assignments.
 
 * [D - GUI](D/Other/README.md)
 
+* [E - TCP](E/Other/README.md)
+
