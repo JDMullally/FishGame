@@ -2,9 +2,9 @@ package view;
 
 import javax.swing.*;
 
-import controller.ControllerModel;
+import controller.IController;
 
-public interface View {
+public interface IView {
 
     /**
      * Makes the view visible.
@@ -14,7 +14,7 @@ public interface View {
     /**
      * Starts a timer for the game
      *
-     * @param timer
+     * @param timer the given timer
      */
     void start(Timer timer);
 
@@ -23,5 +23,5 @@ public interface View {
      *
      * @param listener the given listener
      */
-    void setListener(ControllerModel listener);
+    void setListener(IController listener);
 }

@@ -8,86 +8,84 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import static constants.Constants.HEX_SIZE;
+
 public class GameBoard implements IGameBoard {
 
-    private int width; // width of the board
-    private int height; // height of the board
+    private int rows; // rows of the board
+    private int columns; // columns of the board
     private Tile[][] board; // the game board
+    private Canvas canvas; // the game board canvas
 
     /**
-     * Constructor that only takes in a width and height of the board.
-     * @param width
-     * @param height
+     * Constructor that only takes in a rows and columns of the board.
+     * @param rows
+     * @param columns
      */
-    public GameBoard(int width, int height) {
-        this.width = width;
-        this.height = height;
-        this.board = this.generateBoard(width, height, new ArrayList<>(), 0);
+    public GameBoard(int rows, int columns) {
+        this(rows, columns, new ArrayList<>(), 0);
     }
 
     /**
      * Constructor that additionally takes a list of holes with the boards dimensions.
-     * @param width
-     * @param height
+     * @param rows
+     * @param columns
      * @param holes
      */
-    public GameBoard(int width, int height, List<Point> holes) {
-        this.width = width;
-        this.height = height;
-        this.board = this.generateBoard(width, height, new ArrayList<>(holes), 0);
+    public GameBoard(int rows, int columns, List<Point> holes) {
+        this(rows, columns, new ArrayList<>(holes), 0);
     }
 
     /**
      * Constructor that additionally takes in a minimum number of one fish
      * tiles along with the dimensions of the board.
-     * @param width
-     * @param height
+     * @param rows
+     * @param columns
      * @param minOneFishTiles
      */
-    public GameBoard(int width, int height, int minOneFishTiles) {
-        this.width = width;
-        this.height = height;
-        this.board = this.generateBoard(width, height, new ArrayList<>(), minOneFishTiles);
+    public GameBoard(int rows, int columns, int minOneFishTiles) {
+        this(rows, columns, new ArrayList<>(), minOneFishTiles);
     }
 
     /**
      * Constructor that takes the minimum number of one fish tiles,
      * a list of holes and the dimensions of the board.
-     * @param width
-     * @param height
+     * @param rows
+     * @param columns
      * @param holes
      * @param minOneFishTiles
      */
-    public GameBoard(int width, int height, List<Point> holes, int minOneFishTiles) {
-        this.width = width;
-        this.height = height;
-        this.board = this.generateBoard(width, height, new ArrayList<>(holes), minOneFishTiles);
+    public GameBoard(int rows, int columns, List<Point> holes, int minOneFishTiles) {
+        this.rows = rows;
+        this.columns = columns;
+        this.board = this.generateBoard(rows, columns, new ArrayList<>(holes), minOneFishTiles);
+        this.canvas = this.generateCanvas(rows, columns);
     }
 
     /**
      * Returns a new game board with the specified parameters.
-     * @param width
-     * @param height
+     * @param rows
+     * @param columns
      * @param holes
      * @param minOneFishTiles
      * @return Tile[][]
      */
-    private Tile[][] generateBoard(int width, int height, List<Point> holes, int minOneFishTiles) {
-        if (width < 1 || height < 1) {
+    private Tile[][] generateBoard(int rows, int columns, List<Point> holes, int minOneFishTiles) {
+        if (rows < 1 || columns < 1) {
             throw new IllegalArgumentException("Width and Height must be greater than zero");
         }
-        if (minOneFishTiles > width * height - holes.size()) {
+        if (minOneFishTiles > rows * columns - holes.size()) {
             throw new IllegalArgumentException("The minimum number of one fish tiles must be less than or equal to the maximum"
                     + " number of tiles on the board minus the number of holes: "
-                    + (width * height - holes.size()));
+                    + (rows * columns - holes.size()));
         }
 
-        Tile[][] board = new Tile[width][height];
+        Tile[][] board = new Tile[rows][columns];
 
         // generate random board with holes
         Random rand = new Random();
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
                 if (!holes.isEmpty() && holes.contains(new Point(i, j))) {
                     board[i][j] = new EmptyTile(i, j);
                 } else {
@@ -102,8 +100,8 @@ public class GameBoard implements IGameBoard {
 
         // guarentee there is a minimum number of one fish tiles
         while (minOneFishTiles > 0) {
-            int x = rand.nextInt(width);
-            int y = rand.nextInt(height);
+            int x = rand.nextInt(rows);
+            int y = rand.nextInt(columns);
             int fish = board[x][y].getFish();
             if (fish > 1) {
                 board[x][y] = new FishTile(x, y, 1);
@@ -115,15 +113,27 @@ public class GameBoard implements IGameBoard {
     }
 
     /**
+     * Returns a new Canvas as a function of the rows and columns of the board.
+     * @param rows
+     * @param columns
+     * @return Canvas
+     */
+    private Canvas generateCanvas(int rows, int columns) {
+        int canvasWidth = columns * 4 * HEX_SIZE + HEX_SIZE;
+        int canvasHeight = rows * 2 * HEX_SIZE;
+        return new Canvas(0, 0, canvasWidth, canvasHeight);
+    }
+
+    /**
      * Returns true if there is a valid Tile at the specified point
      * @param point
      * @return boolean
      */
     private boolean validTile(Point point) {
         return point.x >= 0
-                && point.x < width
+                && point.x < rows
                 && point.y >= 0
-                && point.y < height
+                && point.y < columns
                 && !board[point.x][point.y].isEmpty();
     }
 
@@ -133,13 +143,18 @@ public class GameBoard implements IGameBoard {
     }
 
     @Override
+    public Canvas getCanvas() {
+        return this.canvas;
+    }
+
+    @Override
     public int getBoardWidth() {
-        return this.width;
+        return this.rows;
     }
 
     @Override
     public int getBoardHeight() {
-        return this.height;
+        return this.columns;
     }
 
     @Override
@@ -287,9 +302,9 @@ public class GameBoard implements IGameBoard {
     public boolean equals(Object o) {
         if (o instanceof GameBoard) {
             GameBoard other = (GameBoard) o;
-            return this.board.equals(other.board)
-                && this.height == other.height
-                && this.width == other.width;
+            return Arrays.deepEquals(this.board, other.board)
+                && this.columns == other.columns
+                && this.rows == other.rows;
         }
         return false;
     }

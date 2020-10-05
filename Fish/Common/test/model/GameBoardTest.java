@@ -161,9 +161,6 @@ public class GameBoardTest {
 
         List<List<Tile>> actualPaths = this.modelDefault.getViablePaths(tileOneOne);
 
-        System.out.println(testPaths);
-        System.out.println(actualPaths);
-
         assertEquals(testPaths, actualPaths);
     }
 
@@ -171,8 +168,6 @@ public class GameBoardTest {
     @Test
     public void getViablePaths2() {
         this.init();
-
-
     }
 
     /**
