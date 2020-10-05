@@ -4,8 +4,8 @@ import java.awt.Point;
 
 public class FishTile implements Tile {
 
-    private Point position;
-    private int fish;
+    private Point position; // position of the tile
+    private int fish; // number of fish on the tile
 
     /**
      * Constructor that takes in the position of the Tile and the number of fish it has.
@@ -14,6 +14,18 @@ public class FishTile implements Tile {
      */
     public FishTile(Point position, int fish) {
         this.position = new Point(position);
+        this.fish = fish;
+    }
+
+    /**
+     * Constructor that takes in the position as an x and y coordinate of the
+     * Tile and the number of fish it has.
+     * @param x
+     * @param y
+     * @param fish
+     */
+    public FishTile(int x, int y, int fish) {
+        this.position = new Point(x, y);
         this.fish = fish;
     }
 
@@ -32,5 +44,9 @@ public class FishTile implements Tile {
         return new Point(this.position);
     }
 
+    @Override
+    public Tile clone() {
+        return new FishTile(new Point(this.position), this.fish);
+    }
 
 }

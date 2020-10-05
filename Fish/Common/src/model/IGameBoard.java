@@ -6,10 +6,10 @@ import java.util.List;
 public interface IGameBoard {
 
     /**
-     * Returns the GameBoard as a list of lists of Tiles.
-     * @return List of List of Tile
+     * Returns the GameBoard as a 2D array of Tiles.
+     * @return 2D array of Tile
      */
-    public List<List<Tile>> getGameBoard();
+    public Tile[][] getGameBoard();
 
     /**
      * Returns the maximum width of the board.
@@ -26,16 +26,30 @@ public interface IGameBoard {
     /**
      * Returns all viable paths from the current Tile.
      * @param tile
-     * @return List of Tile
+     * @return List of List of Tile
      */
-    public List<Tile> getViablePaths(Tile tile);
+    public List<List<Tile>> getViablePaths(Tile tile);
 
     /**
      * Returns all viable paths from the current Point.
      * @param point
+     * @return List of List of Tile
+     */
+    public List<List<Tile>> getViablePaths(Point point);
+
+    /**
+     * Returns all viable Tiles that can be moved to from the current Tile.
+     * @param tile
      * @return List of Tile
      */
-    public List<Tile> getViablePaths(Point point);
+    public List<Tile> getViableTiles(Tile tile);
+
+    /**
+     * Returns all viable Tiles that can be moved to from the current Point.
+     * @param point
+     * @return List of Tile
+     */
+    public List<Tile> getViableTiles(Point point);
 
     /**
      * Replaces a Tile with an EmptyTile and returns the old Tile.

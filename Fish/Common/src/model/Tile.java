@@ -25,4 +25,9 @@ public interface Tile {
      */
     public Point getPosition();
 
+    /**
+     * Returns a clone of the Tile.
+     * @return Tile
+     */
+    public Tile clone();
 }
