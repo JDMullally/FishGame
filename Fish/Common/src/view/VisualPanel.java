@@ -24,6 +24,8 @@ public class VisualPanel extends JPanel implements ActionListener {
         }
 
         this.board = board;
+        this.setBackground(new Color(150,150,150));
+
     }
 
     @Override
@@ -36,6 +38,21 @@ public class VisualPanel extends JPanel implements ActionListener {
         super.paintComponent(g);
 
         Graphics2D g2d = (Graphics2D) g;
-        // TODO
+
+
+        for (Tile[] row : this.board) {
+            for (Tile tile: row) {
+                Polygon hexagon = tile.getGraphicalTile();
+                if (hexagon != null) {
+                    g2d.setColor(new Color(252, 157, 3));
+                    g2d.fill(hexagon);
+                    g2d.setColor(new Color(255, 255, 255));
+                    g2d.draw(hexagon);
+                }
+            }
+        }
+
     }
+
+
 }

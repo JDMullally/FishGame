@@ -1,6 +1,7 @@
 package model;
 
 import java.awt.Point;
+import java.awt.Polygon;
 
 public class EmptyTile implements Tile {
 
@@ -36,6 +37,11 @@ public class EmptyTile implements Tile {
     @Override
     public Point getPosition() {
         return new Point(this.position);
+    }
+
+    @Override
+    public Polygon getGraphicalTile() {
+        return null;
     }
 
     @Override

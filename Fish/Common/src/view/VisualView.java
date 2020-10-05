@@ -23,6 +23,10 @@ public class VisualView extends JFrame implements IView {
         this.setTitle("Fish");
         this.setLayout(new BorderLayout());
         this.setSize(canvas.getWidth(), canvas.getHeight());
+
+        this.getRootPane().setBorder(
+            BorderFactory.createMatteBorder(2,2,2,2, Color.BLACK));
+
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.add(new JScrollPane(this.panel));
         this.pack();

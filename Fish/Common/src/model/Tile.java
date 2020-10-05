@@ -1,6 +1,7 @@
 package model;
 
 import java.awt.Point;
+import java.awt.Polygon;
 
 /**
  * Represents a tile on the GameBoard.
@@ -24,6 +25,12 @@ public interface Tile {
      * @return Point
      */
     Point getPosition();
+
+    /**
+     * Returns a graphical representation of the tile.
+     * @return Polygon
+     */
+    Polygon getGraphicalTile();
 
     /**
      * Returns a clone of the Tile.
