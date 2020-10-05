@@ -2,6 +2,7 @@ package model;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -280,5 +281,28 @@ public class GameBoard implements IGameBoard {
         Tile oldTile = this.board[point.x][point.y];
         this.board[point.x][point.y] = new EmptyTile(new Point(point));
         return oldTile.clone();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof GameBoard) {
+            GameBoard other = (GameBoard) o;
+            return this.board.equals(other.board)
+                && this.height == other.height
+                && this.width == other.width;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        String lineSeparator = System.lineSeparator();
+        StringBuilder sb = new StringBuilder();
+
+        for (Tile[] row : this.board) {
+            sb.append(Arrays.toString(row))
+                .append(lineSeparator);
+        }
+        return sb.toString();
     }
 }
