@@ -1,12 +1,12 @@
+package util;
+
 import java.awt.Point;
 import java.util.ArrayList;
 
 public class Util {
 
 
-    public static boolean isPointInsideHexagon(float[] vertexX,
-        float[] vertexY, float testX, float testY)
-    {
+    public static boolean isPointInsideHexagon(float[] vertexX, float[] vertexY, float testX, float testY) {
         boolean c = false;
         for (int i = 0, j = 6 - 1; i < 6; j = i++)
         {
