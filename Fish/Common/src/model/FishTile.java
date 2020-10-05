@@ -49,4 +49,19 @@ public class FishTile implements Tile {
         return new FishTile(new Point(this.position), this.fish);
     }
 
+    @Override
+    public String toString() {
+        return "(" + this.getPosition() + ", Fish: " + this.getFish() + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof FishTile) {
+            FishTile other = (FishTile) o;
+            return this.position.equals(other.position) && this.fish == other.fish;
+        }
+        return false;
+    }
+
+
 }

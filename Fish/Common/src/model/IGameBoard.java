@@ -24,6 +24,12 @@ public interface IGameBoard {
     public int getBoardHeight();
 
     /**
+     * Returns a Tile at a given point on the board.
+     * @param point
+     * @return Tile
+     */
+    public Tile getTile(Point point);
+    /**
      * Returns all viable paths from the current Tile.
      * @param tile
      * @return List of List of Tile

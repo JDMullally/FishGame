@@ -142,6 +142,11 @@ public class GameBoard implements IGameBoard {
     }
 
     @Override
+    public Tile getTile(Point point) {
+        return this.board[point.x][point.y].clone();
+    }
+
+    @Override
     public List<List<Tile>> getViablePaths(Tile tile) {
         return this.getViablePaths(tile.getPosition());
     }

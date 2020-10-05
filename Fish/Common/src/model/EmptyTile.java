@@ -42,4 +42,18 @@ public class EmptyTile implements Tile {
     public Tile clone() {
         return new EmptyTile(new Point(this.position));
     }
+
+    @Override
+    public String toString() {
+        return "(" + this.getPosition() + ", Fish: " + this.getFish() + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof EmptyTile) {
+            EmptyTile other = (EmptyTile) o;
+            return this.position.equals(other.position);
+        }
+        return false;
+    }
 }
