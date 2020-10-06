@@ -23,7 +23,7 @@ public class GameBoard implements IGameBoard {
      * @param columns
      */
     public GameBoard(int rows, int columns) {
-        this(rows, columns, new ArrayList<>(), 0);
+        this(rows, columns, new ArrayList<>(), 0, 0);
     }
 
     /**
@@ -33,7 +33,7 @@ public class GameBoard implements IGameBoard {
      * @param holes
      */
     public GameBoard(int rows, int columns, List<Point> holes) {
-        this(rows, columns, new ArrayList<>(holes), 0);
+        this(rows, columns, new ArrayList<>(holes), 0, 0);
     }
 
     /**
@@ -44,21 +44,22 @@ public class GameBoard implements IGameBoard {
      * @param minOneFishTiles
      */
     public GameBoard(int rows, int columns, int minOneFishTiles) {
-        this(rows, columns, new ArrayList<>(), minOneFishTiles);
+        this(rows, columns, new ArrayList<>(), minOneFishTiles, 0);
     }
 
     /**
-     * Constructor that takes the minimum number of one fish tiles,
-     * a list of holes and the dimensions of the board.
+     * Constructor that takes the minimum number of one fish tiles, if all of the tiles should have
+     * the same number of fish, a list of holes, and the dimensions of the board.
      * @param rows
      * @param columns
      * @param holes
      * @param minOneFishTiles
+     * @param sameFish
      */
-    public GameBoard(int rows, int columns, List<Point> holes, int minOneFishTiles) {
+    public GameBoard(int rows, int columns, List<Point> holes, int minOneFishTiles, int sameFish) {
         this.rows = rows;
         this.columns = columns;
-        this.board = this.generateBoard(rows, columns, new ArrayList<>(holes), minOneFishTiles);
+        this.board = this.generateBoard(rows, columns, new ArrayList<>(holes), minOneFishTiles, sameFish);
         this.canvas = this.generateCanvas(rows, columns);
     }
 
@@ -68,9 +69,10 @@ public class GameBoard implements IGameBoard {
      * @param columns
      * @param holes
      * @param minOneFishTiles
+     * @param sameFish
      * @return Tile[][]
      */
-    private Tile[][] generateBoard(int rows, int columns, List<Point> holes, int minOneFishTiles) {
+    private Tile[][] generateBoard(int rows, int columns, List<Point> holes, int minOneFishTiles, int sameFish) {
         if (rows < 1 || columns < 1) {
             throw new IllegalArgumentException("Width and Height must be greater than zero");
         }
@@ -79,17 +81,20 @@ public class GameBoard implements IGameBoard {
                     + " number of tiles on the board minus the number of holes: "
                     + (rows * columns - holes.size()));
         }
+        if (sameFish < 0 || sameFish > 5) {
+            throw new IllegalArgumentException("The number of sameFish must be between 1 and 5 inclusive");
+        }
 
-        Tile[][] board = new Tile[columns][rows];
+        Random rand = new Random();
 
         // generate random board with holes
-        Random rand = new Random();
+        Tile[][] board = new Tile[columns][rows];
         for (int i = 0; i < columns; i++) {
             for (int j = 0; j < rows; j++) {
                 if (!holes.isEmpty() && holes.contains(new Point(i, j))) {
                     board[i][j] = new EmptyTile(i, j);
                 } else {
-                    int fish = rand.nextInt(5) + 1;
+                    int fish = sameFish == 0 ? rand.nextInt(5) + 1 : sameFish;
                     if (fish == 1) {
                         minOneFishTiles--;
                     }
@@ -99,7 +104,7 @@ public class GameBoard implements IGameBoard {
         }
 
         // guarentee there is a minimum number of one fish tiles
-        while (minOneFishTiles > 0) {
+        while (sameFish == 0 && minOneFishTiles > 0) {
             int x = rand.nextInt(columns);
             int y = rand.nextInt(rows);
             int fish = board[x][y].getFish();

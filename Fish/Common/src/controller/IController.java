@@ -1,6 +1,9 @@
 package controller;
 
 import java.awt.event.MouseListener;
+import java.awt.event.TextListener;
+
+import javax.swing.*;
 
 import model.IGameBoard;
 import view.IView;

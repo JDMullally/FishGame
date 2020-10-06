@@ -33,7 +33,7 @@ public class GameBoardTest {
         this.modelSmall = new GameBoard(1,1);
         this.modelDefault = new GameBoard(4,3);
         this.modelHoles = new GameBoard(3, 4, this.holes1);
-        this.modelHolesAndMinOnes = new GameBoard(3,4, this.holes1,3);
+        this.modelHolesAndMinOnes = new GameBoard(3,4, this.holes1,3, 0);
         this.modelMinOnes = new GameBoard(3,4,3);
 
         tileOneOne = this.modelDefault.getGameBoard()[1][1].clone();

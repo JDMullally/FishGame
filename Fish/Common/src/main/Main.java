@@ -23,30 +23,24 @@ public class Main {
     private static int rows;
     private static int columns;
     private static List<Point> holes;
-    private static Integer minOneFishTiles;
+    private static int minOneFishTiles;
+    private static int sameFish;
 
     /**
      * Entry point for the Fish Game.
      * @param args program arguments
      */
     public static void main(String[] args) throws ArgumentParserException {
+        // parses arguments
         parseArgs(args);
 
-        // sets game board
-        IGameBoard model;
-        if (holes == null && minOneFishTiles == null) {
-            model = new GameBoard(rows, columns);
-        } else if (minOneFishTiles == null) {
-            model = new GameBoard(rows, columns, holes);
-        } else if (holes == null) {
-            model = new GameBoard(rows, columns, minOneFishTiles);
-        } else {
-            model = new GameBoard(rows, columns, holes, minOneFishTiles);
-        }
-
+        // sets game board, view, model and runs them
+        IGameBoard model = new GameBoard(rows, columns, holes, minOneFishTiles, sameFish);
         IView view = new VisualView(model.getGameBoard(), model.getCanvas());
         Controller controller = new Controller();
         controller.control(model, view);
+
+        
     }
 
     /**
@@ -55,6 +49,7 @@ public class Main {
      * --columns [int]
      * --holes [List<Integer>] , example: '--holes 1 2 5 6' means points at [1,2] and [5,6]
      * --minOneFishTiles [int]
+     * --sameFish [int] (between 1-5 inclusive)
      * @param args program arguments
      */
     private static void parseArgs(String[] args) throws ArgumentParserException {
@@ -83,14 +78,24 @@ public class Main {
                 .type(Integer.class)
                 .required(false)
                 .help("Minimum number of one fish tiles");
+        parser.addArgument("-sf", "--sameFish")
+                .dest("sameFish")
+                .type(Integer.class)
+                .required(false)
+                .help("If all of the tiles should have the same number of fish and how many");
 
         // parses program arguments
         try {
             Namespace nameSpace = parser.parseArgs(args);
+
+            Integer minOneFishTilesTemp = nameSpace.getInt("minOneFishTiles");
+            Integer sameFishTemp = nameSpace.getInt("sameFish");
+
             rows = nameSpace.getInt("rows");
             columns = nameSpace.getInt("columns");
             holes = toPointList(nameSpace.getList("holes"));
-            minOneFishTiles = nameSpace.getInt("minOneFishTiles");
+            minOneFishTiles = minOneFishTilesTemp == null ? 0 : minOneFishTilesTemp;
+            sameFish = sameFishTemp == null ? 0 : sameFishTemp;
         } catch (ArgumentParserException e) {
             parser.handleError(e);
             throw e;
@@ -103,7 +108,9 @@ public class Main {
      * @return List<Point>
      */
     private static List<Point> toPointList(List<Integer> list) {
-        if (list == null || list.size() % 2 == 1) {
+        if (list == null) {
+            return new ArrayList<>();
+        } if (list.size() % 2 == 1) {
             throw new IllegalArgumentException("--holes : " + list + " --- List of Points must be even");
         }
 

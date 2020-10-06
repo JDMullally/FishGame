@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
+import model.EmptyTile;
 import model.IGameBoard;
 import model.Tile;
 import view.IView;
@@ -44,7 +45,17 @@ public class Controller implements IController {
             for (Tile tile : tiles) {
                 Polygon hexagon = tile.getVisualHexagon();
                 if (hexagon != null && hexagon.contains(point)) {
-                    this.view.update(gameBoard, this.model.getViablePaths(tile.getPosition()));
+
+                    // left click shows viable paths
+                    if (e.getButton() == 1) {
+                        this.view.update(gameBoard, this.model.getViablePaths(tile.getPosition()));
+                    }
+                    // right click removes the tile
+                    if (e.getButton() == 3) {
+                        this.model.replaceTile(new EmptyTile(tile.getPosition()));
+                        this.view.update(this.model.getGameBoard(), new ArrayList<>());
+                    }
+
                     return;
                 }
             }

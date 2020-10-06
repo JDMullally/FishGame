@@ -109,7 +109,6 @@ public class FishTile implements Tile {
             fish.transform(affineTransform2);
 
             fishList.add(fish);
-
         }
         return fishList;
     }
