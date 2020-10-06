@@ -1,5 +1,6 @@
 package controller;
 
+import java.awt.*;
 import java.awt.event.MouseEvent;
 
 import javax.swing.*;
@@ -33,7 +34,8 @@ public class Controller implements IController {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        this.view.update(this.model.getGameBoard());
+        Point point = new Point(1, 1);
+        this.view.update(this.model.getGameBoard(), this.model.getViablePaths(point));
     }
 
     @Override

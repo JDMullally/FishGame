@@ -1,8 +1,8 @@
 package view;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -11,6 +11,7 @@ import model.Tile;
 public class VisualPanel extends JPanel {
 
     private Tile[][] board;
+    private List<List<Tile>> viablePaths;
 
     /**
      * Default constructor takes in an immutable model.
@@ -24,6 +25,7 @@ public class VisualPanel extends JPanel {
         }
 
         this.board = board;
+        this.viablePaths = new ArrayList<>();
 
         this.setBackground(new Color(150,150,150));
         this.setBorder(BorderFactory.createMatteBorder(1,1,1,1, Color.BLACK));
@@ -35,6 +37,7 @@ public class VisualPanel extends JPanel {
 
         Graphics2D g2d = (Graphics2D) g;
 
+        // draws hexagons
         for (Tile[] row : this.board) {
             for (Tile tile: row) {
                 Polygon hexagon = tile.getGraphicalTile();
@@ -47,14 +50,27 @@ public class VisualPanel extends JPanel {
                 }
             }
         }
+
+        // draws viable paths
+        g2d.setColor(Color.RED);
+        g2d.setStroke(new BasicStroke(2));
+        for (List<Tile> paths : this.viablePaths) {
+            for (int i = 1; i < paths.size(); i++) {
+                Point tileCenter1 = paths.get(i - 1).getCenter();
+                Point tileCenter2 = paths.get(i).getCenter();
+                g2d.drawLine(tileCenter1.x, tileCenter1.y, tileCenter2.x, tileCenter2.y);
+            }
+        }
     }
 
     /**
      * Updates the board and repaints it
      * @param board the game board
+     * @param viablePaths viable paths to move on the board
      */
-    void update(Tile[][] board) {
+    void update(Tile[][] board, List<List<Tile>> viablePaths) {
         this.board = board;
+        this.viablePaths = viablePaths;
         this.repaint();
     }
 

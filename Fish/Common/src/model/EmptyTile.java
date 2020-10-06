@@ -5,7 +5,7 @@ import java.awt.Polygon;
 
 public class EmptyTile implements Tile {
 
-    private Point position; // position of the tile
+    private Point position; // position of the tile relative to the board coordinates
 
     /**
      * Constructor that takes in the position of the Tile.
@@ -37,6 +37,11 @@ public class EmptyTile implements Tile {
     @Override
     public Point getPosition() {
         return new Point(this.position);
+    }
+
+    @Override
+    public Point getCenter() {
+        return null;
     }
 
     @Override

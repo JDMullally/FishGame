@@ -131,9 +131,9 @@ public class GameBoard implements IGameBoard {
      */
     private boolean validTile(Point point) {
         return point.x >= 0
-                && point.x < rows
+                && point.x < columns
                 && point.y >= 0
-                && point.y < columns
+                && point.y < rows
                 && !board[point.x][point.y].isEmpty();
     }
 
@@ -186,7 +186,7 @@ public class GameBoard implements IGameBoard {
                 // for a given direction
                 switch (direction) {
                     case UP:
-                        newPosition = new Point(curPosition.x - 2, curPosition.y);
+                        newPosition = new Point(curPosition.x, curPosition.y - 2);
                         if (validTile(newPosition)) {
                             curPosition = newPosition;
                             break;
@@ -195,10 +195,10 @@ public class GameBoard implements IGameBoard {
                             break buildPath;
                         }
                     case DIAGONAL_UP_RIGHT:
-                        if (curPosition.x % 2 == 0) {
-                            newPosition = new Point(curPosition.x - 1, curPosition.y);
+                        if (curPosition.y % 2 == 0) {
+                            newPosition = new Point(curPosition.x, curPosition.y - 1);
                         } else {
-                            newPosition = new Point(curPosition.x - 1, curPosition.y + 1);
+                            newPosition = new Point(curPosition.x + 1, curPosition.y - 1);
                         }
 
                         if (validTile(newPosition)) {
@@ -209,8 +209,8 @@ public class GameBoard implements IGameBoard {
                             break buildPath;
                         }
                     case DIAGONAL_DOWN_RIGHT:
-                        if (curPosition.x % 2 == 0) {
-                            newPosition = new Point(curPosition.x + 1, curPosition.y);
+                        if (curPosition.y % 2 == 0) {
+                            newPosition = new Point(curPosition.x, curPosition.y + 1);
                         } else {
                             newPosition = new Point(curPosition.x + 1, curPosition.y + 1);
                         }
@@ -223,7 +223,7 @@ public class GameBoard implements IGameBoard {
                             break buildPath;
                         }
                     case DOWN:
-                        newPosition = new Point(curPosition.x + 2, curPosition.y);
+                        newPosition = new Point(curPosition.x, curPosition.y + 2);
                         if (validTile(newPosition)) {
                             curPosition = newPosition;
                             break;
@@ -232,10 +232,10 @@ public class GameBoard implements IGameBoard {
                             break buildPath;
                         }
                     case DIAGONAL_DOWN_LEFT:
-                        if (curPosition.x % 2 == 0) {
-                            newPosition = new Point(curPosition.x + 1, curPosition.y - 1);
+                        if (curPosition.y % 2 == 0) {
+                            newPosition = new Point(curPosition.x - 1, curPosition.y + 1);
                         } else {
-                            newPosition = new Point(curPosition.x + 1, curPosition.y);
+                            newPosition = new Point(curPosition.x, curPosition.y + 1);
                         }
 
                         if (validTile(newPosition)) {
@@ -246,10 +246,10 @@ public class GameBoard implements IGameBoard {
                             break buildPath;
                         }
                     case DIAGONAL_UP_LEFT:
-                        if (curPosition.x % 2 == 0) {
+                        if (curPosition.y % 2 == 0) {
                             newPosition = new Point(curPosition.x - 1, curPosition.y - 1);
                         } else {
-                            newPosition = new Point(curPosition.x - 1, curPosition.y);
+                            newPosition = new Point(curPosition.x, curPosition.y - 1);
                         }
 
                         if (validTile(newPosition)) {

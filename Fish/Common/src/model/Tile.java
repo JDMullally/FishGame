@@ -27,6 +27,12 @@ public interface Tile {
     Point getPosition();
 
     /**
+     * Returns the center position of the Tile relative to it's visual representation.
+     * @return Point
+     */
+    Point getCenter();
+
+    /**
      * Returns a graphical representation of the tile.
      * @return Polygon
      */

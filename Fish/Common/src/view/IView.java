@@ -1,5 +1,7 @@
 package view;
 
+import java.util.List;
+
 import javax.swing.*;
 
 import controller.IController;
@@ -28,7 +30,9 @@ public interface IView {
 
     /**
      * Updates the view with the new game board and redraws the board
+     *
      * @param board the game board
+     * @param viablePaths viable paths to move on the board
      */
-    void update(Tile[][] board);
+    void update(Tile[][] board, List<List<Tile>> viablePaths);
 }

@@ -1,6 +1,7 @@
 package view;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -23,7 +24,7 @@ public class VisualView extends JFrame implements IView {
         JScrollPane scrollPane = new JScrollPane(this.panel);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-        this.setTitle("Fish");
+        this.setTitle("Fish Game");
         this.setSize(canvas.getWidth(), canvas.getHeight());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.add(scrollPane);
@@ -47,7 +48,7 @@ public class VisualView extends JFrame implements IView {
     }
 
     @Override
-    public void update(Tile[][] board) {
-        this.panel.update(board);
+    public void update(Tile[][] board, List<List<Tile>> viablePaths) {
+        this.panel.update(board, viablePaths);
     }
 }
