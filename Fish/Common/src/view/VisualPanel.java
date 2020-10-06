@@ -40,7 +40,7 @@ public class VisualPanel extends JPanel {
         // draws hexagons
         for (Tile[] row : this.board) {
             for (Tile tile: row) {
-                Polygon hexagon = tile.getGraphicalTile();
+                Polygon hexagon = tile.getVisualHexagon();
                 hexagon.translate(1, 1);
                 if (hexagon != null) {
                     g2d.setColor(new Color(252, 157, 3));

@@ -1,7 +1,7 @@
 package model;
 
-import java.awt.Point;
-import java.awt.Polygon;
+import java.awt.*;
+import java.util.List;
 
 /**
  * Represents a tile on the GameBoard.
@@ -33,10 +33,16 @@ public interface Tile {
     Point getCenter();
 
     /**
-     * Returns a graphical representation of the tile.
+     * Returns a graphical representation of the tile as a hexagon.
      * @return Polygon
      */
-    Polygon getGraphicalTile();
+    Polygon getVisualHexagon();
+
+    /**
+     * Returns a graphical representation of the fish on the tile.
+     * @return List<Shape>
+     */
+    List<Shape> getVisualFish();
 
     /**
      * Returns a clone of the Tile.

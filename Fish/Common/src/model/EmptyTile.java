@@ -1,7 +1,7 @@
 package model;
 
-import java.awt.Point;
-import java.awt.Polygon;
+import java.awt.*;
+import java.util.List;
 
 public class EmptyTile implements Tile {
 
@@ -45,7 +45,12 @@ public class EmptyTile implements Tile {
     }
 
     @Override
-    public Polygon getGraphicalTile() {
+    public Polygon getVisualHexagon() {
+        return null;
+    }
+
+    @Override
+    public List<Shape> getVisualFish() {
         return null;
     }
 

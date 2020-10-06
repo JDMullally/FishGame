@@ -1,7 +1,7 @@
 package model;
 
-import java.awt.Point;
-import java.awt.Polygon;
+import java.awt.*;
+import java.util.List;
 
 import static constants.Constants.HEX_SIZE;
 
@@ -11,7 +11,8 @@ public class FishTile implements Tile {
     private int fish; // number of fish on the tile
 
     private Point center; // the center of the tile relative to it's visual representation
-    private Polygon hexagon; // a visual representation of the tile
+    private Polygon visualHexagon; // a visual representation of the tile
+    private List<Shape> visualFish; // a visual representation of the fish on the tile
 
     /**
      * Constructor that takes in the position of the Tile and the number of fish it has.
@@ -32,8 +33,9 @@ public class FishTile implements Tile {
     public FishTile(int x, int y, int fish) {
         this.position = new Point(x, y);
         this.fish = fish;
-        this.hexagon = this.generateHexagon();
         this.center = this.calculateCenter();
+        this.visualHexagon = this.generateHexagon();
+        this.visualFish = this.generateFish();
     }
 
     /**
@@ -46,11 +48,11 @@ public class FishTile implements Tile {
             xBuffer = xBuffer + 2 * HEX_SIZE;
         }
 
-        return new Point((int) ((HEX_SIZE * this.position.x * 3) + xBuffer + HEX_SIZE * 1.5), (HEX_SIZE * this.position.y)+ HEX_SIZE);
+        return new Point((int) ((HEX_SIZE * this.position.x * 3) + xBuffer + HEX_SIZE * 1.5) + 1, (HEX_SIZE * this.position.y)+ HEX_SIZE);
     }
 
     /**
-     * Generates a visual representation of the tile as a hexagon.
+     * Generates a visual representation of the Tile as a hexagon.
      * @return Polygon
      */
     private Polygon generateHexagon() {
@@ -69,6 +71,15 @@ public class FishTile implements Tile {
         hexagon.addPoint((HEX_SIZE * this.position.x * 3) + HEX_SIZE + xBuffer, (HEX_SIZE * this.position.y) + (2 * HEX_SIZE));
 
         return hexagon;
+    }
+
+    /**
+     * Generates a visual representation of the fish on the Tile as a list of Shapes.
+     * @return
+     */
+    private List<Shape> generateFish() {
+        // TODO: generate fish
+        return null;
     }
 
     @Override
@@ -92,8 +103,14 @@ public class FishTile implements Tile {
     }
 
     @Override
-    public Polygon getGraphicalTile() {
-        return new Polygon(this.hexagon.xpoints, this.hexagon.ypoints, this.hexagon.npoints);
+    public Polygon getVisualHexagon() {
+        return new Polygon(this.visualHexagon.xpoints, this.visualHexagon.ypoints, this.visualHexagon.npoints);
+    }
+
+    @Override
+    public List<Shape> getVisualFish() {
+        // TODO: return fish
+        return null;
     }
 
     @Override

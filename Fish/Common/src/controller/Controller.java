@@ -2,10 +2,12 @@ package controller;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.*;
 
 import model.IGameBoard;
+import model.Tile;
 import view.IView;
 
 /**
@@ -34,8 +36,21 @@ public class Controller implements IController {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        Point point = new Point(1, 1);
-        this.view.update(this.model.getGameBoard(), this.model.getViablePaths(point));
+        Point point = new Point(e.getX(), e.getY());
+
+        // checks if the point is inside a polygon
+        Tile[][] gameBoard = this.model.getGameBoard();
+        for (Tile[] tiles : gameBoard) {
+            for (Tile tile : tiles) {
+                Polygon hexagon = tile.getVisualHexagon();
+                if (hexagon != null && hexagon.contains(point)) {
+                    this.view.update(gameBoard, this.model.getViablePaths(tile.getPosition()));
+                    return;
+                }
+            }
+        }
+
+        this.view.update(gameBoard, new ArrayList<>());
     }
 
     @Override
