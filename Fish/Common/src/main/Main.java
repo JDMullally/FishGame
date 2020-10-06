@@ -39,8 +39,6 @@ public class Main {
         IView view = new VisualView(model.getGameBoard(), model.getCanvas());
         Controller controller = new Controller();
         controller.control(model, view);
-
-        
     }
 
     /**

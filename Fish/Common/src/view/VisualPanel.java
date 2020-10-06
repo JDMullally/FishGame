@@ -50,7 +50,7 @@ public class VisualPanel extends JPanel {
                     g2d.draw(hexagon);
                 }
 
-                g2d.setColor(new Color(80, 30, 255));
+                g2d.setColor(new Color(0, 28, 150));
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
                 // draws fish
