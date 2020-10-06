@@ -80,12 +80,12 @@ public class GameBoard implements IGameBoard {
                     + (rows * columns - holes.size()));
         }
 
-        Tile[][] board = new Tile[rows][columns];
+        Tile[][] board = new Tile[columns][rows];
 
         // generate random board with holes
         Random rand = new Random();
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
+        for (int i = 0; i < columns; i++) {
+            for (int j = 0; j < rows; j++) {
                 if (!holes.isEmpty() && holes.contains(new Point(i, j))) {
                     board[i][j] = new EmptyTile(i, j);
                 } else {
@@ -119,8 +119,8 @@ public class GameBoard implements IGameBoard {
      * @return Canvas
      */
     private Canvas generateCanvas(int rows, int columns) {
-        int canvasWidth = columns * 4 * HEX_SIZE + HEX_SIZE;
-        int canvasHeight = rows * 2 * HEX_SIZE;
+        int canvasWidth = columns * 4 * HEX_SIZE + HEX_SIZE + 3;
+        int canvasHeight = (rows + 1) * HEX_SIZE + 3;
         return new Canvas(0, 0, canvasWidth, canvasHeight);
     }
 

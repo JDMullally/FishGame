@@ -20,15 +20,13 @@ public class VisualView extends JFrame implements IView {
         this.panel = new VisualPanel(board);
         this.panel.setPreferredSize(new Dimension(canvas.getWidth(), canvas.getHeight()));
 
+        JScrollPane scrollPane = new JScrollPane(this.panel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
         this.setTitle("Fish");
-        this.setLayout(new BorderLayout());
         this.setSize(canvas.getWidth(), canvas.getHeight());
-
-        this.getRootPane().setBorder(
-            BorderFactory.createMatteBorder(2,2,2,2, Color.BLACK));
-
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.add(new JScrollPane(this.panel));
+        this.add(scrollPane);
         this.pack();
     }
 
@@ -39,12 +37,17 @@ public class VisualView extends JFrame implements IView {
 
     @Override
     public void start(Timer timer) {
-        timer.addActionListener(this.panel);
         timer.start();
+        this.panel.refresh();
     }
 
     @Override
     public void setListener(IController listener) {
-        this.addMouseListener(listener);
+        this.panel.addMouseListener(listener);
+    }
+
+    @Override
+    public void update(Tile[][] board) {
+        this.panel.update(board);
     }
 }

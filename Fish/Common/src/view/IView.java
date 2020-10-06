@@ -3,6 +3,7 @@ package view;
 import javax.swing.*;
 
 import controller.IController;
+import model.Tile;
 
 public interface IView {
 
@@ -24,4 +25,10 @@ public interface IView {
      * @param listener the given listener
      */
     void setListener(IController listener);
+
+    /**
+     * Updates the view with the new game board and redraws the board
+     * @param board the game board
+     */
+    void update(Tile[][] board);
 }

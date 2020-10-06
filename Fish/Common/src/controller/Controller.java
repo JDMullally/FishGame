@@ -33,7 +33,7 @@ public class Controller implements IController {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-
+        this.view.update(this.model.getGameBoard());
     }
 
     @Override

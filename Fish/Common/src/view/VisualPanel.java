@@ -8,7 +8,7 @@ import javax.swing.*;
 
 import model.Tile;
 
-public class VisualPanel extends JPanel implements ActionListener {
+public class VisualPanel extends JPanel {
 
     private Tile[][] board;
 
@@ -24,13 +24,9 @@ public class VisualPanel extends JPanel implements ActionListener {
         }
 
         this.board = board;
+
         this.setBackground(new Color(150,150,150));
-
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        this.repaint();
+        this.setBorder(BorderFactory.createMatteBorder(1,1,1,1, Color.BLACK));
     }
 
     @Override
@@ -39,10 +35,10 @@ public class VisualPanel extends JPanel implements ActionListener {
 
         Graphics2D g2d = (Graphics2D) g;
 
-
         for (Tile[] row : this.board) {
             for (Tile tile: row) {
                 Polygon hexagon = tile.getGraphicalTile();
+                hexagon.translate(1, 1);
                 if (hexagon != null) {
                     g2d.setColor(new Color(252, 157, 3));
                     g2d.fill(hexagon);
@@ -51,8 +47,22 @@ public class VisualPanel extends JPanel implements ActionListener {
                 }
             }
         }
-
     }
 
+    /**
+     * Updates the board and repaints it
+     * @param board the game board
+     */
+    void update(Tile[][] board) {
+        this.board = board;
+        this.repaint();
+    }
+
+    /**
+     * Repaints the board
+     */
+    void refresh() {
+        this.repaint();
+    }
 
 }

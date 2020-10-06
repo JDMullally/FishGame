@@ -50,24 +50,18 @@ public class FishTile implements Tile {
     @Override
     public Polygon getGraphicalTile() {
         Polygon hexagon = new Polygon();
-        int yBuffer = HEX_SIZE;
-        int xBuffer = HEX_SIZE;
-        if (this.position.y % 2 == 0) {
-            yBuffer = 0;
 
+        int xBuffer = this.position.x * HEX_SIZE;
+        if (this.position.y % 2 == 1) {
+            xBuffer = xBuffer + 2 * HEX_SIZE;
         }
-        hexagon.addPoint((HEX_SIZE * this.position.x),
-            (yBuffer * this.position.y) + HEX_SIZE);
-        hexagon.addPoint((HEX_SIZE * this.position.x) + HEX_SIZE,
-            (yBuffer * this.position.y));
-        hexagon.addPoint((HEX_SIZE * this.position.x) + (2 * HEX_SIZE),
-            (yBuffer * this.position.y) + yBuffer);
-        hexagon.addPoint((HEX_SIZE * this.position.x)+ (3 * HEX_SIZE),
-            (yBuffer * this.position.y) + yBuffer + HEX_SIZE);
-        hexagon.addPoint((HEX_SIZE * this.position.x) + (2 * HEX_SIZE),
-            (yBuffer * this.position.y) + yBuffer + (2 * HEX_SIZE));
-        hexagon.addPoint((HEX_SIZE * this.position.x) + HEX_SIZE,
-            (yBuffer * this.position.y) + yBuffer + (2 * HEX_SIZE));
+
+        hexagon.addPoint((HEX_SIZE * this.position.x * 3) + xBuffer, (HEX_SIZE * this.position.y)+ HEX_SIZE);
+        hexagon.addPoint((HEX_SIZE * this.position.x * 3) + HEX_SIZE + xBuffer, (HEX_SIZE * this.position.y));
+        hexagon.addPoint((HEX_SIZE * this.position.x * 3) + (2 * HEX_SIZE) + xBuffer, (HEX_SIZE * this.position.y));
+        hexagon.addPoint((HEX_SIZE * this.position.x * 3)+ (3 * HEX_SIZE) + xBuffer, (HEX_SIZE * this.position.y) + HEX_SIZE);
+        hexagon.addPoint((HEX_SIZE * this.position.x * 3) + (2 * HEX_SIZE) + xBuffer, (HEX_SIZE * this.position.y) + (2 * HEX_SIZE));
+        hexagon.addPoint((HEX_SIZE * this.position.x * 3) + HEX_SIZE + xBuffer, (HEX_SIZE * this.position.y) + (2 * HEX_SIZE));
 
         return hexagon;
     }

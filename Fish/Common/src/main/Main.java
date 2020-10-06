@@ -19,8 +19,8 @@ import view.VisualView;
  */
 public class Main {
 
-    private static int width;
-    private static int height;
+    private static int rows;
+    private static int columns;
     private static List<Point> holes;
     private static Integer minOneFishTiles;
 
@@ -34,13 +34,13 @@ public class Main {
         // sets game board
         IGameBoard model;
         if (holes == null && minOneFishTiles == null) {
-            model = new GameBoard(width, height);
+            model = new GameBoard(rows, columns);
         } else if (minOneFishTiles == null) {
-            model = new GameBoard(width, height, holes);
+            model = new GameBoard(rows, columns, holes);
         } else if (holes == null) {
-            model = new GameBoard(width, height, minOneFishTiles);
+            model = new GameBoard(rows, columns, minOneFishTiles);
         } else {
-            model = new GameBoard(width, height, holes, minOneFishTiles);
+            model = new GameBoard(rows, columns, holes, minOneFishTiles);
         }
 
         IView view = new VisualView(model.getGameBoard(), model.getCanvas());
@@ -50,8 +50,8 @@ public class Main {
 
     /**
      * Parses program arguments:
-     * -width [int]
-     * -height [int]
+     * -rows [int]
+     * -columns [int]
      * -holes [List<int,int>] , example: '{[1,2], [5,6]}'
      * -minOneFishTiles [int]
      * @param args program arguments
@@ -61,13 +61,13 @@ public class Main {
         ArgumentParser parser = ArgumentParsers.newArgumentParser("Main", true);
 
         // adds expected program arguments to parser
-        parser.addArgument("--width")
-                .dest("width")
+        parser.addArgument("-r", "--rows")
+                .dest("rows")
                 .type(Integer.class)
                 .required(true)
                 .help("Width of the GameBoard");
-        parser.addArgument("--height")
-                .dest("height")
+        parser.addArgument("-c", "--columns")
+                .dest("columns")
                 .type(Integer.class)
                 .required(true)
                 .help("Height of the GameBoard");
@@ -81,8 +81,8 @@ public class Main {
         // parses program arguments
         try {
             Namespace nameSpace = parser.parseArgs(args);
-            width = nameSpace.getInt("width");
-            height = nameSpace.getInt("height");
+            rows = nameSpace.getInt("rows");
+            columns = nameSpace.getInt("columns");
             minOneFishTiles = nameSpace.getInt("minOneFishTiles");
         } catch (ArgumentParserException e) {
             parser.handleError(e);
