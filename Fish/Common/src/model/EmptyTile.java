@@ -1,6 +1,7 @@
 package model;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmptyTile implements Tile {
@@ -51,7 +52,7 @@ public class EmptyTile implements Tile {
 
     @Override
     public List<Shape> getVisualFish() {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override

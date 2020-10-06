@@ -100,8 +100,8 @@ public class GameBoard implements IGameBoard {
 
         // guarentee there is a minimum number of one fish tiles
         while (minOneFishTiles > 0) {
-            int x = rand.nextInt(rows);
-            int y = rand.nextInt(columns);
+            int x = rand.nextInt(columns);
+            int y = rand.nextInt(rows);
             int fish = board[x][y].getFish();
             if (fish > 1) {
                 board[x][y] = new FishTile(x, y, 1);

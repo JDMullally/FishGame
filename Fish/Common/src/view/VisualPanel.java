@@ -37,16 +37,26 @@ public class VisualPanel extends JPanel {
 
         Graphics2D g2d = (Graphics2D) g;
 
-        // draws hexagons
+        // draws hexagons and fish
         for (Tile[] row : this.board) {
             for (Tile tile: row) {
+                // draws hexagon
                 Polygon hexagon = tile.getVisualHexagon();
-                hexagon.translate(1, 1);
                 if (hexagon != null) {
+                    hexagon.translate(1, 1);
                     g2d.setColor(new Color(252, 157, 3));
                     g2d.fill(hexagon);
                     g2d.setColor(new Color(255, 255, 255));
                     g2d.draw(hexagon);
+                }
+
+                g2d.setColor(new Color(80, 30, 255));
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // draws fish
+                List<Shape> fishList = tile.getVisualFish();
+                for (Shape fish : fishList) {
+                    g2d.fill(fish);
                 }
             }
         }

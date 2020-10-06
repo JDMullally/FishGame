@@ -1,6 +1,9 @@
 package model;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.util.ArrayList;
 import java.util.List;
 
 import static constants.Constants.HEX_SIZE;
@@ -12,7 +15,7 @@ public class FishTile implements Tile {
 
     private Point center; // the center of the tile relative to it's visual representation
     private Polygon visualHexagon; // a visual representation of the tile
-    private List<Shape> visualFish; // a visual representation of the fish on the tile
+    private List<GeneralPath> visualFish; // a visual representation of the fish on the tile
 
     /**
      * Constructor that takes in the position of the Tile and the number of fish it has.
@@ -77,9 +80,38 @@ public class FishTile implements Tile {
      * Generates a visual representation of the fish on the Tile as a list of Shapes.
      * @return
      */
-    private List<Shape> generateFish() {
-        // TODO: generate fish
-        return null;
+    private List<GeneralPath> generateFish() {
+        GeneralPath shape = new GeneralPath();
+        Point center = this.getCenter();
+
+        // draws a single fish in the center of the tile
+        shape.moveTo(center.x - HEX_SIZE / 2, center.y);
+        shape.curveTo(center.x - 5, center.y - 4, center.x + 5, center.y - 4, center.x + HEX_SIZE / 2 - 4, center.y - 2);
+        shape.lineTo(center.x + HEX_SIZE / 2, center.y - 4);
+        shape.lineTo(center.x + HEX_SIZE / 2, center.y + 4);
+        shape.lineTo(center.x + HEX_SIZE / 2 - 4, center.y + 2);
+        shape.curveTo(center.x + 5, center.y + 4, center.x - 5, center.y + 4, center.x - HEX_SIZE / 2, center.y);
+        shape.closePath();
+
+        // adds starting height to first fish
+        AffineTransform affineTransform = new AffineTransform();
+        affineTransform.translate(0, -5 * (this.fish - 1));
+        shape.transform(affineTransform);
+
+        // creates multiple fish
+        List<GeneralPath> fishList = new ArrayList<>();
+        for (int i = 0; i < this.fish; i++) {
+            GeneralPath fish = new GeneralPath(shape);
+
+            // shift fish up by an amount
+            AffineTransform affineTransform2 = new AffineTransform();
+            affineTransform2.translate(0, i * 10);
+            fish.transform(affineTransform2);
+
+            fishList.add(fish);
+
+        }
+        return fishList;
     }
 
     @Override
@@ -109,8 +141,11 @@ public class FishTile implements Tile {
 
     @Override
     public List<Shape> getVisualFish() {
-        // TODO: return fish
-        return null;
+        List<Shape> shapes = new ArrayList<>();
+        for (Shape fish : this.visualFish) {
+            shapes.add(new GeneralPath(fish));
+        }
+        return shapes;
     }
 
     @Override
