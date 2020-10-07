@@ -60,18 +60,18 @@ public class FishTile implements Tile {
      */
     private Polygon generateHexagon() {
         Polygon hexagon = new Polygon();
-
-        int xBuffer = this.position.x * HEX_SIZE;
+        int yBuffer = (HEX_SIZE * this.position.y);
+        int xBuffer = this.position.x * HEX_SIZE * 4;
         if (this.position.y % 2 == 1) {
             xBuffer = xBuffer + 2 * HEX_SIZE;
         }
 
-        hexagon.addPoint((HEX_SIZE * this.position.x * 3) + xBuffer, (HEX_SIZE * this.position.y)+ HEX_SIZE);
-        hexagon.addPoint((HEX_SIZE * this.position.x * 3) + HEX_SIZE + xBuffer, (HEX_SIZE * this.position.y));
-        hexagon.addPoint((HEX_SIZE * this.position.x * 3) + (2 * HEX_SIZE) + xBuffer, (HEX_SIZE * this.position.y));
-        hexagon.addPoint((HEX_SIZE * this.position.x * 3) + (3 * HEX_SIZE) + xBuffer, (HEX_SIZE * this.position.y) + HEX_SIZE);
-        hexagon.addPoint((HEX_SIZE * this.position.x * 3) + (2 * HEX_SIZE) + xBuffer, (HEX_SIZE * this.position.y) + (2 * HEX_SIZE));
-        hexagon.addPoint((HEX_SIZE * this.position.x * 3) + HEX_SIZE + xBuffer, (HEX_SIZE * this.position.y) + (2 * HEX_SIZE));
+        hexagon.addPoint(xBuffer, HEX_SIZE + yBuffer);
+        hexagon.addPoint(HEX_SIZE + xBuffer, yBuffer);
+        hexagon.addPoint((2 * HEX_SIZE) + xBuffer, yBuffer);
+        hexagon.addPoint((3 * HEX_SIZE) + xBuffer, HEX_SIZE + yBuffer);
+        hexagon.addPoint((2 * HEX_SIZE) + xBuffer, (2 * HEX_SIZE) + yBuffer);
+        hexagon.addPoint(HEX_SIZE + xBuffer, (2 * HEX_SIZE) + yBuffer);
 
         return hexagon;
     }
