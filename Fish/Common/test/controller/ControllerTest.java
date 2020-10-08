@@ -1,17 +1,11 @@
 package controller;
 
-
-import java.awt.Point;
 import java.util.ArrayList;
 import model.GameBoard;
 import model.IGameBoard;
-import model.Tile;
 import org.junit.Test;
 import view.IView;
 import view.VisualView;
-
-import static org.junit.Assert.*;
-
 
 public class ControllerTest {
 

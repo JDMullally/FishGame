@@ -9,16 +9,22 @@ import org.junit.Test;
 
 public class FishTileTest {
 
-    int fish;
-    Tile tile;
-    Tile tile2;
+    private int fish;
+    private Tile tile;
+    private Tile tile2;
 
     private void init() {
-        fish = 5;
+        this.fish = 5;
         this.tile = new FishTile(new Point(1,1), fish);
         this.tile2 = new FishTile(new Point(2,2), fish/2);
     }
 
+    /**
+     * Returns true if the points of the two polygons are equal
+     * @param p1 Polygon
+     * @param p2 Polygon
+     * @return boolean
+     */
     private boolean checkPoints(Polygon p1, Polygon p2) {
         if (p1.npoints == p2.npoints) {
             for (int i = 0; i < p1.npoints; i++) {
@@ -43,7 +49,7 @@ public class FishTileTest {
     public void getFish() {
         this.init();
 
-        assertEquals(fish, this.tile.getFish());
+        assertEquals(this.fish, this.tile.getFish());
     }
 
     @Test
@@ -76,7 +82,7 @@ public class FishTileTest {
         //compares the points of the hexagons
         boolean samePoints = checkPoints(actual, expected);
 
-        assertEquals(true, samePoints);
+        assertTrue(samePoints);
     }
 
     @Test
@@ -101,7 +107,7 @@ public class FishTileTest {
         //compares the points of the hexagons
         boolean samePoints = checkPoints(actual, expected);
 
-        assertEquals(true, samePoints);
+        assertTrue(samePoints);
     }
 
     @Test
@@ -135,7 +141,7 @@ public class FishTileTest {
 
         Shape middleFish = fish.get(2);
 
-        assertEquals(true, middleFish.contains(this.tile.getCenter()));
+        assertTrue(middleFish.contains(this.tile.getCenter()));
     }
 
     @Test

@@ -13,7 +13,7 @@ public class EmptyTileTest {
 
     private EmptyTile etile;
 
-    public void init() {
+    private void init() {
         this.etile = new EmptyTile(new Point(1, 1));
     }
 
@@ -21,7 +21,7 @@ public class EmptyTileTest {
     public void isEmpty() {
         this.init();
 
-        assertEquals(true, this.etile.isEmpty());
+        assertTrue(this.etile.isEmpty());
     }
 
     @Test
@@ -43,7 +43,7 @@ public class EmptyTileTest {
 
         Polygon actual = this.etile.getVisualHexagon();
 
-        assertEquals(null, actual);
+        assertNull(actual);
     }
 
     @Test
@@ -52,7 +52,7 @@ public class EmptyTileTest {
 
         Point actual = this.etile.getCenter();
 
-        assertEquals(null, actual);
+        assertNull(actual);
     }
 
     @Test

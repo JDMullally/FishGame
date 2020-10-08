@@ -5,31 +5,32 @@ import static org.junit.Assert.*;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
 
 public class GameBoardTest {
 
-    int holes1Size;
-    GameBoard modelHoles;
-    GameBoard modelSmall;
-    GameBoard empty;
-    GameBoard modelSmallError;
-    GameBoard modelTooManyMin;
-    GameBoard modelDefault;
-    GameBoard modelMinOnes;
-    GameBoard modelHolesAndMinOnes;
-    Tile tileOneOne;
+    private int holes1Size;
+    private GameBoard modelHoles;
+    private GameBoard modelSmall;
+    private GameBoard empty;
+    private GameBoard modelSmallError;
+    private GameBoard modelTooManyMin;
+    private GameBoard modelDefault;
+    private GameBoard modelMinOnes;
+    private GameBoard modelHolesAndMinOnes;
+    private Tile tileOneOne;
 
-    List<Point> holes1;
-    List<Point> holesEmpty;
-    List<Point> holesInvalid;
+    private List<Point> holes1;
+    private List<Point> holesEmpty;
+    private List<Point> holesInvalid;
 
 
-    public void init() {
+    private void init() {
         this.holes1 = Arrays.asList(new Point(2, 2), new Point(2, 1));
-        this.holesEmpty = Arrays.asList(new Point(1, 1));
-        this.holesInvalid = Arrays.asList(new Point(100, 100));
+        this.holesEmpty = Collections.singletonList(new Point(1, 1));
+        this.holesInvalid = Collections.singletonList(new Point(100, 100));
 
         this.holes1Size = this.holes1.size();
 
@@ -68,9 +69,9 @@ public class GameBoardTest {
         int count = 0;
 
         Tile[][] testBoard = modelOutOfBoundHole.getGameBoard();
-        for (int i = 0; i < testBoard.length; i++) {
-            for (int j = 0; j < testBoard[i].length; j++) {
-                if (testBoard[i][j].isEmpty()) {
+        for (Tile[] tiles : testBoard) {
+            for (Tile tile : tiles) {
+                if (tile.isEmpty()) {
                     count++;
                 }
             }
@@ -99,9 +100,9 @@ public class GameBoardTest {
         int counter = holes1Size;
         assertNotEquals(0, counter);
         Tile[][] testBoard = this.modelHoles.getGameBoard();
-        for (int i = 0; i < testBoard.length; i++) {
-            for (int j = 0; j < testBoard[i].length; j++) {
-                if (testBoard[i][j].isEmpty()) {
+        for (Tile[] tiles : testBoard) {
+            for (Tile tile : tiles) {
+                if (tile.isEmpty()) {
                     counter--;
                 }
             }
@@ -111,6 +112,7 @@ public class GameBoardTest {
 
     @Test
     public void testSameFish() {
+        this.init();
 
         this.modelDefault = new GameBoard(3, 4, new ArrayList<>(), 0, 1);
 
@@ -124,11 +126,13 @@ public class GameBoardTest {
                 }
             }
         }
-        assertEquals(true, allOnes);
+        assertTrue(allOnes);
     }
 
     @Test
     public void testMinOneAndSameFish() {
+        this.init();
+
         this.modelDefault = new GameBoard(3, 4, new ArrayList<>(), 10, 4);
 
         boolean allFours = true;
@@ -141,12 +145,14 @@ public class GameBoardTest {
                 }
             }
         }
-        assertEquals(true, allFours);
+        assertTrue(allFours);
     }
 
     @Test
     public void testSameFishAndHoles() {
-        this.modelDefault = new GameBoard(3, 4, Arrays.asList(new Point(1,1)), 0, 4);
+        this.init();
+
+        this.modelDefault = new GameBoard(3, 4, Collections.singletonList(new Point(1, 1)), 0, 4);
 
         boolean noHoles = true;
 
@@ -159,7 +165,7 @@ public class GameBoardTest {
             }
         }
 
-        assertEquals(false, noHoles);
+        assertFalse(noHoles);
     }
 
     /**
