@@ -1,3 +1,21 @@
-# 1 — Dot Game
+# Fish
 
-We are about to launch a "dot game" company. We have been hired to design and implement the software. We have thus far developed a technical plan identifying the software software components of a complete Fish game system and a sequence of milestones to complete the Fish game. 
+Fish is a board game for two to four players.
+
+### Example
+Go to the `Fish` directory and run the following command for information on how to properly run the
+executable:
+
+```
+$  ./xfish -h
+```
+
+The arguments `-r` and `-c` are required arguments representing the number of rows and columns of
+the game board. All other arguments are optional.
+
+### Testing
+Go to the `Fish/Common` directory and run:
+
+```
+$  ./test.sh
+```

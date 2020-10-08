@@ -12,4 +12,4 @@ Mark Preschern and Joseph Mullally's CS4500 assignments.
 
 * [E - TCP](E/Other/README.md)
 
-* [1 — Dot Game](Fish/Other/README.md)
+* [Fish](Fish/Common/README.md)

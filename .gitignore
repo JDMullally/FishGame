@@ -56,3 +56,6 @@ fabric.properties
 
 # Mac Stuff
 .DS_Store
+
+# Maven
+target/
