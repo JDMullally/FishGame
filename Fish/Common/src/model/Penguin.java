@@ -112,6 +112,17 @@ public class Penguin implements IPenguin{
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o instanceof FishTile) {
+            Penguin other = (Penguin) o;
+            return this.color.getRGB() == other.getColor().getRGB()
+                && this.position.equals(other.position)
+                && this.score == other.score;
+        }
+        return false;
+    }
+
+    @Override
     public IPenguin clone() {
         return new Penguin(new Color(this.color.getRGB()), new Point(this.position), this.score);
     }

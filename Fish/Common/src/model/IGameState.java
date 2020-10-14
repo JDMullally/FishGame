@@ -31,7 +31,7 @@ public interface IGameState {
      * @param player the player who want's to see their possible moves
      * @return Map of Penguin to List of Tile
      */
-    Map<Penguin, List<Tile>> getPossibleMoves(Player player);
+    Map<IPenguin, List<Tile>> getPossibleMoves(IPlayer player);
 
     /**
      * Allows players to place penguins on the current GameBoard.
@@ -39,9 +39,9 @@ public interface IGameState {
      * @param penguin Penguin owned by Player player
      * @param player Player placing the Penguin
      * @param tile Tile the Player is placing Penguin.
-     * @return
+     * @return IPenguin that was placed
      */
-    Penguin placePenguin(Penguin penguin, Player player, Tile tile);
+    IPenguin placePenguin(IPenguin penguin, IPlayer player, Tile tile) throws IllegalArgumentException;
 
     /**
      * Moves a Player's Penguin from it's currentTile to a newTile, or throws an error if the move
@@ -53,7 +53,7 @@ public interface IGameState {
      * @param newTile
      * @throws IllegalArgumentException
      */
-    boolean move(Player player, Penguin penguin, Tile currentTile, Tile newTile) throws IllegalArgumentException;
+    boolean move(IPlayer player, IPenguin penguin, Tile currentTile, Tile newTile) throws IllegalArgumentException;
 
     /**
      * Moves a Player's Penguin from it's currentPoint to a newPoint, or throws an error if the move
@@ -65,7 +65,7 @@ public interface IGameState {
      * @param newPoint
      * @throws IllegalArgumentException
      */
-    boolean move(Player player, Penguin penguin, Point currentPoint, Point newPoint) throws IllegalArgumentException;
+    boolean move(IPlayer player, IPenguin penguin, Point currentPoint, Point newPoint) throws IllegalArgumentException;
 
     /**
      * Returns true if no players can make a move and false otherwise.

@@ -2,7 +2,9 @@ package model;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,8 +63,21 @@ public class GameState extends GameBoard implements IGameState {
      * @param endpoint point to move to
      * @return boolean
      */
-    private boolean isMoveLegal(IPenguin penguin, IPlayer player, Point endpoint) {
-        return false; // TODO
+    private boolean isMoveLegal(IPenguin penguin, IPlayer player, Tile endpoint) {
+        return players.get(this.getTurn() % players.size()).equals(player)
+            && player.getColor().getRGB() == penguin.getColor().getRGB()
+            && this.getViableTiles(penguin.getPosition()).contains(endpoint);
+    }
+
+    private boolean pointContainsPenguin(Point point) {
+        for (IPlayer player : players) {
+            for (IPenguin penguin: player.getPenguins()) {
+                if (point.equals(penguin.getPosition())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -76,22 +91,31 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     @Override
-    public Map<Penguin, List<Tile>> getPossibleMoves(Player player) {
-        return null; // TODO
+    public Map<IPenguin, List<Tile>> getPossibleMoves(IPlayer player) {
+        Map<IPenguin, List<Tile>> possibleMoves = new HashMap<>();
+        for (IPenguin p : player.getPenguins()) {
+            possibleMoves.put(p, this.getViableTiles(p.getPosition()));
+        }
+        return possibleMoves;
     }
 
     @Override
-    public Penguin placePenguin(Penguin penguin, Player player, Tile tile) {
-        return null; //TODO
+    public IPenguin placePenguin(IPenguin penguin, IPlayer player, Tile tile) throws IllegalArgumentException {
+        if(penguin == null || player == null || tile == null) {
+            throw new IllegalArgumentException("Enter a valid Penguin, Player and Tile");
+        } else if (this.pointContainsPenguin(tile.getPosition())) {
+            throw new IllegalArgumentException("Can't place a Penguin on another Penguin");
+        }
+        return null;
     }
 
     @Override
-    public boolean move(Player player, Penguin penguin, Tile currentTile, Tile newTile) throws IllegalArgumentException {
+    public boolean move(IPlayer player, IPenguin penguin, Tile currentTile, Tile newTile) throws IllegalArgumentException {
         return false; //TODO
     }
 
     @Override
-    public boolean move(Player player, Penguin penguin, Point currentPoint, Point newPoint) throws IllegalArgumentException {
+    public boolean move(IPlayer player, IPenguin penguin, Point currentPoint, Point newPoint) throws IllegalArgumentException {
         return false; //TODO
     }
 

@@ -80,7 +80,7 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     }
 
     @Override
-    public Map<Penguin, List<Tile>> getPossibleMoves(Player player) {
+    public Map<IPenguin, List<Tile>> getPossibleMoves(IPlayer player) {
         return this.gameState.getPossibleMoves(player);
     }
 
@@ -95,17 +95,17 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     }
 
     @Override
-    public Penguin placePenguin(Penguin penguin, Player player, Tile tile) {
+    public IPenguin placePenguin(IPenguin penguin, IPlayer player, Tile tile) {
         throw new UnsupportedOperationException("GameState is immutable.");
     }
 
     @Override
-    public boolean move(Player player, Penguin penguin, Tile currentTile, Tile newTile) throws IllegalArgumentException {
+    public boolean move(IPlayer player, IPenguin penguin, Tile currentTile, Tile newTile) throws IllegalArgumentException {
         throw new UnsupportedOperationException("GameState is immutable.");
     }
 
     @Override
-    public boolean move(Player player, Penguin penguin, Point currentPoint, Point newPoint) throws IllegalArgumentException {
+    public boolean move(IPlayer player, IPenguin penguin, Point currentPoint, Point newPoint) throws IllegalArgumentException {
         throw new UnsupportedOperationException("GameState is immutable.");
     }
 }
