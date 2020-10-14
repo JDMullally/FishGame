@@ -25,6 +25,13 @@ public interface IGameState {
     int getTurn();
 
     /**
+     * Returns the IPlayer whose turn it is to move.
+     *
+     * @return IPlayer
+     */
+    IPlayer playerTurn();
+
+    /**
      * Returns all possible moves (from any penguin) for a given player as a Map of Penguin to List
      * of Tile.
      *
@@ -49,11 +56,10 @@ public interface IGameState {
      *
      * @param player
      * @param penguin
-     * @param currentTile
      * @param newTile
      * @throws IllegalArgumentException
      */
-    boolean move(IPlayer player, IPenguin penguin, Tile currentTile, Tile newTile) throws IllegalArgumentException;
+    boolean move(IPlayer player, IPenguin penguin, Tile newTile, boolean pass) throws IllegalArgumentException;
 
     /**
      * Moves a Player's Penguin from it's currentPoint to a newPoint, or throws an error if the move
@@ -61,11 +67,10 @@ public interface IGameState {
      *
      * @param player
      * @param penguin
-     * @param currentPoint
      * @param newPoint
      * @throws IllegalArgumentException
      */
-    boolean move(IPlayer player, IPenguin penguin, Point currentPoint, Point newPoint) throws IllegalArgumentException;
+    boolean move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) throws IllegalArgumentException;
 
     /**
      * Returns true if no players can make a move and false otherwise.

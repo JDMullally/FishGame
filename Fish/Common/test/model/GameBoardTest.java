@@ -184,17 +184,17 @@ public class GameBoardTest {
      * Tests for getBoard Width and Height
      */
     @Test
-    public void getBoardWidth() {
+    public void getRows() {
         this.init();
 
-        assertEquals(1, this.modelSmall.getBoardWidth());
+        assertEquals(1, this.modelSmall.getRows());
     }
 
     @Test
-    public void getBoardHeight() {
+    public void getColumns() {
         this.init();
 
-        assertEquals(1, this.modelSmall.getBoardHeight());
+        assertEquals(1, this.modelSmall.getColumns());
     }
 
     /**

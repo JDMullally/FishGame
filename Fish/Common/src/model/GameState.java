@@ -63,14 +63,42 @@ public class GameState extends GameBoard implements IGameState {
      * @param endpoint point to move to
      * @return boolean
      */
-    private boolean isMoveLegal(IPenguin penguin, IPlayer player, Tile endpoint) {
-        return players.get(this.getTurn() % players.size()).equals(player)
-            && player.getColor().getRGB() == penguin.getColor().getRGB()
-            && this.getViableTiles(penguin.getPosition()).contains(endpoint);
+    private boolean isMoveLegal(IPenguin penguin, IPlayer player, Point endpoint) throws IllegalArgumentException {
+        // Checks if it is the input Player's turn
+        if (!this.playerTurn().equals(player)) {
+            throw new IllegalArgumentException("Invalid Move: Not this Player's turn");
+        }
+        // Checks if the input Player is moving their own penguin.
+        if (player.getColor().getRGB() != penguin.getColor().getRGB()) {
+            throw new IllegalArgumentException("Invalid Move: That's not this Player's Penguin");
+        }
+
+        // Checks if the endpoint is within the bounds of the board.
+        int rows = this.getRows();
+        int cols = this.getColumns();
+        if (endpoint.x < 0 || endpoint.x >= rows || endpoint.y < 0 || endpoint.y >= cols) {
+            throw new IllegalArgumentException("Invalid Move: That Point is outside the Board");
+        }
+
+        // Checks if the Penguin can actually move to the endpoint.
+        for (Tile tile : this.getViableTiles(penguin.getPosition())) {
+            Point point = tile.getPosition();
+            if (point.x == endpoint.x && point.y == endpoint.y) {
+                return true;
+            }
+        }
+
+        throw new IllegalArgumentException("Invalid Move: Penguin cannot move there.");
     }
 
+    /**
+     * Returns true if a point has a penguin on it.
+     *
+     * @param point
+     * @return boolean
+     */
     private boolean pointContainsPenguin(Point point) {
-        for (IPlayer player : players) {
+        for (IPlayer player : this.players) {
             for (IPenguin penguin: player.getPenguins()) {
                 if (point.equals(penguin.getPosition())) {
                     return true;
@@ -91,6 +119,11 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     @Override
+    public IPlayer playerTurn() {
+        return this.players.get(this.turn % this.players.size());
+    }
+
+    @Override
     public Map<IPenguin, List<Tile>> getPossibleMoves(IPlayer player) {
         Map<IPenguin, List<Tile>> possibleMoves = new HashMap<>();
         for (IPenguin p : player.getPenguins()) {
@@ -106,22 +139,42 @@ public class GameState extends GameBoard implements IGameState {
         } else if (this.pointContainsPenguin(tile.getPosition())) {
             throw new IllegalArgumentException("Can't place a Penguin on another Penguin");
         }
-        return null;
+        Tile removed = this.replaceTile(tile);
+        penguin.addScore(removed.getFish());
+        return penguin;
     }
 
     @Override
-    public boolean move(IPlayer player, IPenguin penguin, Tile currentTile, Tile newTile) throws IllegalArgumentException {
-        return false; //TODO
+    public boolean move(IPlayer player, IPenguin penguin, Tile newTile, boolean pass) throws IllegalArgumentException {
+        return this.move(player, penguin, newTile.getPosition(), pass);
     }
 
     @Override
-    public boolean move(IPlayer player, IPenguin penguin, Point currentPoint, Point newPoint) throws IllegalArgumentException {
-        return false; //TODO
+    public boolean move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) throws IllegalArgumentException {
+        if (pass) {
+            this.turn++;
+            return true;
+        }
+        else if(isMoveLegal(penguin, player, newPoint)) {
+            this.turn++;
+            Tile removed = this.replaceTile(newPoint);
+            penguin.addScore(removed.getFish());
+            penguin.move(newPoint);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean isGameOver() {
-        return false; //TODO
+        for (IPlayer player : this.players) {
+            for (IPenguin penguin: player.getPenguins()) {
+                if (!this.getViableTiles(penguin.getPosition()).isEmpty()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }

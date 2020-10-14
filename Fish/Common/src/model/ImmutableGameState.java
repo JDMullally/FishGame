@@ -25,13 +25,13 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     }
 
     @Override
-    public int getBoardWidth() {
-        return this.gameState.getBoardWidth();
+    public int getRows() {
+        return this.gameState.getRows();
     }
 
     @Override
-    public int getBoardHeight() {
-        return this.gameState.getBoardHeight();
+    public int getColumns() {
+        return this.gameState.getColumns();
     }
 
     @Override
@@ -80,6 +80,11 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     }
 
     @Override
+    public IPlayer playerTurn() {
+        return this.gameState.playerTurn();
+    }
+
+    @Override
     public Map<IPenguin, List<Tile>> getPossibleMoves(IPlayer player) {
         return this.gameState.getPossibleMoves(player);
     }
@@ -100,12 +105,12 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     }
 
     @Override
-    public boolean move(IPlayer player, IPenguin penguin, Tile currentTile, Tile newTile) throws IllegalArgumentException {
+    public boolean move(IPlayer player, IPenguin penguin, Tile newTile, boolean pass) throws IllegalArgumentException {
         throw new UnsupportedOperationException("GameState is immutable.");
     }
 
     @Override
-    public boolean move(IPlayer player, IPenguin penguin, Point currentPoint, Point newPoint) throws IllegalArgumentException {
+    public boolean move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) throws IllegalArgumentException {
         throw new UnsupportedOperationException("GameState is immutable.");
     }
 }

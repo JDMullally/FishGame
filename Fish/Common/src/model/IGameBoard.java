@@ -21,13 +21,13 @@ public interface IGameBoard {
      * Returns the maximum width of the board.
      * @return int
      */
-    int getBoardWidth();
+    int getRows();
 
     /**
      * Returns the maximum height of the board.
      * @return int
      */
-    int getBoardHeight();
+    int getColumns();
 
     /**
      * Returns a Tile at a given point on the board.

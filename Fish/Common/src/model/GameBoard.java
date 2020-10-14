@@ -167,12 +167,12 @@ public class GameBoard implements IGameBoard {
     }
 
     @Override
-    public int getBoardWidth() {
+    public int getRows() {
         return this.rows;
     }
 
     @Override
-    public int getBoardHeight() {
+    public int getColumns() {
         return this.columns;
     }
 

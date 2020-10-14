@@ -15,12 +15,12 @@ public class ControllerTest {
 
     private void init() {
         this.model =  new GameBoard(5,5, new ArrayList<>() ,4, 0);
-        this.view = new VisualView(model.getGameBoard(), model.getCanvas());
+        //this.view = new VisualView(model.getGameBoard(), model.getCanvas());
 
         this.controller = new Controller();
 
     }
-
+    /*
     @Test (expected = IllegalArgumentException.class)
     public void testControlVoidModel() {
         init();
@@ -34,4 +34,6 @@ public class ControllerTest {
 
         this.controller.control(this.model, null);
     }
+    */
+
 }
