@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 import model.EmptyTile;
-import model.IGameBoard;
+import model.GameState;
+import model.ImmutableGameState;
 import model.Tile;
 import view.IView;
 
@@ -17,14 +18,13 @@ import view.IView;
  */
 public class Controller implements IController {
 
-    //TODO change to IGameState
-    private IGameBoard model;
-    private IView view;
+    private GameState model; // Fish Game model
+    private IView view; // Fish Game view
 
     private Timer timer = new Timer(0, null); // zero delay timer
 
     @Override
-    public void control(IGameBoard model, IView view) throws IllegalArgumentException {
+    public void control(GameState model, IView view) throws IllegalArgumentException {
         if (model == null || view == null) {
             throw new IllegalArgumentException("Model and view can't be null.");
         }
@@ -49,12 +49,12 @@ public class Controller implements IController {
 
                     // left click shows viable paths
                     if (e.getButton() == 1) {
-                        this.view.update(gameBoard, this.model.getViablePaths(tile.getPosition()));
+                        this.view.update(new ImmutableGameState(this.model), this.model.getViablePaths(tile.getPosition()));
                     }
                     // right click removes the tile
                     if (e.getButton() == 3) {
                         this.model.replaceTile(new EmptyTile(tile.getPosition()));
-                        this.view.update(this.model.getGameBoard(), new ArrayList<>());
+                        this.view.update(new ImmutableGameState(this.model), new ArrayList<>());
                     }
 
                     return;
@@ -62,7 +62,7 @@ public class Controller implements IController {
             }
         }
 
-        this.view.update(gameBoard, new ArrayList<>());
+        this.view.update(new ImmutableGameState(this.model), new ArrayList<>());
     }
 
     @Override

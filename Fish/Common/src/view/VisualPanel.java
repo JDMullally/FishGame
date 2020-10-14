@@ -6,26 +6,27 @@ import java.util.List;
 
 import javax.swing.*;
 
+import model.ImmutableGameStateModel;
 import model.Penguin;
 import model.Tile;
 
 public class VisualPanel extends JPanel {
 
-    private Tile[][] board;
-    private List<List<Tile>> viablePaths;
+    private ImmutableGameStateModel immutableModel; // Immutable GameState
+    private List<List<Tile>> viablePaths; // current viable paths
 
     /**
      * Default constructor takes in an immutable model.
      *
-     * @param board the animation model
+     * @param immutableModel the immutable model
      * @throws IllegalArgumentException if the model is null
      */
-    public VisualPanel(Tile[][] board) throws IllegalArgumentException {
-        if (board == null) {
+    public VisualPanel(ImmutableGameStateModel immutableModel) throws IllegalArgumentException {
+        if (immutableModel == null) {
             throw new IllegalArgumentException("Board can't be null.");
         }
 
-        this.board = board;
+        this.immutableModel = immutableModel;
         this.viablePaths = new ArrayList<>();
 
         this.setBackground(new Color(150,150,150));
@@ -39,7 +40,7 @@ public class VisualPanel extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
 
         // draws hexagons and fish
-        for (Tile[] row : this.board) {
+        for (Tile[] row : this.immutableModel.getGameBoard()) {
             for (Tile tile: row) {
                 // draws hexagon
                 Polygon hexagon = tile.getVisualHexagon();
@@ -55,7 +56,7 @@ public class VisualPanel extends JPanel {
                 if (hexagon == null) {
                     Penguin penguin = new Penguin(Color.BLACK, tile.getPosition());
                     Shape penguinShape = penguin.drawPenguin();
-                    g2d.setColor(penguin.getTeam());
+                    g2d.setColor(penguin.getColor());
                     g2d.fill(penguinShape);
                 }
 
@@ -83,12 +84,13 @@ public class VisualPanel extends JPanel {
     }
 
     /**
-     * Updates the board and repaints it
-     * @param board the game board
-     * @param viablePaths viable paths to move on the board
+     * Updates the model and repaints it
+     *
+     * @param immutableModel the immutable model
+     * @param viablePaths current viable paths to display
      */
-    void update(Tile[][] board, List<List<Tile>> viablePaths) {
-        this.board = board;
+    void update(ImmutableGameStateModel immutableModel, List<List<Tile>> viablePaths) {
+        this.immutableModel = immutableModel;
         this.viablePaths = viablePaths;
         this.repaint();
     }

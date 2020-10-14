@@ -1,11 +1,8 @@
 package controller;
 
 import java.awt.event.MouseListener;
-import java.awt.event.TextListener;
 
-import javax.swing.*;
-
-import model.IGameBoard;
+import model.GameState;
 import view.IView;
 
 /**
@@ -15,11 +12,11 @@ import view.IView;
 public interface IController extends MouseListener {
 
     /**
-     * Makes the IGameBoard visible and clickable
+     * Makes the GameState visible and clickable
      *
-     * @param model
-     * @param view
+     * @param model GameState
+     * @param view IView
      * @throws IllegalArgumentException if the model or view is null
      */
-    void control(IGameBoard model, IView view) throws IllegalArgumentException;
+    void control(GameState model, IView view) throws IllegalArgumentException;
 }

@@ -5,8 +5,12 @@ import java.util.List;
 import javax.swing.*;
 
 import controller.IController;
+import model.ImmutableGameStateModel;
 import model.Tile;
 
+/**
+ * Represents the model for a visual view of the Fish Game.
+ */
 public interface IView {
 
     /**
@@ -29,10 +33,10 @@ public interface IView {
     void setListener(IController listener);
 
     /**
-     * Updates the view with the new game board and redraws the board
+     * Updates the view with the new immutable model and redraws the board
      *
-     * @param board the game board
-     * @param viablePaths viable paths to move on the board
+     * @param immutableModel ImmutableGameStateModel
+     * @param viablePaths current viable paths to display
      */
-    void update(Tile[][] board, List<List<Tile>> viablePaths);
+    void update(ImmutableGameStateModel immutableModel, List<List<Tile>> viablePaths);
 }

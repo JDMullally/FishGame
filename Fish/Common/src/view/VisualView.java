@@ -7,18 +7,24 @@ import javax.swing.*;
 
 import controller.IController;
 import model.Canvas;
+import model.ImmutableGameStateModel;
 import model.Tile;
 
+/**
+ * Represents a visual view of the Fish Game.
+ */
 public class VisualView extends JFrame implements IView {
 
     private VisualPanel panel;
 
-    public VisualView(Tile[][] board, Canvas canvas) {
-        if (board == null) {
-            throw new IllegalArgumentException("Board can't be null.");
+    public VisualView(ImmutableGameStateModel immutableModel) {
+        if (immutableModel == null) {
+            throw new IllegalArgumentException("Model can't be null.");
         }
 
-        this.panel = new VisualPanel(board);
+        this.panel = new VisualPanel(immutableModel);
+
+        Canvas canvas = immutableModel.getCanvas();
         this.panel.setPreferredSize(new Dimension(canvas.getWidth(), canvas.getHeight()));
 
         JScrollPane scrollPane = new JScrollPane(this.panel);
@@ -48,7 +54,7 @@ public class VisualView extends JFrame implements IView {
     }
 
     @Override
-    public void update(Tile[][] board, List<List<Tile>> viablePaths) {
-        this.panel.update(board, viablePaths);
+    public void update(ImmutableGameStateModel immutableModel, List<List<Tile>> viablePaths) {
+        this.panel.update(immutableModel, viablePaths);
     }
 }

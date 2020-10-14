@@ -11,7 +11,11 @@ import java.util.List;
 
 import controller.Controller;
 import model.GameBoard;
+import model.GameState;
 import model.IGameBoard;
+import model.IGameState;
+import model.ImmutableGameState;
+import model.ImmutableGameStateModel;
 import view.IView;
 import view.VisualView;
 
@@ -35,8 +39,10 @@ public class Main {
         parseArgs(args);
 
         // sets game board, view, model and runs them
-        IGameBoard model = new GameBoard(rows, columns, holes, minOneFishTiles, sameFish);
-        IView view = new VisualView(model.getGameBoard(), model.getCanvas());
+        GameState model = new GameState(rows, columns, holes, minOneFishTiles, sameFish, new ArrayList<>());
+        ImmutableGameStateModel immutableModel = new ImmutableGameState(model);
+
+        IView view = new VisualView(immutableModel);
         Controller controller = new Controller();
         controller.control(model, view);
     }
