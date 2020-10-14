@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Map;
 
 public class ImmutableGameState implements ImmutableGameStateModel {
 
@@ -60,12 +61,12 @@ public class ImmutableGameState implements ImmutableGameStateModel {
 
     @Override
     public Tile replaceTile(Tile tile) {
-        throw new UnsupportedOperationException("Model is immutable.");
+        throw new UnsupportedOperationException("GameState is immutable.");
     }
 
     @Override
     public Tile replaceTile(Point point) {
-        throw new UnsupportedOperationException("Model is immutable.");
+        throw new UnsupportedOperationException("GameState is immutable.");
     }
 
     @Override
@@ -74,13 +75,18 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     }
 
     @Override
-    public Tile[][] getGameBoard() {
-        return this.gameState.getGameBoard();
+    public int getTurn() {
+        return this.gameState.getTurn();
     }
 
     @Override
-    public Tile makeMove(Penguin penguin, Player player, Tile newTile, IGameBoard board) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Model is immutable.");
+    public Map<Penguin, List<Tile>> getPossibleMoves(Player player) {
+        return this.gameState.getPossibleMoves(player);
+    }
+
+    @Override
+    public Tile[][] getGameBoard() {
+        return this.gameState.getGameBoard();
     }
 
     @Override
@@ -90,16 +96,16 @@ public class ImmutableGameState implements ImmutableGameStateModel {
 
     @Override
     public Penguin placePenguin(Penguin penguin, Player player, Tile tile) {
-        throw new UnsupportedOperationException("Model is immutable.");
+        throw new UnsupportedOperationException("GameState is immutable.");
     }
 
     @Override
-    public JsonObject GameStateToJson() {
-        return null; // TODO
+    public boolean move(Player player, Penguin penguin, Tile currentTile, Tile newTile) throws IllegalArgumentException {
+        throw new UnsupportedOperationException("GameState is immutable.");
     }
 
     @Override
-    public IGameState JsonToGameState(JsonObject gameState) {
-        return null; // TODO
+    public boolean move(Player player, Penguin penguin, Point currentPoint, Point newPoint) throws IllegalArgumentException {
+        throw new UnsupportedOperationException("GameState is immutable.");
     }
 }

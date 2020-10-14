@@ -73,18 +73,4 @@ public interface IGameState {
      * @return boolean
      */
     boolean isGameOver();
-
-    /**
-     * Formats the current GameState into a JSON Object and prints it out.
-     *
-     * @return
-     */
-    JsonObject GameStateToJson();
-
-    /**
-     *
-     * @param gameState
-     * @return the GameState created with the JsonObject
-     */
-    IGameState JsonToGameState(JsonObject gameState);
 }

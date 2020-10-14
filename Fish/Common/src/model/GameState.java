@@ -1,12 +1,10 @@
 package model;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * GameState represents a Fish Game, which more specifically is made up of a GameBoard and a
@@ -55,6 +53,18 @@ public class GameState extends GameBoard implements IGameState {
         this.players.sort(Comparator.comparingInt(IPlayer::getAge));
     }
 
+    /**
+     * Returns true if a Player's Penguin can move to the specified Point.
+     *
+     * @param penguin IPenguin
+     * @param player IPlayer
+     * @param endpoint point to move to
+     * @return boolean
+     */
+    private boolean isMoveLegal(IPenguin penguin, IPlayer player, Point endpoint) {
+        return false; // TODO
+    }
+
     @Override
     public List<IPlayer> getPlayers() {
         return new ArrayList<>(this.players);
@@ -65,32 +75,29 @@ public class GameState extends GameBoard implements IGameState {
         return this.turn;
     }
 
-    // TODO
     @Override
-    public Tile makeMove(Penguin penguin, Player player,
-        Tile newTile, IGameBoard board) throws IllegalArgumentException {
-        if (isMoveLegal(penguin, player, newTile)) {
-            return null;
-        }
-        return null;
+    public Map<Penguin, List<Tile>> getPossibleMoves(Player player) {
+        return null; // TODO
     }
 
-    //TODO required for makeMove
-    private boolean isMoveLegal(Penguin penguin, Player player, Tile newTile) {
-        return false;
-    }
-
-    //TODO
-    @Override
-    public boolean isGameOver() {
-        return false;
-    }
-
-    //TODO
     @Override
     public Penguin placePenguin(Penguin penguin, Player player, Tile tile) {
-        return null;
+        return null; //TODO
     }
 
+    @Override
+    public boolean move(Player player, Penguin penguin, Tile currentTile, Tile newTile) throws IllegalArgumentException {
+        return false; //TODO
+    }
+
+    @Override
+    public boolean move(Player player, Penguin penguin, Point currentPoint, Point newPoint) throws IllegalArgumentException {
+        return false; //TODO
+    }
+
+    @Override
+    public boolean isGameOver() {
+        return false; //TODO
+    }
 
 }
