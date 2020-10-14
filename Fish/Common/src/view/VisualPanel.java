@@ -43,13 +43,15 @@ public class VisualPanel extends JPanel {
             for (Tile tile: row) {
                 // draws hexagon
                 Polygon hexagon = tile.getVisualHexagon();
-                if (hexagon != null) {
+                if (!tile.isEmpty()) {
                     hexagon.translate(1, 1);
                     g2d.setColor(new Color(252, 157, 3));
                     g2d.fill(hexagon);
                     g2d.setColor(new Color(255, 255, 255));
                     g2d.draw(hexagon);
                 }
+
+                // TODO: draws placement penguin
                 if (hexagon == null) {
                     Penguin penguin = new Penguin(Color.BLACK, tile.getPosition());
                     Shape penguinShape = penguin.drawPenguin();

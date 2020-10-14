@@ -2,46 +2,58 @@ package model;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
- * GameState has a Game
+ * GameState represents a Fish Game, which more specifically is made up of a GameBoard and a
+ * List of Players playing the game.
  */
-public class GameState implements IGameState {
+public class GameState extends GameBoard implements IGameState {
 
-    IGameBoard board;
-    List<IPlayer> players;
+    private List<IPlayer> players; // the players of the game
+
+    /*
+     * the n'th turn of the game
+     * i.e. It is a player's move when ((turn % players.size()) == index of a given player)
+     */
+    private int turn;
 
     /**
-     * Constructor for GameState, also responsible for sorting players by age.
-     * @param board GameBoard for Fish.
-     * @param players List of Players playing Fish.
+     * Constructor initializes a GameState with all arguments for a GameBoard and with a List of
+     * Players.
+     *
+     * @param rows
+     * @param columns
+     * @param holes
+     * @param minOneFishTiles
+     * @param sameFish
+     * @param players
      */
-    GameState(IGameBoard board, List<IPlayer> players) {
-        if (board != null && players != null) {
-            //Collections.sort(players);
-            this.players = new ArrayList<>(players);
-            this.board = board;
-        } else {
-            throw new IllegalArgumentException("Neither the GameBoard nor the List of Players can be null");
+    public GameState(int rows, int columns, List<Point> holes, int minOneFishTiles, int sameFish, List<IPlayer> players) {
+        super(rows, columns, holes, minOneFishTiles, sameFish);
+
+        if (players == null) {
+            throw new IllegalArgumentException("Players cannot be null");
+        } else if (players.size() <= 0 || players.size() > 4) {
+            throw new IllegalArgumentException("There must be between 1 and 4 players");
         }
+
+        this.players = players;
+        this.turn = 0;
+
+        this.sortPlayers();
     }
 
-    GameState initialize(IGameBoard board, List<Player> players) throws IllegalArgumentException {
-        if (board != null && players != null
-            && players.size() > 0 && players.size() <= 4) {
-            Collections.sort(players);
-            this.players = new ArrayList<>(players);
-            this.board = board;
-            //TODO cool return method
-            return null;
-        } else {
-            throw new IllegalArgumentException("Neither the GameBoard nor the List of Players can be null");
-        }
+    /**
+     * Sorts players by age.
+     */
+    private void sortPlayers() {
+        this.players.sort(Comparator.comparingInt(IPlayer::getAge));
     }
-
 
     @Override
     public List<IPlayer> getPlayers() {
@@ -49,11 +61,11 @@ public class GameState implements IGameState {
     }
 
     @Override
-    public Tile[][] getGameBoard() {
-       return this.board.getGameBoard().clone();
+    public int getTurn() {
+        return this.turn;
     }
 
-    //TODO
+    // TODO
     @Override
     public Tile makeMove(Penguin penguin, Player player,
         Tile newTile, IGameBoard board) throws IllegalArgumentException {
@@ -80,43 +92,5 @@ public class GameState implements IGameState {
         return null;
     }
 
-    //TODO write tests to confirm jsonBoard is correct
-    @Override
-    public JsonObject GameStateToJson() {
-        JsonObject jsonGameState = new JsonObject();
-        JsonArray jsonBoard = new JsonArray();
-        Tile[][] board = this.invert(this.board.getGameBoard().clone());
-        for (Tile[] row : board) {
-            JsonArray jsonRow = new JsonArray();
-            for (Tile tile: row) {
-                jsonRow.add(tile.getFish());
-            }
-            jsonBoard.add(jsonRow.deepCopy());
-        }
-        jsonGameState.add("board", jsonBoard);
 
-        JsonArray jsonPosition = new JsonArray();
-        jsonPosition.add(0);
-        jsonPosition.add(0);
-
-        jsonGameState.add("position", jsonPosition);
-
-        return jsonGameState;
-    }
-
-    private Tile[][] invert(Tile[][] board) {
-        Tile[][] newBoard = new Tile[board.length][board.length];
-
-        for (Tile[] col : board) {
-            for (Tile tile: col) {
-                newBoard[tile.getPosition().y][tile.getPosition().x] = tile.clone();
-            }
-        }
-        return newBoard;
-    }
-
-    @Override
-    public IGameState JsonToGameState(JsonObject gameState) {
-        return null;
-    }
 }

@@ -1,8 +1,10 @@
 package model;
 
 import com.google.gson.JsonObject;
+
+import java.awt.*;
 import java.util.List;
-import netscape.javascript.JSObject;
+import java.util.Map;
 
 /**
  * Represents the GameState for Fish.
@@ -16,31 +18,24 @@ public interface IGameState {
     List<IPlayer> getPlayers();
 
     /**
-     * Gets the GameBoard as an array of array of Tiles.
-     * @return Tile[][] representing GameBoard
+     * Returns the number of turns that have been played in the game
+     *
+     * @return int
      */
-    Tile[][] getGameBoard();
+    int getTurn();
 
     /**
-     * Returns Tile the Player moved their Penguin to if the move was successful.
-     * Otherwise it throws an IllegalArgumentException.
-     * @param penguin
-     * @param player
-     * @param newTile
-     * @param board
-     * @return boolean whether move is valid or not.
+     * Returns all possible moves (from any penguin) for a given player as a Map of Penguin to List
+     * of Tile.
+     *
+     * @param player the player who want's to see their possible moves
+     * @return Map of Penguin to List of Tile
      */
-    Tile makeMove(Penguin penguin, Player player,
-        Tile newTile, IGameBoard board) throws IllegalArgumentException;
-
-    /**
-     * Returns true if all players have skipped their turn and there are no more possible moves.
-     * @return
-     */
-    boolean isGameOver();
+    Map<Penguin, List<Tile>> getPossibleMoves(Player player);
 
     /**
      * Allows players to place penguins on the current GameBoard.
+     *
      * @param penguin Penguin owned by Player player
      * @param player Player placing the Penguin
      * @param tile Tile the Player is placing Penguin.
@@ -49,7 +44,40 @@ public interface IGameState {
     Penguin placePenguin(Penguin penguin, Player player, Tile tile);
 
     /**
+     * Moves a Player's Penguin from it's currentTile to a newTile, or throws an error if the move
+     * isn't valid.
+     *
+     * @param player
+     * @param penguin
+     * @param currentTile
+     * @param newTile
+     * @throws IllegalArgumentException
+     */
+    boolean move(Player player, Penguin penguin, Tile currentTile, Tile newTile) throws IllegalArgumentException;
+
+    /**
+     * Moves a Player's Penguin from it's currentPoint to a newPoint, or throws an error if the move
+     * isn't valid.
+     *
+     * @param player
+     * @param penguin
+     * @param currentPoint
+     * @param newPoint
+     * @throws IllegalArgumentException
+     */
+    boolean move(Player player, Penguin penguin, Point currentPoint, Point newPoint) throws IllegalArgumentException;
+
+    /**
+     * Returns true if no players can make a move and false otherwise.
+     *
+     * @return boolean
+     */
+    boolean isGameOver();
+
+    /**
      * Formats the current GameState into a JSON Object and prints it out.
+     *
+     * @return
      */
     JsonObject GameStateToJson();
 

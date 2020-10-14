@@ -8,7 +8,6 @@ import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
-import javafx.scene.shape.Circle;
 
 /**
  * Penguins are represented with their position on the GameBoard as a Point,
@@ -17,35 +16,36 @@ import javafx.scene.shape.Circle;
  */
 public class Penguin implements IPenguin{
 
-    private Point position;
-    private int score;
-    private Color team;
+    private final Color color; // penguin's color
+    private Point position; // its position on the board
+    private int score; // the score the penguin currently has
 
     /**
      * Constructor
-     * @param team Team penguin is a part of.
+     * @param color Team penguin is a part of
      * @param position Position of the Penguin
      */
-    public Penguin(Color team, Point position) {
-        this.score = 0;
-        this.team = team;
+    public Penguin(Color color, Point position) {
+        this.color = color;
         this.position = position;
+        this.score = 0;
     }
 
-    @Override
-    public Point movePenguin(Tile tile) {
-        this.position = tile.getPosition().getLocation();
-        this.score += tile.getFish();
-        return this.position.getLocation();
-    }
-
-    @Override
-    public Color getTeam() {
-        return this.team;
+    /**
+     * Constructor
+     * @param color Team penguin is a part of
+     * @param position Position of the Penguin
+     * @param score score of the Penguin
+     */
+    public Penguin(Color color, Point position, int score) {
+        this.color = color;
+        this.position = position;
+        this.score = score;
     }
 
     /**
      * Calculates the center position of the Penguin relative to it's visual representation.
+     *
      * @return Point
      */
     private Point calculateCenter() {
@@ -58,13 +58,33 @@ public class Penguin implements IPenguin{
     }
 
     @Override
+    public Point getPosition() {
+        return this.position;
+    }
+
+    @Override
+    public Color getColor() {
+        return this.color;
+    }
+
+    @Override
     public int getScore() {
         return this.score;
     }
 
     @Override
-    public boolean checkTeam(Color team) {
-        return this.team.equals(team);
+    public void addScore(int points) {
+        this.score += points;
+    }
+
+    @Override
+    public void move(Tile tile) {
+        this.move(tile.getPosition());
+    }
+
+    @Override
+    public void move(Point point) {
+        this.position = new Point(point);
     }
 
     @Override
@@ -82,15 +102,17 @@ public class Penguin implements IPenguin{
 
         penguin.lineTo(center.x + (3 * HEX_SIZE) / 4.0, center.y + (3 * HEX_SIZE) / 4.0);
         penguin.lineTo(center.x - HEX_SIZE / 4.0, center.y + (3 * HEX_SIZE) / 4.0);
-        //penguin.lineTo(center.x,center.y + (HEX_SIZE));
-        //penguin.lineTo(center.x,center.y + (HEX_SIZE) / 2.0);
         penguin.closePath();
 
         AffineTransform affineTransform = new AffineTransform();
         affineTransform.translate(- HEX_SIZE / 4.0, 0);
         penguin.transform(affineTransform);
 
-
         return new GeneralPath(penguin);
+    }
+
+    @Override
+    public IPenguin clone() {
+        return new Penguin(new Color(this.color.getRGB()), new Point(this.position), this.score);
     }
 }

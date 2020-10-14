@@ -9,7 +9,7 @@
 `Date:` 9/23/2020
 
 Our representation of the game state for a Fish Game is a 2D-Array of Tile objects and a List of
-Penguin objects. The 2D-Array holds information about each individual Tile on the entire game board.
+Player objects. The 2D-Array holds information about each individual Tile on the entire game board.
 More specifically, the Tile describes its location, how many fish it has, and how to draw itself.
 The List of Penguins hold information about each penguin in the game. More specifically, the Penguin
 describes its location, which player it belongs to, and how many points it has scored.

@@ -45,7 +45,7 @@ public class Controller implements IController {
         for (Tile[] tiles : gameBoard) {
             for (Tile tile : tiles) {
                 Polygon hexagon = tile.getVisualHexagon();
-                if (hexagon != null && hexagon.contains(point)) {
+                if (!tile.isEmpty() && hexagon.contains(point)) {
 
                     // left click shows viable paths
                     if (e.getButton() == 1) {
