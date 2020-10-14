@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.swing.*;
 
+import model.Penguin;
 import model.Tile;
 
 public class VisualPanel extends JPanel {
@@ -48,6 +49,12 @@ public class VisualPanel extends JPanel {
                     g2d.fill(hexagon);
                     g2d.setColor(new Color(255, 255, 255));
                     g2d.draw(hexagon);
+                }
+                if (hexagon == null) {
+                    Penguin penguin = new Penguin(Color.BLACK, tile.getPosition());
+                    Shape penguinShape = penguin.drawPenguin();
+                    g2d.setColor(penguin.getTeam());
+                    g2d.fill(penguinShape);
                 }
 
                 g2d.setColor(new Color(0, 28, 150));

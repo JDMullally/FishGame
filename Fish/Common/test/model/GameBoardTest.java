@@ -40,7 +40,6 @@ public class GameBoardTest {
         this.modelHoles = new GameBoard(4, 3, this.holes1);
         this.modelHolesAndMinOnes = new GameBoard(3, 4, this.holes1, 3, 0);
         this.modelMinOnes = new GameBoard(3, 4, 3);
-
         tileOneOne = this.modelDefault.getGameBoard()[1][1].clone();
     }
 
@@ -335,7 +334,7 @@ public class GameBoardTest {
     @Test
     public void testReplaceTile2() {
         init();
-
+        System.out.println(this.modelDefault);
         Tile tileCopy = this.modelHoles.getTile(new Point(2, 1)).clone();
         Tile removedMissingTile = this.modelHoles.replaceTile(new Point(2, 1));
 
