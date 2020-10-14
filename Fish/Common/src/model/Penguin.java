@@ -15,7 +15,7 @@ import javafx.scene.shape.Circle;
  * the number of fish they have eaten as a score, and the color of their team.
  * A Penguin can be moved, draw itself, confirm it's team
  */
-public class Penguin {
+public class Penguin implements IPenguin{
 
     private Point position;
     private int score;
@@ -32,18 +32,14 @@ public class Penguin {
         this.position = position;
     }
 
-    /**
-     * Moves Penguin to given Tile, eats the fish at that Tile
-     * and returns the Penguin's new Position.
-     * @param tile where Penguin is moving to.
-     * @return Point where the Penguin now resides.
-     */
+    @Override
     public Point movePenguin(Tile tile) {
         this.position = tile.getPosition().getLocation();
         this.score += tile.getFish();
         return this.position.getLocation();
     }
 
+    @Override
     public Color getTeam() {
         return this.team;
     }
@@ -61,19 +57,17 @@ public class Penguin {
         return new Point((int) ((HEX_SIZE * this.position.x * 3) + xBuffer + HEX_SIZE * 1.5) + 1, (HEX_SIZE * this.position.y)+ HEX_SIZE);
     }
 
+    @Override
     public int getScore() {
         return this.score;
     }
 
-    /**
-     * Returns true if the input team color is the same as this Penguin's team color
-     * @param team Color of a team.
-     * @return boolean if given color is the same as the team color.
-     */
+    @Override
     public boolean checkTeam(Color team) {
         return this.team.equals(team);
     }
 
+    @Override
     public Shape drawPenguin() {
         GeneralPath penguin = new GeneralPath();
         Point center = this.calculateCenter();

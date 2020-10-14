@@ -17,6 +17,7 @@ import view.IView;
  */
 public class Controller implements IController {
 
+    //TODO change to IGameState
     private IGameBoard model;
     private IView view;
 

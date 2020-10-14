@@ -3,7 +3,7 @@ package model;
 import java.awt.Color;
 import java.util.List;
 
-public class Player implements IPlayer, Comparable<Player>{
+public class Player implements IPlayer{
 
     List<Penguin> penguinList;
     String username;
@@ -22,10 +22,10 @@ public class Player implements IPlayer, Comparable<Player>{
         this.username = username;
     }
 
-
+    //TODO
     @Override
-    public Tile makeMove(Penguin penguin, Tile tile) {
-        return null;
+    public Tile makeMove(Penguin penguin, Tile tile, IGameState gameState) {
+       return null;
     }
 
     @Override

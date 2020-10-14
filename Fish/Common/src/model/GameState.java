@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * GameState has a Game
+ */
 public class GameState implements IGameState {
 
     IGameBoard board;
@@ -16,11 +19,24 @@ public class GameState implements IGameState {
      * @param board GameBoard for Fish.
      * @param players List of Players playing Fish.
      */
-    GameState(IGameBoard board, List<Player> players) {
+    GameState(IGameBoard board, List<IPlayer> players) {
         if (board != null && players != null) {
+            //Collections.sort(players);
+            this.players = new ArrayList<>(players);
+            this.board = board;
+        } else {
+            throw new IllegalArgumentException("Neither the GameBoard nor the List of Players can be null");
+        }
+    }
+
+    GameState initialize(IGameBoard board, List<Player> players) throws IllegalArgumentException {
+        if (board != null && players != null
+            && players.size() > 0 && players.size() <= 4) {
             Collections.sort(players);
             this.players = new ArrayList<>(players);
             this.board = board;
+            //TODO cool return method
+            return null;
         } else {
             throw new IllegalArgumentException("Neither the GameBoard nor the List of Players can be null");
         }
@@ -93,7 +109,7 @@ public class GameState implements IGameState {
 
         for (Tile[] col : board) {
             for (Tile tile: col) {
-                newBoard[tile.getPosition().x][tile.getPosition().y] = tile.clone();
+                newBoard[tile.getPosition().y][tile.getPosition().x] = tile.clone();
             }
         }
         return newBoard;

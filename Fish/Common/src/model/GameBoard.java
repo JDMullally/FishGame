@@ -10,12 +10,26 @@ import java.util.stream.Collectors;
 
 import static constants.Constants.HEX_SIZE;
 
+/**
+ * Class represents the entire GameBoard
+ */
 public class GameBoard implements IGameBoard {
 
     private int rows; // rows of the board
     private int columns; // columns of the board
     private Tile[][] board; // the game board
     private Canvas canvas; // the game board canvas
+
+    /**
+     * Constructor that takes in a 2D array of Tiles to create the GameBoard.
+     * @param board represents an entire board
+     */
+    public GameBoard(Tile[][] board) {
+        this.board = board.clone();
+        this.columns = board.length;
+        this.rows = board[0].length;
+        this.canvas = generateCanvas(this.rows, this.columns);
+    }
 
     /**
      * Constructor that only takes in a rows and columns of the board.
