@@ -3,4 +3,5 @@ all:
 	@eval $$( \
 	mvn install \
 	&& cd target \
-	&& mv Fish-1.0-SNAPSHOT.jar ../xfish.jar)
+	&& cp Fish-1.0-SNAPSHOT.jar ../xfish.jar \
+	&& cp Fish-1.0-SNAPSHOT-jar-with-dependencies.jar ../xboard.jar)

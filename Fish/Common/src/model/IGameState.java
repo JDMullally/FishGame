@@ -41,23 +41,34 @@ public interface IGameState {
     Map<IPenguin, List<Tile>> getPossibleMoves(IPlayer player);
 
     /**
-     * Allows players to place penguins on the current GameBoard.
+     * Adds a player to the GameState.
      *
-     * @param penguin Penguin owned by Player player
+     * @param player the player being added
+     * @throws IllegalArgumentException if their are already 4 players in the game
+     */
+    void addPlayer(Player player) throws IllegalArgumentException;
+
+    /**
+     * Allows players to place penguins on the current GameBoard.
+     * Effect: Adds the specified penguin to the player.
+     *
+     * @param penguin Penguin to be owned by Player player
      * @param player Player placing the Penguin
      * @param tile Tile the Player is placing Penguin.
-     * @return IPenguin that was placed
      */
-    IPenguin placePenguin(IPenguin penguin, IPlayer player, Tile tile) throws IllegalArgumentException;
+    void placePenguin(IPenguin penguin, IPlayer player, Tile tile) throws IllegalArgumentException;
 
     /**
      * Moves a Player's Penguin from it's currentTile to a newTile, or throws an error if the move
      * isn't valid.
      *
-     * @param player
-     * @param penguin
-     * @param newTile
-     * @throws IllegalArgumentException
+     * @param player the IPlayer moving
+     * @param penguin the IPenguin moving
+     * @param newTile the Tile to move to
+     * @param pass if the IPlayer would like to pass their turn
+     * @return true if the move is successful
+     *
+     * @throws IllegalArgumentException if the move is invalid
      */
     boolean move(IPlayer player, IPenguin penguin, Tile newTile, boolean pass) throws IllegalArgumentException;
 
@@ -65,10 +76,13 @@ public interface IGameState {
      * Moves a Player's Penguin from it's currentPoint to a newPoint, or throws an error if the move
      * isn't valid.
      *
-     * @param player
-     * @param penguin
-     * @param newPoint
-     * @throws IllegalArgumentException
+     * @param player the IPlayer moving
+     * @param penguin the IPenguin moving
+     * @param newPoint the Point to move to
+     * @param pass if the IPlayer would like to pass their turn
+     * @return true if the move is successful
+     *
+     * @throws IllegalArgumentException if the move is invalid
      */
     boolean move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) throws IllegalArgumentException;
 

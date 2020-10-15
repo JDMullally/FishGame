@@ -75,11 +75,9 @@ public class Player implements IPlayer {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof FishTile) {
+        if (o instanceof Player) {
             Player other = (Player) o;
-            return this.age == other.age
-                && this.color.getRGB() == other.getColor().getRGB()
-                && this.penguins.equals(other.penguins);
+            return this.age == other.age && this.color.getRGB() == other.getColor().getRGB();
         }
         return false;
     }

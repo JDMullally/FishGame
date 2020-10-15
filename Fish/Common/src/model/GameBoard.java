@@ -1,11 +1,14 @@
 package model;
 
+import com.google.gson.JsonArray;
+
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static constants.Constants.HEX_SIZE;
@@ -78,7 +81,37 @@ public class GameBoard implements IGameBoard {
     }
 
     /**
+     * Constructor that takes in rows and columns of the board, as well as the board itself.
+     *
+     * @param rows
+     * @param columns
+     * @param board
+     */
+    public GameBoard(int rows, int columns, Tile[][] board) {
+        this.rows = rows;
+        this.columns = columns;
+        this.board = board;
+        this.canvas = this.generateCanvas(rows, columns);
+    }
+
+    /**
+     * Constructor that takes in rows and columns of the board, as well as the board as a well
+     * formated JsonArray.
+     *
+     * @param rows
+     * @param columns
+     * @param jsonArray
+     */
+    public GameBoard(int rows, int columns, JsonArray jsonArray) {
+        this.rows = rows;
+        this.columns = columns;
+        this.board = this.generateBoard(rows, columns, jsonArray);
+        this.canvas = this.generateCanvas(rows, columns);
+    }
+
+    /**
      * Returns a new game board with the specified parameters.
+     *
      * @param rows
      * @param columns
      * @param holes
@@ -125,6 +158,34 @@ public class GameBoard implements IGameBoard {
             if (fish > 1) {
                 board[x][y] = new FishTile(x, y, 1);
                 minOneFishTiles--;
+            }
+        }
+
+        return board;
+    }
+
+    /**
+     * Returns a new game board with the specified parameters.
+     *
+     * @param rows
+     * @param columns
+     * @param jsonArray
+     * @return Tile[][]
+     */
+    private Tile[][] generateBoard(int rows, int columns, JsonArray jsonArray) {
+        if (rows < 1 || columns < 1) {
+            throw new IllegalArgumentException("Width and Height must be greater than zero");
+        }
+
+        Tile[][] board = new Tile[columns][rows];
+        for (int i = 0; i < columns; i++) {
+            for (int j = 0; j < rows; j++) {
+                int fish = jsonArray.get(j).getAsJsonArray().get(i).getAsInt();
+                if (fish == 0) {
+                    board[i][j] = new EmptyTile(i, j);
+                } else {
+                    board[i][j] = new FishTile(i, j, fish);
+                }
             }
         }
 
@@ -299,10 +360,14 @@ public class GameBoard implements IGameBoard {
 
     @Override
     public List<Tile> getViableTiles(Point point) {
-        return this.getViablePaths(new Point(point))
+        List<Tile> tiles = this.getViablePaths(new Point(point))
                 .stream()
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+
+        tiles.removeIf(tile -> tile.getPosition().x == point.x && tile.getPosition().y == point.y);
+
+        return tiles;
     }
 
     @Override

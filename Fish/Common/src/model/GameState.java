@@ -1,8 +1,9 @@
 package model;
 
+import com.google.gson.JsonArray;
+
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -26,26 +27,28 @@ public class GameState extends GameBoard implements IGameState {
      * Constructor initializes a GameState with all arguments for a GameBoard and with a List of
      * Players.
      *
-     * @param rows
-     * @param columns
-     * @param holes
-     * @param minOneFishTiles
-     * @param sameFish
-     * @param players
+     * @param rows rows on the board
+     * @param columns columns on the board
+     * @param holes holes on the board
+     * @param minOneFishTiles number of min one fish tiles
+     * @param sameFish same fish number
      */
-    public GameState(int rows, int columns, List<Point> holes, int minOneFishTiles, int sameFish, List<IPlayer> players) {
+    public GameState(int rows, int columns, List<Point> holes, int minOneFishTiles, int sameFish) {
         super(rows, columns, holes, minOneFishTiles, sameFish);
 
-        if (players == null) {
-            throw new IllegalArgumentException("Players cannot be null");
-        } else if (players.size() <= 0 || players.size() > 4) {
-            throw new IllegalArgumentException("There must be between 1 and 4 players");
-        }
-
-        this.players = players;
+        this.players = new ArrayList<>();
         this.turn = 0;
+    }
 
-        this.sortPlayers();
+    /**
+     * Constructor initializes GameState with rows, columns, and a well formatted JsonArray.
+     *
+     * @param rows
+     * @param columns
+     * @param jsonArray
+     */
+    public GameState(int rows, int columns, JsonArray jsonArray) {
+        super(rows, columns, jsonArray);
     }
 
     /**
@@ -68,6 +71,7 @@ public class GameState extends GameBoard implements IGameState {
         if (!this.playerTurn().equals(player)) {
             throw new IllegalArgumentException("Invalid Move: Not this Player's turn");
         }
+
         // Checks if the input Player is moving their own penguin.
         if (player.getColor().getRGB() != penguin.getColor().getRGB()) {
             throw new IllegalArgumentException("Invalid Move: That's not this Player's Penguin");
@@ -94,13 +98,14 @@ public class GameState extends GameBoard implements IGameState {
     /**
      * Returns true if a point has a penguin on it.
      *
-     * @param point
+     * @param point Point
      * @return boolean
      */
     private boolean pointContainsPenguin(Point point) {
         for (IPlayer player : this.players) {
-            for (IPenguin penguin: player.getPenguins()) {
-                if (point.equals(penguin.getPosition())) {
+            for (IPenguin penguin : player.getPenguins()) {
+                Point penguinPoint = penguin.getPosition();
+                if (point.x == penguinPoint.x && point.y == penguinPoint.y) {
                     return true;
                 }
             }
@@ -133,15 +138,46 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     @Override
-    public IPenguin placePenguin(IPenguin penguin, IPlayer player, Tile tile) throws IllegalArgumentException {
+    public void addPlayer(Player player) throws IllegalArgumentException {
+        if (player == null) {
+            throw new IllegalArgumentException("Player cannot be null");
+        } else if (players.size() > 4) {
+            throw new IllegalArgumentException("There can't be more than 4 players");
+        }
+
+        this.players.add(player);
+        this.sortPlayers();
+    }
+
+    @Override
+    public void placePenguin(IPenguin penguin, IPlayer player, Tile tile) throws IllegalArgumentException {
         if(penguin == null || player == null || tile == null) {
-            throw new IllegalArgumentException("Enter a valid Penguin, Player and Tile");
+            throw new IllegalArgumentException("Enter a valid Penguin, Player, and Tile");
         } else if (this.pointContainsPenguin(tile.getPosition())) {
             throw new IllegalArgumentException("Can't place a Penguin on another Penguin");
         }
+
+        // checks if the player is in the game
+        IPlayer validPlayer = null;
+        for (IPlayer p: this.players) {
+            if (player.equals(p)) {
+                validPlayer = player.clone();
+            }
+        }
+
+        // adds the penguin to the player if possible
+        if (validPlayer == null) {
+            throw new IllegalArgumentException("Player specified is not in the game");
+        } else {
+            validPlayer.addPenguin(penguin);
+        }
+
+        // removes tile
         Tile removed = this.replaceTile(tile);
+
+        // updates penguin
         penguin.addScore(removed.getFish());
-        return penguin;
+        penguin.move(tile);
     }
 
     @Override
@@ -151,15 +187,23 @@ public class GameState extends GameBoard implements IGameState {
 
     @Override
     public boolean move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) throws IllegalArgumentException {
+        // if the player passes their turn
         if (pass) {
             this.turn++;
             return true;
         }
-        else if(isMoveLegal(penguin, player, newPoint)) {
+
+        // attempts to move
+        if (this.isMoveLegal(penguin, player, newPoint)) {
             this.turn++;
+
+            // removes tile
             Tile removed = this.replaceTile(newPoint);
+
+            // updates penguin
             penguin.addScore(removed.getFish());
             penguin.move(newPoint);
+
             return true;
         }
         return false;
@@ -168,9 +212,11 @@ public class GameState extends GameBoard implements IGameState {
     @Override
     public boolean isGameOver() {
         for (IPlayer player : this.players) {
-            for (IPenguin penguin: player.getPenguins()) {
-                if (!this.getViableTiles(penguin.getPosition()).isEmpty()) {
-                    return false;
+            for (IPenguin penguin : player.getPenguins()) {
+                for (Tile tile : this.getViableTiles(penguin.getPosition())) {
+                    if (!this.pointContainsPenguin(tile.getPosition())) {
+                        return false;
+                    }
                 }
             }
         }

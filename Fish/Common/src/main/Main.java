@@ -39,7 +39,7 @@ public class Main {
         parseArgs(args);
 
         // sets game board, view, model and runs them
-        GameState model = new GameState(rows, columns, holes, minOneFishTiles, sameFish, new ArrayList<>());
+        GameState model = new GameState(rows, columns, holes, minOneFishTiles, sameFish);
         ImmutableGameStateModel immutableModel = new ImmutableGameState(model);
 
         IView view = new VisualView(immutableModel);
