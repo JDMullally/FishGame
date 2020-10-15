@@ -24,17 +24,6 @@ public class GameBoard implements IGameBoard {
     private Canvas canvas; // the game board canvas
 
     /**
-     * Constructor that takes in a 2D array of Tiles to create the GameBoard.
-     * @param board represents an entire board
-     */
-    public GameBoard(Tile[][] board) {
-        this.board = board.clone();
-        this.columns = board.length;
-        this.rows = board[0].length;
-        this.canvas = generateCanvas(this.rows, this.columns);
-    }
-
-    /**
      * Constructor that only takes in a rows and columns of the board.
      * @param rows
      * @param columns

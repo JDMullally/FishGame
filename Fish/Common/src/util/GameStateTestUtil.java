@@ -8,19 +8,11 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import controller.Controller;
-import model.EmptyTile;
 import model.GameState;
-import model.IGameState;
-import model.ImmutableGameState;
-import model.ImmutableGameStateModel;
 import model.Tile;
-import view.IView;
-import view.VisualView;
 
 /**
  * Tests the GameState for the Fish Game.
