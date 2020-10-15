@@ -27,11 +27,15 @@ public class Player implements IPlayer {
             throw new IllegalArgumentException("Color cannot be null");
         } else if (age < 0) {
             throw new IllegalArgumentException("Age cannot be negative");
+        } else if (penguins == null || penguins.isEmpty()) {
+            this.color = color;
+            this.age = age;
+            this.penguins = null;
+        } else {
+            this.color = color;
+            this.age = age;
+            this.penguins = this.validPenguins(penguins, color);
         }
-
-        this.color = color;
-        this.age = age;
-        this.penguins = this.validPenguins(penguins, color);
     }
 
     /**

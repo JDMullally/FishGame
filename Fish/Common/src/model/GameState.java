@@ -41,6 +41,37 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     /**
+     * Constructor that allows the addition of a full list of players.
+     * @param rows number rows on the board
+     * @param columns number of columns on the board
+     * @param holes list of holes on the board
+     * @param minOneFishTiles minimum number of one fish tiles
+     * @param sameFish makes the whole board have the same number of fish (equal to sameFish)
+     * @param players List of Players
+     */
+    public GameState(int rows, int columns, List<Point> holes, int minOneFishTiles, int sameFish, List<IPlayer> players) {
+        super(rows, columns, holes, minOneFishTiles, sameFish);
+
+        if(players.isEmpty()) {
+            throw new IllegalArgumentException("Cannot have a game with zero players");
+        } else {
+            for (IPlayer player : players) {
+                if (player.getPenguins().size() != (6 - players.size())) {
+                    throw new IllegalArgumentException(
+                        "Given player does not have enough Penguins");
+                }
+                for (IPenguin penguin : player.getPenguins()) {
+                    if (player.getColor().getRGB() != penguin.getColor().getRGB()) {
+                        throw new IllegalArgumentException("Player has invalid Penguins");
+                    }
+                }
+            }
+        }
+        this.players = new ArrayList<>(players);
+        this.turn = 0;
+    }
+
+    /**
      * Constructor initializes GameState with rows, columns, and a well formatted JsonArray.
      *
      * @param rows
@@ -105,7 +136,7 @@ public class GameState extends GameBoard implements IGameState {
         for (IPlayer player : this.players) {
             for (IPenguin penguin : player.getPenguins()) {
                 Point penguinPoint = penguin.getPosition();
-                if (point.x == penguinPoint.x && point.y == penguinPoint.y) {
+                if (penguinPoint != null && (point.x == penguinPoint.x && point.y == penguinPoint.y)) {
                     return true;
                 }
             }
@@ -152,9 +183,11 @@ public class GameState extends GameBoard implements IGameState {
     @Override
     public void placePenguin(IPenguin penguin, IPlayer player, Tile tile) throws IllegalArgumentException {
         if(penguin == null || player == null || tile == null) {
-            throw new IllegalArgumentException("Enter a valid Penguin, Player, and Tile");
+            throw new IllegalArgumentException("Enter a valid Penguin, Player, and Tile.");
         } else if (this.pointContainsPenguin(tile.getPosition())) {
-            throw new IllegalArgumentException("Can't place a Penguin on another Penguin");
+            throw new IllegalArgumentException("Can't place a Penguin on another Penguin.");
+        } else if (penguin.getPosition() != null) {
+            throw new IllegalArgumentException("Can't place a Penguin already on the board.");
         }
 
         // checks if the player is in the game

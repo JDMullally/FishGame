@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Represents the GameState for Fish.
  */
-public interface IGameState {
+public interface IGameState extends IGameBoard{
 
     /**
      * Gets the list of the current Players

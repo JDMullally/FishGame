@@ -1,24 +1,18 @@
 package model;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import java.awt.Color;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
 
-@RunWith(Arquillian.class)
 public class PlayerTest {
 
-    @Deployment
-    public static JavaArchive createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class)
-            .addClass(Player.class)
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    IPlayer player;
+
+    private void init() {
+        //this.player = new Player(Color.CYAN, P)
     }
+
 
     @Test
     public void getColor() {
