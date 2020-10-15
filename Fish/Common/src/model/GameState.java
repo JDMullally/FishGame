@@ -52,6 +52,9 @@ public class GameState extends GameBoard implements IGameState {
     public GameState(int rows, int columns, List<Point> holes, int minOneFishTiles, int sameFish, List<IPlayer> players) {
         super(rows, columns, holes, minOneFishTiles, sameFish);
 
+        if (players == null) {
+            throw new IllegalArgumentException("Players cannot be null");
+        }
         this.players = new ArrayList<>(players);
         this.turn = 0;
 
@@ -242,11 +245,19 @@ public class GameState extends GameBoard implements IGameState {
 
     @Override
     public boolean move(IPlayer player, IPenguin penguin, Tile newTile, boolean pass) throws IllegalArgumentException {
+        if (player == null || penguin == null || newTile == null) {
+            throw new IllegalArgumentException("Enter a non-null Player, Penguin and Tile");
+        }
+
         return this.move(player, penguin, newTile.getPosition(), pass);
     }
 
     @Override
     public boolean move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) throws IllegalArgumentException {
+        if (player == null || penguin == null || newPoint == null) {
+            throw new IllegalArgumentException("Enter a non-null Player, Penguin and Point");
+        }
+
         this.validatePlayers();
 
         // if the player passes their turn

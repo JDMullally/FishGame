@@ -8,6 +8,9 @@ import org.junit.Test;
 import static constants.Constants.HEX_SIZE;
 import static org.junit.Assert.*;
 
+/**
+ * Tests all public methods for the Penguin class
+ */
 public class PenguinTest {
     IPenguin testPenguin;
     Point position;
@@ -17,6 +20,9 @@ public class PenguinTest {
         this.testPenguin = new Penguin(Color.CYAN, this.position);
     }
 
+    /**
+     * Tests for getPosition
+     */
     @Test
     public void getPosition() {
         init();
@@ -24,6 +30,9 @@ public class PenguinTest {
         assertEquals(new Point(0,0), this.testPenguin.getPosition());
     }
 
+    /**
+     * Tests for getColor
+     */
     @Test
     public void getColor() {
         init();
@@ -31,6 +40,9 @@ public class PenguinTest {
         assertEquals(Color.CYAN, this.testPenguin.getColor());
     }
 
+    /**
+     * Tests for getScore
+     */
     @Test
     public void getScore() {
         init();
@@ -38,6 +50,9 @@ public class PenguinTest {
         assertEquals(0, this.testPenguin.getScore());
     }
 
+    /**
+     * Tests for addScore
+     */
     @Test
     public void addScore() {
         init();
@@ -50,6 +65,9 @@ public class PenguinTest {
         assertEquals(fish, this.testPenguin.getScore());
     }
 
+    /**
+     * Tests for move
+     */
     @Test
     public void move() {
         init();
@@ -61,6 +79,9 @@ public class PenguinTest {
         assertEquals(new Point(1,1), this.testPenguin.getPosition());
     }
 
+    /**
+     * Tests for drawPenguin
+     */
     @Test
     public void drawPenguin() {
         init();
@@ -74,6 +95,6 @@ public class PenguinTest {
         Point center = new Point((int) ((HEX_SIZE * this.position.x * 3)
             + xBuffer + HEX_SIZE * 1.5) + 1, (HEX_SIZE * this.position.y)+ HEX_SIZE);
 
-        assertEquals(true, this.testPenguin.drawPenguin().contains(center.x,center.y));
+        assertTrue(this.testPenguin.drawPenguin().contains(center.x, center.y));
     }
 }

@@ -113,10 +113,11 @@ public class Penguin implements IPenguin{
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof FishTile) {
+        if (o instanceof Penguin) {
             Penguin other = (Penguin) o;
             return this.color.getRGB() == other.getColor().getRGB()
-                && this.position.equals(other.position)
+                && this.position.x == other.position.x
+                && this.position.y == other.position.y
                 && this.score == other.score;
         }
         return false;
