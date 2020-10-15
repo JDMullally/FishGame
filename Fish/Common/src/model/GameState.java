@@ -42,7 +42,7 @@ public class GameState extends GameBoard implements IGameState {
 
     /**
      * Constructor that allows the addition of a full list of players.
-     * @param rows number rows on the board
+     * @param rows number of rows on the board
      * @param columns number of columns on the board
      * @param holes list of holes on the board
      * @param minOneFishTiles minimum number of one fish tiles
@@ -52,31 +52,19 @@ public class GameState extends GameBoard implements IGameState {
     public GameState(int rows, int columns, List<Point> holes, int minOneFishTiles, int sameFish, List<IPlayer> players) {
         super(rows, columns, holes, minOneFishTiles, sameFish);
 
-        if(players.isEmpty()) {
-            throw new IllegalArgumentException("Cannot have a game with zero players");
-        } else {
-            for (IPlayer player : players) {
-                if (player.getPenguins().size() != (6 - players.size())) {
-                    throw new IllegalArgumentException(
-                        "Given player does not have enough Penguins");
-                }
-                for (IPenguin penguin : player.getPenguins()) {
-                    if (player.getColor().getRGB() != penguin.getColor().getRGB()) {
-                        throw new IllegalArgumentException("Player has invalid Penguins");
-                    }
-                }
-            }
-        }
         this.players = new ArrayList<>(players);
         this.turn = 0;
+
+        this.sortPlayers();
+        this.validatePlayers();
     }
 
     /**
      * Constructor initializes GameState with rows, columns, and a well formatted JsonArray.
      *
-     * @param rows
-     * @param columns
-     * @param jsonArray
+     * @param rows number of rows on the board
+     * @param columns number of columns on the board
+     * @param jsonArray a JsonArray representing a game board
      */
     public GameState(int rows, int columns, JsonArray jsonArray) {
         super(rows, columns, jsonArray);
@@ -87,6 +75,41 @@ public class GameState extends GameBoard implements IGameState {
      */
     private void sortPlayers() {
         this.players.sort(Comparator.comparingInt(IPlayer::getAge));
+    }
+
+    /**
+     * Validates that all players are initialized correctly on the basis of unique color, having a
+     * valid number of players (1-4), and each player having exactly (6 - players.size()) penguins.
+     */
+    private void validatePlayers() {
+        if (this.players.isEmpty()) {
+            throw new IllegalArgumentException("Cannot have a game with zero players");
+        } else if (this.players.size() > 4) {
+            throw new IllegalArgumentException("Cannot have a game with more than 4 players");
+        } else {
+            for (int i = 0; i < this.players.size(); i++) {
+                IPlayer player = this.players.get(i);
+
+                // checks that penguin size is valid
+                if (player.getPenguins().size() != (6 - this.players.size())) {
+                    throw new IllegalArgumentException("Player '" + player.getColor().toString() + "' has the wrong number of penguins");
+                }
+                // checks that penguin colors are correct
+                for (IPenguin penguin : player.getPenguins()) {
+                    if (player.getColor().getRGB() != penguin.getColor().getRGB()) {
+                        throw new IllegalArgumentException("Player has invalid Penguin colors");
+                    }
+                }
+                // checks that there are no duplicate player colors
+                for (int j = 0; j < this.players.size(); j++) {
+                    IPlayer player2 = this.players.get(j);
+
+                    if (i != j && player.getColor().getRGB() == player2.getColor().getRGB()) {
+                        throw new IllegalArgumentException("2 players have the same color: " + player.getColor().toString());
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -201,6 +224,10 @@ public class GameState extends GameBoard implements IGameState {
         // adds the penguin to the player if possible
         if (validPlayer == null) {
             throw new IllegalArgumentException("Player specified is not in the game");
+        } else if (validPlayer.getColor().getRGB() != penguin.getColor().getRGB()) {
+            throw new IllegalArgumentException("Penguin and Player doesn't have the same color");
+        } else if (validPlayer.getPenguins().size() > (6 - this.players.size())) {
+            throw new IllegalArgumentException("Cannot place another penguin, already have too many");
         } else {
             validPlayer.addPenguin(penguin);
         }
@@ -220,6 +247,8 @@ public class GameState extends GameBoard implements IGameState {
 
     @Override
     public boolean move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) throws IllegalArgumentException {
+        this.validatePlayers();
+
         // if the player passes their turn
         if (pass) {
             this.turn++;
