@@ -10,10 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import controller.Controller;
-import model.GameBoard;
 import model.GameState;
-import model.IGameBoard;
-import model.IGameState;
 import model.ImmutableGameState;
 import model.ImmutableGameStateModel;
 import view.IView;

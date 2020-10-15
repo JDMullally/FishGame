@@ -14,7 +14,13 @@ The arguments `-r` and `-c` are required arguments representing the number of ro
 the game board. All other arguments are optional.
 
 ### Testing
-Go to the `Fish/Common` directory and run:
+To run the testing harness, go to the `Fish/3` directory and run the following, passing a Board-Posn to STDIN:
+
+```
+$  ./xboard
+```
+
+To run unit tests, go to the `Fish/Common` directory and run:
 
 ```
 $  ./test.sh
