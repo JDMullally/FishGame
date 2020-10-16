@@ -8,6 +8,11 @@ import java.util.List;
 
 import static constants.Constants.HEX_SIZE;
 
+/**
+ * A FishTile is a representation of Tile that has fish on it.
+ * It is Shaped like a hexagon and is able to draw itself.
+ * A FishTile has between 1-5 fish on it and can draw those as well.
+ */
 public class FishTile implements Tile {
 
     private Point position; // position of the tile relative to the board coordinates

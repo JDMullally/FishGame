@@ -3,6 +3,12 @@ package model;
 import java.awt.Point;
 import java.util.List;
 
+/**
+ * Represents the entire GameBoard. A GameBoard can generate a board of Tiles,
+ * show it's canvas for a graphical representation, show it's game board, get it's dimensions,
+ * get a tile from a specific point, Find viable paths from a given point, and remove Tiles by
+ * replacing them with Empty Tiles.
+ */
 public interface IGameBoard {
 
     /**

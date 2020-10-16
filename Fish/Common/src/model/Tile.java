@@ -4,7 +4,9 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * Represents a tile on the GameBoard.
+ * Represents a Tile on the GameBoard.
+ * A Tile should know if it is empty, get it's fish, position, graphical center,
+ * graphical shape and clone itself.
  */
 public interface Tile {
 

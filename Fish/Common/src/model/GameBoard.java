@@ -14,7 +14,9 @@ import java.util.stream.Collectors;
 import static constants.Constants.HEX_SIZE;
 
 /**
- * Class represents the entire GameBoard
+ * Class represents the entire GameBoard.
+ * A GameBoard knows it's dimensions and has access to all of it's piece which are represented by Tiles.
+ * A GameBoard can generate a board of Tiles, Find viable paths from a given point, and remove Tiles.
  */
 public class GameBoard implements IGameBoard {
 

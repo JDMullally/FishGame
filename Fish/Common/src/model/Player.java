@@ -6,7 +6,8 @@ import java.util.List;
 
 /**
  * A Player represents a player in the Fish Game. A player is made up of a color, age, and List of
- * IPenguins they can place on the board.
+ * IPenguins they can place on the board.  A player should be able to display it's age,
+ * color and Penguins.  It should also be able to add Penguins to it's current list of Penguins.
  */
 public class Player implements IPlayer {
 

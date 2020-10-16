@@ -4,6 +4,10 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * An Empty Tile is a Tile with no fish on it.
+ * It doesn't draw anything, because an EmptyTile is a hole on the board.
+ */
 public class EmptyTile implements Tile {
 
     private Point position; // position of the tile relative to the board coordinates

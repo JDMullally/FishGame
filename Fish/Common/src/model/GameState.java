@@ -12,6 +12,9 @@ import java.util.Map;
 /**
  * GameState represents a Fish Game, which more specifically is made up of a GameBoard and a
  * List of Players playing the game.
+ * Implementation that represents the GameState for Fish.
+ * A GameState should be able to change the GameBoard, show it's Players, add Players to the game,
+ * let Players place Penguins, get the possible moves for a Penguin, and check if the game is over.
  */
 public class GameState extends GameBoard implements IGameState {
 

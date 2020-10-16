@@ -5,6 +5,8 @@ import java.util.List;
 
 /**
  * Interface for Player class that allows them to interact with the GameState.
+ * An IPlayer should be able to display it's age, color and Penguins.
+ * It should also be able to add Penguins to it's current list of Penguins.
  */
 public interface IPlayer {
 

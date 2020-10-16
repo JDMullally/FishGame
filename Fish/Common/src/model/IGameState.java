@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents the GameState for Fish.
+ * Represents the GameState for Fish. A GameState should be able to change the GameBoard,
+ * show it's Players, add Players to the game, let Players place Penguins,
+ * get the possible moves for a Penguin, and check if the game is over.
  */
 public interface IGameState extends IGameBoard{
 

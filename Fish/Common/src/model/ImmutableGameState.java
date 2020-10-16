@@ -5,7 +5,11 @@ import com.google.gson.JsonObject;
 import java.awt.*;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * Class implementation that represents the model for an immutable implementation of a GameState. No new methods are
+ * required, as those from GameState are carried over. This interface is required however, as
+ * to distinguish the difference between classes that implement a mutable vs immutable model.
+ */
 public class ImmutableGameState implements ImmutableGameStateModel {
 
     private final GameState gameState;
