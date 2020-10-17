@@ -5,13 +5,25 @@ TAs can find:
 
 - the data description of states, including an interpretation:
 
+**<https://github.ccs.neu.edu/CS4500-F20/texline/blob/aa035d03869374727a29007c468a93a260509a32/Fish/Common/src/model/GameState.java#L12-L19>**
+
 - a signature/purpose statement of functionality that creates states 
+
+**Our GameState constructors allow functionality that creates game states**
+
+**<https://github.ccs.neu.edu/CS4500-F20/texline/blob/aa035d03869374727a29007c468a93a260509a32/Fish/Common/src/model/GameState.java#L29-L77>**
 
 - unit tests for functionality of taking a turn 
 
+**<https://github.ccs.neu.edu/CS4500-F20/texline/blob/aa035d03869374727a29007c468a93a260509a32/Fish/Common/test/model/GameStateTest.java#L390-L470>**
+
 - unit tests for functionality of placing an avatar 
 
+**<https://github.ccs.neu.edu/CS4500-F20/texline/blob/aa035d03869374727a29007c468a93a260509a32/Fish/Common/test/model/GameStateTest.java#L302-L388>**
+
 - unit tests for functionality of final-state test
+
+**<https://github.ccs.neu.edu/CS4500-F20/texline/blob/aa035d03869374727a29007c468a93a260509a32/Fish/Common/test/model/GameStateTest.java#L473-L522>**
 
 The ideal feedback is a GitHub perma-link to the range of lines in specific
 file or a collection of files for each of the above bullet points.
@@ -34,12 +46,6 @@ the specified code snippets answers the request.
 Select ONE of the following choices by deleting the other two options.
 
 A) My partner and I contributed equally to this assignment. 
-
-B) My partner and I contributed not *exactly* equally, but *roughly*
-   equally to this assignment.
-
-C) My partner and I did not contribute roughly equally to this
-   assignment; one of us contributed significantly more.
 
 If you chose C, please give some further explanation below describing
 the state of your partnership and whether and how you have been or are
