@@ -21,7 +21,7 @@ public class GameStateTest {
     IGameState gameState, emptyState;
     Penguin peng1, peng2, peng3, peng4, peng5, peng6, peng7, peng8;
     List<IPlayer> players;
-    Player p1;
+    Player p1, p2;
     int turn1;
 
     private void init() {
@@ -29,15 +29,22 @@ public class GameStateTest {
         this.peng2 = new Penguin(Color.WHITE,null);
         this.peng3 = new Penguin(Color.WHITE, null);
         this.peng4 = new Penguin(Color.WHITE, null);
-        this.peng5 = new Penguin(Color.WHITE, null);
 
-         List<IPenguin> penguinList1 = Arrays.asList(peng1, peng2, peng3, peng4, peng5);
+        List<IPenguin> penguinList1 = Arrays.asList(peng1, peng2, peng3, peng4);
+
+        this.peng5 = new Penguin(Color.BLACK, null);
+        this.peng6 = new Penguin(Color.BLACK, null);
+        this.peng7 = new Penguin(Color.BLACK, null);
+        this.peng8 = new Penguin(Color.BLACK, null);
+
+         List<IPenguin> penguinList2= Arrays.asList(peng5, peng6, peng7, peng8);
 
         this.p1 = new Player(Color.WHITE,20, penguinList1);
+        this.p2 = new Player(Color.BLACK,20, penguinList2);
 
-        this.players = Arrays.asList(p1);
+        this.players = Arrays.asList(this.p1, this.p2);
 
-        this.gameState = new GameState(5,5, new ArrayList<>(), 0, 2, this.players);
+        this.gameState = new GameState(8,8, new ArrayList<>(), 0, 2, this.players);
         this.emptyState = new GameState(5,5, this.getFullHoleList(5,5), 0, 2, this.players);
         this.turn1 = this.gameState.getTurn();
     }
@@ -50,21 +57,29 @@ public class GameStateTest {
         this.peng2 = new Penguin(Color.WHITE,null);
         this.peng3 = new Penguin(Color.WHITE, null);
         this.peng4 = new Penguin(Color.WHITE, null);
-        this.peng5 = new Penguin(Color.WHITE, null);
 
-        List<IPenguin> penguinList1 = Arrays.asList(peng1, peng2, peng3, peng4, peng5);
+        List<IPenguin> penguinList1 = Arrays.asList(peng1, peng2, peng3, peng4);
+
+        this.peng5 = new Penguin(Color.BLACK, null);
+        this.peng6 = new Penguin(Color.BLACK, null);
+        this.peng7 = new Penguin(Color.BLACK, null);
+        this.peng8 = new Penguin(Color.BLACK, null);
+
+        List<IPenguin> penguinList2= Arrays.asList(peng5, peng6, peng7, peng8);
 
         this.p1 = new Player(Color.WHITE,20, penguinList1);
+        this.p2 = new Player(Color.BLACK,20, penguinList2);
 
-        this.players = Arrays.asList(p1);
+        this.players = Arrays.asList(this.p1, this.p2);
 
-        IGameState state = new GameState(5,5,
+        IGameState state = new GameState(8,8,
             new ArrayList<>(), 0, 0, this.players);
 
-        for (IPlayer player : state.getPlayers()) {
+        for (int j = 0; j < this.players.size(); j++) {
+            IPlayer player = this.players.get(j);
             for (int i = 0; i < player.getPenguins().size(); i++)
                 state.placePenguin(player.getPenguins().get(i),
-                    player, state.getTile(new Point(0, i)));
+                    player, state.getTile(new Point(j, i)));
         }
 
         return state;
@@ -79,22 +94,30 @@ public class GameStateTest {
         this.peng2 = new Penguin(Color.WHITE,null);
         this.peng3 = new Penguin(Color.WHITE, null);
         this.peng4 = new Penguin(Color.WHITE, null);
-        this.peng5 = new Penguin(Color.WHITE, null);
 
-        List<IPenguin> penguinList1 = Arrays.asList(peng1, peng2, peng3, peng4, peng5);
+        List<IPenguin> penguinList1 = Arrays.asList(peng1, peng2, peng3, peng4);
+
+        this.peng5 = new Penguin(Color.BLACK, null);
+        this.peng6 = new Penguin(Color.BLACK, null);
+        this.peng7 = new Penguin(Color.BLACK, null);
+        this.peng8 = new Penguin(Color.BLACK, null);
+
+        List<IPenguin> penguinList2= Arrays.asList(peng5, peng6, peng7, peng8);
 
         this.p1 = new Player(Color.WHITE,20, penguinList1);
+        this.p2 = new Player(Color.BLACK,20, penguinList2);
 
-        this.players = Arrays.asList(p1);
+        this.players = Arrays.asList(this.p1, this.p2);
 
-        List<Point> holes = Arrays.asList(new Point(1,0), new Point(1,1), new Point(1,2), new Point(1,3), new Point(1,4));
+        List<Point> holes = Arrays.asList(new Point(2,0), new Point(2,1), new Point(2,2), new Point(2,3));
 
-        IGameState state = new GameState(5,5, holes, 0, 0, this.players);
+        IGameState state = new GameState(4,4, holes, 0, 0, this.players);
 
-        for (IPlayer player : state.getPlayers()) {
+        for (int j = 0; j < this.players.size(); j++) {
+            IPlayer player = this.players.get(j);
             for (int i = 0; i < player.getPenguins().size(); i++)
                 state.placePenguin(player.getPenguins().get(i),
-                    player, state.getTile(new Point(0, i)));
+                    player, state.getTile(new Point(j, i)));
         }
 
         return state;
@@ -121,10 +144,11 @@ public class GameStateTest {
      */
     private void placeAllPenguins() {
         init();
-        for (IPlayer player : this.gameState.getPlayers()) {
+        for (int j = 0; j < this.players.size(); j++) {
+            IPlayer player = this.players.get(j);
             for (int i = 0; i < player.getPenguins().size(); i++)
                 this.gameState.placePenguin(player.getPenguins().get(i),
-                    player, this.gameState.getTile(new Point(i, i)));
+                    player, this.gameState.getTile(new Point(j, i)));
         }
     }
 /**************************************************************************************************/
@@ -228,15 +252,18 @@ public class GameStateTest {
 
         placeAllPenguins();
 
-        IPlayer player = this.gameState.getPlayers().get(turn);
+        turn = this.gameState.getTurn();
+        assertEquals(8, turn);
 
-        IPenguin penguin = player.getPenguins().get(0);
+        IPlayer player = this.gameState.playerTurn();
 
-        this.gameState.move(player, penguin, new Point(0,2), false);
+        IPenguin penguin = player.getPenguins().get(3);
+
+        this.gameState.move(player, penguin, new Point(0,5), false);
 
         turn = this.gameState.getTurn();
 
-        assertEquals(1, turn);
+        assertEquals(9, turn);
     }
 
     /**
@@ -270,7 +297,7 @@ public class GameStateTest {
     @Test
     public void getPossibleMoves() {
         placeAllPenguins();
-        IPlayer player = this.gameState.getPlayers().get(turn1);
+        IPlayer player = this.gameState.playerTurn();
 
         Map<IPenguin, List<Tile>> moves= this.gameState.getPossibleMoves(player);
 
@@ -394,18 +421,15 @@ public class GameStateTest {
     public void moveWorking() {
         placeAllPenguins();
 
-        int turn = this.gameState.getTurn();
-
-        IPenguin penguin = this.gameState.getPlayers().get(turn).getPenguins().get(turn);
+        IPlayer player = this.gameState.playerTurn();
+        IPenguin penguin = player.getPenguins().get(3);
         Point pos = penguin.getPosition();
-        assertEquals(new Point(0,0), pos);
-
-        IPlayer player = this.gameState.getPlayers().get(turn);
+        assertEquals(new Point(0,3), pos);
 
 
-        this.gameState.move(player, penguin, new Point(0,2), false);
+        this.gameState.move(player, penguin, new Point(0,5), false);
 
-        assertEquals(new Point(0,2), penguin.getPosition());
+        assertEquals(new Point(0,5), penguin.getPosition());
     }
 
     /**
@@ -417,11 +441,14 @@ public class GameStateTest {
 
         int turn = this.gameState.getTurn();
 
-        IPenguin penguin = this.gameState.getPlayers().get(turn).getPenguins().get(turn);
+        IPenguin penguin = this.gameState.playerTurn().getPenguins().get(0);
 
-        IPlayer player = this.gameState.getPlayers().get(turn);
-
-        this.gameState.move(player, penguin, new Point(2,2), false);
+        IPlayer player = this.gameState.playerTurn();
+        if (this.gameState.getPossibleMoves(this.gameState.playerTurn()).isEmpty()) {
+            System.out.println("can't make it door stuck");
+        } else {
+            this.gameState.move(player, penguin, new Point(2,2), false);
+        }
     }
 
     /**
@@ -433,9 +460,9 @@ public class GameStateTest {
 
         int turn = this.gameState.getTurn();
 
-        IPenguin penguin = this.gameState.getPlayers().get(turn).getPenguins().get(turn);
+        IPenguin penguin = this.gameState.playerTurn().getPenguins().get(0);
 
-        IPlayer player = this.gameState.getPlayers().get(turn);
+        IPlayer player = this.gameState.playerTurn();
 
         this.gameState.move(player, penguin, new Point(0,2), false);
 
@@ -451,13 +478,13 @@ public class GameStateTest {
 
         int turn = this.gameState.getTurn();
 
-        IPenguin penguin = this.gameState.getPlayers().get(turn).getPenguins().get(turn);
+        IPenguin penguin = this.gameState.playerTurn().getPenguins().get(0);
 
         Point testPos = new Point(0,0);
         Point pos = penguin.getPosition();
         assertEquals(testPos, pos);
 
-        IPlayer player = this.gameState.getPlayers().get(turn);
+        IPlayer player = this.gameState.playerTurn();
 
         Tile tile = new EmptyTile(1,1);
 
@@ -466,7 +493,7 @@ public class GameStateTest {
         assertEquals(testPos, penguin.getPosition());
 
         //Turn still increments
-        assertEquals(1, this.gameState.getTurn());
+        assertEquals(9, this.gameState.getTurn());
     }
 
 
@@ -502,10 +529,10 @@ public class GameStateTest {
     public void penguinsMovedALittle() {
         placeAllPenguins();
 
-        IPlayer player = this.gameState.getPlayers().get(this.turn1);
-        IPenguin penguin = player.getPenguins().get(this.turn1);
+        IPlayer player = this.gameState.playerTurn();
+        IPenguin penguin = this.gameState.playerTurn().getPenguins().get(3);
 
-        this.gameState.move(player, penguin, new Point(0,2), false);
+        this.gameState.move(player, penguin, new Point(0,5), false);
 
         assertFalse(this.gameState.isGameOver());
     }

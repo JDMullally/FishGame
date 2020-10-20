@@ -88,8 +88,8 @@ public class GameState extends GameBoard implements IGameState {
      * valid number of players (1-4), and each player having exactly (6 - players.size()) penguins.
      */
     private void validatePlayers() {
-        if (this.players.isEmpty()) {
-            throw new IllegalArgumentException("Cannot have a game with zero players");
+        if (this.players.isEmpty() || this.players.size() <= 1) {
+            throw new IllegalArgumentException("Cannot have a game with zero or one players");
         } else if (this.players.size() > 4) {
             throw new IllegalArgumentException("Cannot have a game with more than 4 players");
         } else {
@@ -244,6 +244,7 @@ public class GameState extends GameBoard implements IGameState {
         // updates penguin
         penguin.addScore(removed.getFish());
         penguin.move(tile);
+        this.turn++;
     }
 
     @Override
