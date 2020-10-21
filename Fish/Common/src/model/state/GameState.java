@@ -267,11 +267,6 @@ public class GameState extends GameBoard implements IGameState {
             validPlayer.addPenguin(penguin);
         }
 
-        // removes tile
-        Tile removed = this.replaceTile(point);
-
-        // updates penguin
-        player.addScore(removed.getFish());
         penguin.move(point);
         this.turn++;
     }
@@ -304,7 +299,7 @@ public class GameState extends GameBoard implements IGameState {
             this.turn++;
 
             // removes tile
-            Tile removed = this.replaceTile(newPoint);
+            Tile removed = this.replaceTile(penguin.getPosition());
 
             // updates penguin
             player.addScore(removed.getFish());
