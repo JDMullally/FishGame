@@ -57,7 +57,7 @@ public class PlayerTest {
     }
 
     /**
-     * Tests for getPenguins
+     * Tests for getPenguins. getPenguins should only get a copy of the list.
      */
     @Test
     public void getPenguins() {
@@ -67,7 +67,22 @@ public class PlayerTest {
     }
 
     /**
-     * Tests for addPenguin
+     * Tests that the list of penguins is not mutated outside of the class.
+     */
+    @Test
+    public void getPenguinsNoMutate() {
+        this.init();
+        List<IPenguin> penguins = this.player.getPenguins();;
+
+        this.player.addPenguin(new Penguin(Color.BLACK, new Point(1,1)));
+
+        boolean gotPenguins = penguins.equals(this.player.getPenguins());
+
+        assertFalse(gotPenguins);
+    }
+
+    /**
+     * Tests for addPenguin.  Add penguin should mutate the the penguin list.
      */
     @Test
     public void addPenguin() {
@@ -77,5 +92,29 @@ public class PlayerTest {
         penguinlessPlayer.addPenguin(new Penguin(Color.BLACK, new Point(1,1)));
 
         assertEquals(new Penguin(Color.BLACK, new Point(1,1)), penguinlessPlayer.getPenguins().get(0));
+    }
+
+    /**
+     * Tests for getScore.  getScore should only get the score of the penguin.
+     */
+    @Test
+    public void getScore() {
+        init();
+
+        assertEquals(0, this.player.getScore());
+    }
+
+    /**
+     * Tests for addScore.  addScore should mutate the score of the player.
+     */
+    @Test
+    public void addScore() {
+        init();
+
+        assertEquals(0, this.player.getScore());
+
+        this.player.addScore(5);
+
+        assertEquals(5, this.player.getScore());
     }
 }
