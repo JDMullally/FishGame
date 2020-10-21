@@ -183,6 +183,13 @@ public class GameBoardTest {
         assertEquals(testBoard, this.modelSmall.getGameBoard());
     }
 
+    @Test
+    public void getGameBoard2() {
+        this.init();
+
+        System.out.println(Arrays.deepToString(this.modelDefault.getGameBoard()));
+    }
+
     /**
      * Tests for getBoard Width and Height
      */

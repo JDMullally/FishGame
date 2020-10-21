@@ -100,4 +100,11 @@ public interface IGameState extends IGameBoard {
      * @return boolean
      */
     boolean isGameOver();
+
+    /**
+     * Returns a clone of the current gameState.
+     *
+     * @return IPlayer
+     */
+    IGameState clone();
 }

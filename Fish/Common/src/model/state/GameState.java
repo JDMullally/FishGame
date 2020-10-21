@@ -50,7 +50,21 @@ public class GameState extends GameBoard implements IGameState {
 
         this.sortPlayers();
         this.validatePlayers();
-        //this.placePlayerPenguins(); TODO: makes tests fail, but should be called
+        this.placePlayerPenguins(); //TODO: makes tests fail, but should be called
+    }
+
+    public GameState(int rows, int columns, Tile[][] board, List<IPlayer> players) {
+        super(rows, columns, board);
+
+        if (players == null) {
+            throw new IllegalArgumentException("Players cannot be null");
+        }
+        this.players = new ArrayList<>(players);
+        this.turn = 0;
+
+        this.sortPlayers();
+        this.validatePlayers();
+        this.placePlayerPenguins(); //TODO: makes tests fail, but should be called
     }
 
     /**
@@ -323,6 +337,12 @@ public class GameState extends GameBoard implements IGameState {
             }
         }
         return true;
+    }
+
+    @Override
+    public IGameState clone() {
+        //return new GameState(this.getRows(), this.getColumns(), this.getGameBoard(), this.pl)
+        return null;
     }
 
 }
