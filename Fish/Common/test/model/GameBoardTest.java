@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
 
+import model.board.GameBoard;
+import model.board.Tile;
+
 public class GameBoardTest {
 
     private int holes1Size;

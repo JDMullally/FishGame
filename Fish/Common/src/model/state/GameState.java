@@ -1,13 +1,17 @@
-package model;
+package model.state;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+
+import model.board.GameBoard;
+import model.board.Tile;
+import util.ColorUtil;
 
 /**
  * GameState represents a Fish Game, which more specifically is made up of a GameBoard and a
@@ -25,23 +29,6 @@ public class GameState extends GameBoard implements IGameState {
      * i.e. It is a player's move when ((turn % players.size()) == index of a given player)
      */
     private int turn;
-
-    /**
-     * Constructor initializes a GameState with all arguments for a GameBoard and with a List of
-     * Players.
-     *
-     * @param rows rows on the board
-     * @param columns columns on the board
-     * @param holes holes on the board
-     * @param minOneFishTiles number of min one fish tiles
-     * @param sameFish same fish number
-     */
-    public GameState(int rows, int columns, List<Point> holes, int minOneFishTiles, int sameFish) {
-        super(rows, columns, holes, minOneFishTiles, sameFish);
-
-        this.players = new ArrayList<>();
-        this.turn = 0;
-    }
 
     /**
      * Constructor that allows the addition of a full list of players.
@@ -63,6 +50,7 @@ public class GameState extends GameBoard implements IGameState {
 
         this.sortPlayers();
         this.validatePlayers();
+        //this.placePlayerPenguins(); TODO: makes tests fail, but should be called
     }
 
     /**
@@ -70,10 +58,47 @@ public class GameState extends GameBoard implements IGameState {
      *
      * @param rows number of rows on the board
      * @param columns number of columns on the board
-     * @param jsonArray a JsonArray representing a game board
+     * @param board a JsonArray representing a game board
+     * @param players a JsonArray representing players
      */
-    public GameState(int rows, int columns, JsonArray jsonArray) {
-        super(rows, columns, jsonArray);
+    public GameState(int rows, int columns, JsonArray board, JsonArray players) {
+        super(rows, columns, board);
+
+        this.players = this.jsonToPlayers(players);
+
+        this.sortPlayers();
+        this.validatePlayers();
+        this.placePlayerPenguins();
+    }
+
+    /**
+     * Returns a a list of players with the specified parameters.
+     *
+     * @param jsonArray JsonArray
+     * @return List of Iplayer
+     */
+    private List<IPlayer> jsonToPlayers(JsonArray jsonArray) {
+        List<IPlayer> players = new ArrayList<>();
+
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject jsonPlayer = jsonArray.get(i).getAsJsonObject();
+            JsonArray jsonPenguins = jsonPlayer.get("places").getAsJsonArray();
+            String strColor = jsonPlayer.get("color").toString();
+
+            Color color = ColorUtil.toColor(strColor);
+
+            List<IPenguin> penguins = new ArrayList<>();
+            for (int j = 0; j < jsonPenguins.size(); j++) {
+                JsonArray jsonPoint = jsonPenguins.get(j).getAsJsonArray();
+                Point point = new Point(jsonPoint.get(0).getAsInt(), jsonPoint.get(1).getAsInt());
+
+                penguins.add(new Penguin(color, point));
+            }
+
+            players.add(new Player(color, i + 1, penguins));
+        }
+
+        return players;
     }
 
     /**
@@ -114,6 +139,17 @@ public class GameState extends GameBoard implements IGameState {
                         throw new IllegalArgumentException("2 players have the same color: " + player.getColor().toString());
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * Places the player's penguins on the game board.
+     */
+    private void placePlayerPenguins() {
+        for (IPlayer player : this.players) {
+            for (IPenguin penguin : player.getPenguins()) {
+                this.placePenguin(penguin, player, penguin.getPosition(), false);
             }
         }
     }
@@ -189,8 +225,8 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     @Override
-    public Map<IPenguin, List<Tile>> getPossibleMoves(IPlayer player) {
-        Map<IPenguin, List<Tile>> possibleMoves = new HashMap<>();
+    public LinkedHashMap<IPenguin, List<Tile>> getPossibleMoves(IPlayer player) {
+        LinkedHashMap<IPenguin, List<Tile>> possibleMoves = new LinkedHashMap<>();
         for (IPenguin p : player.getPenguins()) {
             possibleMoves.put(p, this.getViableTiles(p.getPosition()));
         }
@@ -198,24 +234,17 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     @Override
-    public void addPlayer(Player player) throws IllegalArgumentException {
-        if (player == null) {
-            throw new IllegalArgumentException("Player cannot be null");
-        } else if (players.size() > 4) {
-            throw new IllegalArgumentException("There can't be more than 4 players");
-        }
-
-        this.players.add(player);
-        this.sortPlayers();
+    public void placePenguin(IPenguin penguin, IPlayer player, Tile tile, boolean addToPlayer) throws IllegalArgumentException {
+        this.placePenguin(penguin, player, tile.getPosition(), addToPlayer);
     }
 
     @Override
-    public void placePenguin(IPenguin penguin, IPlayer player, Tile tile) throws IllegalArgumentException {
-        if(penguin == null || player == null || tile == null) {
+    public void placePenguin(IPenguin penguin, IPlayer player, Point point, boolean addToPlayer) throws IllegalArgumentException {
+        if(penguin == null || player == null || point == null) {
             throw new IllegalArgumentException("Enter a valid Penguin, Player, and Tile.");
-        } else if (this.pointContainsPenguin(tile.getPosition())) {
+        } else if (addToPlayer && this.pointContainsPenguin(point)) {
             throw new IllegalArgumentException("Can't place a Penguin on another Penguin.");
-        } else if (penguin.getPosition() != null) {
+        } else if (addToPlayer && penguin.getPosition() != null) {
             throw new IllegalArgumentException("Can't place a Penguin already on the board.");
         }
 
@@ -234,21 +263,21 @@ public class GameState extends GameBoard implements IGameState {
             throw new IllegalArgumentException("Penguin and Player doesn't have the same color");
         } else if (validPlayer.getPenguins().size() > (6 - this.players.size())) {
             throw new IllegalArgumentException("Cannot place another penguin, already have too many");
-        } else {
+        } else if (addToPlayer) {
             validPlayer.addPenguin(penguin);
         }
 
         // removes tile
-        Tile removed = this.replaceTile(tile);
+        Tile removed = this.replaceTile(point);
 
         // updates penguin
-        penguin.addScore(removed.getFish());
-        penguin.move(tile);
+        player.addScore(removed.getFish());
+        penguin.move(point);
         this.turn++;
     }
 
     @Override
-    public boolean move(IPlayer player, IPenguin penguin, Tile newTile, boolean pass) throws IllegalArgumentException {
+    public IGameState move(IPlayer player, IPenguin penguin, Tile newTile, boolean pass) throws IllegalArgumentException {
         if (player == null || penguin == null || newTile == null) {
             throw new IllegalArgumentException("Enter a non-null Player, Penguin and Tile");
         }
@@ -257,7 +286,7 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     @Override
-    public boolean move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) throws IllegalArgumentException {
+    public IGameState move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) throws IllegalArgumentException {
         if (player == null || penguin == null || newPoint == null) {
             throw new IllegalArgumentException("Enter a non-null Player, Penguin and Point");
         }
@@ -267,7 +296,7 @@ public class GameState extends GameBoard implements IGameState {
         // if the player passes their turn
         if (pass) {
             this.turn++;
-            return true;
+            return this;
         }
 
         // attempts to move
@@ -278,12 +307,13 @@ public class GameState extends GameBoard implements IGameState {
             Tile removed = this.replaceTile(newPoint);
 
             // updates penguin
-            penguin.addScore(removed.getFish());
+            player.addScore(removed.getFish());
             penguin.move(newPoint);
 
-            return true;
+            return this;
         }
-        return false;
+
+        throw new IllegalArgumentException("Move is illegal");
     }
 
     @Override

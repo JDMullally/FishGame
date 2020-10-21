@@ -1,10 +1,13 @@
-package model;
-
-import com.google.gson.JsonObject;
+package model.state;
 
 import java.awt.*;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import model.board.Canvas;
+import model.board.Tile;
+
 /**
  * Class implementation that represents the model for an immutable implementation of a GameState. No new methods are
  * required, as those from GameState are carried over. This interface is required however, as
@@ -89,13 +92,8 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     }
 
     @Override
-    public Map<IPenguin, List<Tile>> getPossibleMoves(IPlayer player) {
+    public LinkedHashMap<IPenguin, List<Tile>> getPossibleMoves(IPlayer player) {
         return this.gameState.getPossibleMoves(player);
-    }
-
-    @Override
-    public void addPlayer(Player player) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("GameState is immutable.");
     }
 
     @Override
@@ -109,17 +107,22 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     }
 
     @Override
-    public void placePenguin(IPenguin penguin, IPlayer player, Tile tile) {
+    public void placePenguin(IPenguin penguin, IPlayer player, Tile tile, boolean addToPlayer) throws IllegalArgumentException {
         throw new UnsupportedOperationException("GameState is immutable.");
     }
 
     @Override
-    public boolean move(IPlayer player, IPenguin penguin, Tile newTile, boolean pass) throws IllegalArgumentException {
+    public void placePenguin(IPenguin penguin, IPlayer player, Point point, boolean addToPlayer) throws IllegalArgumentException {
         throw new UnsupportedOperationException("GameState is immutable.");
     }
 
     @Override
-    public boolean move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) throws IllegalArgumentException {
+    public IGameState move(IPlayer player, IPenguin penguin, Tile newTile, boolean pass) throws IllegalArgumentException {
+        throw new UnsupportedOperationException("GameState is immutable.");
+    }
+
+    @Override
+    public IGameState move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) throws IllegalArgumentException {
         throw new UnsupportedOperationException("GameState is immutable.");
     }
 }

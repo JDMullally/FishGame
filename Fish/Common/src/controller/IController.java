@@ -2,7 +2,7 @@ package controller;
 
 import java.awt.event.MouseListener;
 
-import model.GameState;
+import model.state.GameState;
 import view.IView;
 
 /**

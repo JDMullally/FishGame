@@ -6,9 +6,9 @@ import java.util.List;
 import javax.swing.*;
 
 import controller.IController;
-import model.Canvas;
-import model.ImmutableGameStateModel;
-import model.Tile;
+import model.board.Canvas;
+import model.state.ImmutableGameStateModel;
+import model.board.Tile;
 
 /**
  * Represents a visual view of the Fish Game.

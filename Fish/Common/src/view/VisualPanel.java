@@ -6,9 +6,11 @@ import java.util.List;
 
 import javax.swing.*;
 
-import model.ImmutableGameStateModel;
-import model.Penguin;
-import model.Tile;
+import model.state.IPenguin;
+import model.state.IPlayer;
+import model.state.ImmutableGameStateModel;
+import model.state.Penguin;
+import model.board.Tile;
 
 public class VisualPanel extends JPanel {
 
@@ -52,14 +54,6 @@ public class VisualPanel extends JPanel {
                     g2d.draw(hexagon);
                 }
 
-                // TODO: draws placement penguin
-                if (hexagon == null) {
-                    Penguin penguin = new Penguin(Color.BLACK, tile.getPosition());
-                    Shape penguinShape = penguin.drawPenguin();
-                    g2d.setColor(penguin.getColor());
-                    g2d.fill(penguinShape);
-                }
-
                 g2d.setColor(new Color(0, 28, 150));
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -68,6 +62,14 @@ public class VisualPanel extends JPanel {
                 for (Shape fish : fishList) {
                     g2d.fill(fish);
                 }
+            }
+        }
+
+        // draws penguins
+        for (IPlayer players : this.immutableModel.getPlayers()) {
+            for (IPenguin penguin : players.getPenguins()) {
+                g2d.setColor(penguin.getColor());
+                g2d.fill(penguin.drawPenguin());
             }
         }
 

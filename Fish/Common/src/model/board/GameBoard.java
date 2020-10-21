@@ -1,4 +1,4 @@
-package model;
+package model.board;
 
 import com.google.gson.JsonArray;
 
@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static constants.Constants.HEX_SIZE;

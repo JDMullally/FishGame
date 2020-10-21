@@ -1,4 +1,4 @@
-package model;
+package model.state;
 
 
 import static constants.Constants.HEX_SIZE;
@@ -9,6 +9,8 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 
+import model.board.Tile;
+
 /**
  * Penguins are represented with their position on the GameBoard as a Point,
  * the number of fish they have eaten as a score, and the color of their team.
@@ -18,7 +20,6 @@ public class Penguin implements IPenguin{
 
     private final Color color; // penguin's color
     private Point position; // its position on the board
-    private int score; // the score the penguin currently has
 
     /**
      * Constructor
@@ -28,19 +29,6 @@ public class Penguin implements IPenguin{
     public Penguin(Color color, Point position) {
         this.color = color;
         this.position = position;
-        this.score = 0;
-    }
-
-    /**
-     * Constructor
-     * @param color Team penguin is a part of
-     * @param position Position of the Penguin
-     * @param score score of the Penguin
-     */
-    public Penguin(Color color, Point position, int score) {
-        this.color = color;
-        this.position = position;
-        this.score = score;
     }
 
     /**
@@ -65,16 +53,6 @@ public class Penguin implements IPenguin{
     @Override
     public Color getColor() {
         return this.color;
-    }
-
-    @Override
-    public int getScore() {
-        return this.score;
-    }
-
-    @Override
-    public void addScore(int points) {
-        this.score += points;
     }
 
     @Override
@@ -117,14 +95,13 @@ public class Penguin implements IPenguin{
             Penguin other = (Penguin) o;
             return this.color.getRGB() == other.getColor().getRGB()
                 && this.position.x == other.position.x
-                && this.position.y == other.position.y
-                && this.score == other.score;
+                && this.position.y == other.position.y;
         }
         return false;
     }
 
     @Override
     public IPenguin clone() {
-        return new Penguin(new Color(this.color.getRGB()), new Point(this.position), this.score);
+        return new Penguin(new Color(this.color.getRGB()), new Point(this.position));
     }
 }

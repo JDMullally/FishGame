@@ -1,11 +1,9 @@
 package controller;
 
 import java.util.ArrayList;
-import model.GameBoard;
-import model.IGameBoard;
-import org.junit.Test;
+import model.board.GameBoard;
+import model.board.IGameBoard;
 import view.IView;
-import view.VisualView;
 
 public class ControllerTest {
 

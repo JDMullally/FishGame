@@ -7,6 +7,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import org.junit.Test;
 
+import model.board.FishTile;
+import model.board.Tile;
+
 public class FishTileTest {
 
     private int fish;

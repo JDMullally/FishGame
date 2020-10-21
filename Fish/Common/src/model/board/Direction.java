@@ -1,4 +1,4 @@
-package model;
+package model.board;
 
 /**
  * Represents a direction to move from one hexagon to another.

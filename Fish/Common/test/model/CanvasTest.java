@@ -2,6 +2,8 @@ package model;
 
 import org.junit.Test;
 
+import model.board.Canvas;
+
 import static org.junit.Assert.*;
 
 public class CanvasTest {

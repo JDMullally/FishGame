@@ -4,4 +4,4 @@ all:
 	mvn install \
 	&& cd target \
 	&& cp Fish-1.0-SNAPSHOT.jar ../xfish.jar \
-	&& cp Fish-1.0-SNAPSHOT-jar-with-dependencies.jar ../xboard.jar)
+	&& cp Fish-1.0-SNAPSHOT-jar-with-dependencies.jar ../xstate.jar)

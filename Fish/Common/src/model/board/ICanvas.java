@@ -1,4 +1,4 @@
-package model;
+package model.board;
 
 /**
  * Represents a model for the bounds of the Fish Game.

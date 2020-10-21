@@ -6,10 +6,10 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
-import model.EmptyTile;
-import model.GameState;
-import model.ImmutableGameState;
-import model.Tile;
+import model.board.EmptyTile;
+import model.state.GameState;
+import model.state.ImmutableGameState;
+import model.board.Tile;
 import view.IView;
 
 /**

@@ -1,4 +1,6 @@
-package model;
+package model.state;
+
+import model.board.IGameBoard;
 
 /**
  * Represents the model for an immutable implementation of a GameState. No new methods are

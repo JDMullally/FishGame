@@ -1,4 +1,4 @@
-package model;
+package model.state;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -14,6 +14,7 @@ public class Player implements IPlayer {
     private final Color color; // The Player's color [unique]
     private final int age; // the age of the player
     private List<IPenguin> penguins; // the Player's List of Penguins
+    private int score; // the score the penguin currently has
 
     /**
      * Constructor takes in a Player's color, age, and List of IPenguins
@@ -23,18 +24,32 @@ public class Player implements IPlayer {
      * @param penguins Player's List of IPenguins
      * @throws IllegalArgumentException
      */
-    Player(Color color, int age, List<IPenguin> penguins) throws IllegalArgumentException {
+    public Player(Color color, int age, List<IPenguin> penguins) throws IllegalArgumentException {
+        this(color, age, penguins, 0);
+    }
+
+    /**
+     * Constructor takes in a Player's color, age, and List of IPenguins
+     *
+     * @param color Player's color
+     * @param age Player's age
+     * @param penguins Player's List of IPenguins
+     * @param score Player's current score
+     * @throws IllegalArgumentException
+     */
+    public Player(Color color, int age, List<IPenguin> penguins, int score) throws IllegalArgumentException {
         if (color == null) {
             throw new IllegalArgumentException("Color cannot be null");
         } else if (age < 0) {
             throw new IllegalArgumentException("Age cannot be negative");
         } else if (penguins == null ) {
             throw new IllegalArgumentException("Penguins cannot be null");
-        } else {
-            this.color = color;
-            this.age = age;
-            this.penguins = this.validPenguins(penguins, color);
         }
+
+        this.color = color;
+        this.age = age;
+        this.penguins = this.validPenguins(penguins, color);
+        this.score = score;
     }
 
     /**
@@ -67,6 +82,16 @@ public class Player implements IPlayer {
     }
 
     @Override
+    public int getScore() {
+        return this.score;
+    }
+
+    @Override
+    public void addScore(int points) {
+        this.score += points;
+    }
+
+    @Override
     public List<IPenguin> getPenguins() {
         return new ArrayList<>(this.penguins);
     }
@@ -87,6 +112,6 @@ public class Player implements IPlayer {
 
     @Override
     public IPlayer clone() {
-        return new Player(new Color(this.color.getRGB()), this.age, new ArrayList<>(this.penguins));
+        return new Player(new Color(this.color.getRGB()), this.age, new ArrayList<>(this.penguins), this.score);
     }
 }

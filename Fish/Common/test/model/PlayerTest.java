@@ -3,9 +3,13 @@ package model;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
+
+import model.state.IPenguin;
+import model.state.IPlayer;
+import model.state.Penguin;
+import model.state.Player;
 
 import static org.junit.Assert.*;
 

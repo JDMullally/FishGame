@@ -5,6 +5,9 @@ import java.awt.Color;
 import java.awt.Point;
 import org.junit.Test;
 
+import model.state.IPenguin;
+import model.state.Penguin;
+
 import static constants.Constants.HEX_SIZE;
 import static org.junit.Assert.*;
 
@@ -38,31 +41,6 @@ public class PenguinTest {
         init();
 
         assertEquals(Color.CYAN, this.testPenguin.getColor());
-    }
-
-    /**
-     * Tests for getScore
-     */
-    @Test
-    public void getScore() {
-        init();
-
-        assertEquals(0, this.testPenguin.getScore());
-    }
-
-    /**
-     * Tests for addScore
-     */
-    @Test
-    public void addScore() {
-        init();
-        int fish = 5;
-
-        assertEquals(0, this.testPenguin.getScore());
-
-        this.testPenguin.addScore(fish);
-
-        assertEquals(fish, this.testPenguin.getScore());
     }
 
     /**

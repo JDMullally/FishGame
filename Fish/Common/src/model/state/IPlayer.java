@@ -1,4 +1,4 @@
-package model;
+package model.state;
 
 import java.awt.Color;
 import java.util.List;
@@ -23,6 +23,20 @@ public interface IPlayer {
      * @return int
      */
     int getAge();
+
+    /**
+     * Returns a score representing how many fish the penguin has eaten.
+     *
+     * @return int that represents the number of fish that penguin has eaten.
+     */
+    int getScore();
+
+    /**
+     * Adds points to the Penguins score.
+     *
+     * @param points number of points to add
+     */
+    void addScore(int points);
 
     /**
      * Gets the IPlayer's List of Penguins.

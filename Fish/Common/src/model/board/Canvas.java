@@ -1,4 +1,4 @@
-package model;
+package model.board;
 
 /**
  * Represents the bounds of the animation.

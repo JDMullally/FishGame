@@ -4,13 +4,21 @@ package model;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Test;
+
+import model.board.EmptyTile;
+import model.board.Tile;
+import model.state.GameState;
+import model.state.IGameState;
+import model.state.IPenguin;
+import model.state.IPlayer;
+import model.state.Penguin;
+import model.state.Player;
+
 import static org.junit.Assert.*;
 
 /**
@@ -78,8 +86,7 @@ public class GameStateTest {
         for (int j = 0; j < this.players.size(); j++) {
             IPlayer player = this.players.get(j);
             for (int i = 0; i < player.getPenguins().size(); i++)
-                state.placePenguin(player.getPenguins().get(i),
-                    player, state.getTile(new Point(j, i)));
+                state.placePenguin(player.getPenguins().get(i), player, state.getTile(new Point(j, i)), true);
         }
 
         return state;
@@ -116,8 +123,7 @@ public class GameStateTest {
         for (int j = 0; j < this.players.size(); j++) {
             IPlayer player = this.players.get(j);
             for (int i = 0; i < player.getPenguins().size(); i++)
-                state.placePenguin(player.getPenguins().get(i),
-                    player, state.getTile(new Point(j, i)));
+                state.placePenguin(player.getPenguins().get(i), player, state.getTile(new Point(j, i)), true);
         }
 
         return state;
@@ -147,8 +153,7 @@ public class GameStateTest {
         for (int j = 0; j < this.players.size(); j++) {
             IPlayer player = this.players.get(j);
             for (int i = 0; i < player.getPenguins().size(); i++)
-                this.gameState.placePenguin(player.getPenguins().get(i),
-                    player, this.gameState.getTile(new Point(j, i)));
+                this.gameState.placePenguin(player.getPenguins().get(i), player, this.gameState.getTile(new Point(j, i)), true);
         }
     }
 /**************************************************************************************************/
@@ -307,26 +312,6 @@ public class GameStateTest {
     }
 
     /**
-     * Tests for addPlayer
-     */
-    @Test
-    public void addPlayer() {
-        init();
-        IGameState testBoard = new GameState(5,5, new ArrayList<>(), 0, 2);
-        testBoard.addPlayer(this.p1);
-        IPlayer addedPlayer = testBoard.getPlayers().get(0);
-
-        assertEquals(addedPlayer, this.gameState.getPlayers().get(0));
-    }
-
-    @Test (expected = IllegalArgumentException.class)
-    public void addPlayerNull() {
-        init();
-
-        this.gameState.addPlayer(null);
-    }
-
-    /**
      * place Penguin methods.
      * A Penguin should always be able to be placed during placement rounds,
      * especially if it's current position is null;
@@ -342,7 +327,7 @@ public class GameStateTest {
         Point newPos = new Point(0,0);
         this.gameState.placePenguin(penguin1,
             this.gameState.getPlayers().get(turn1),
-            this.gameState.getTile(newPos));
+            this.gameState.getTile(newPos), true);
 
         assertEquals(newPos, penguin1.getPosition());
 
@@ -355,7 +340,7 @@ public class GameStateTest {
         Point newPos = new Point(0,0);
         this.gameState.placePenguin(null,
             this.gameState.getPlayers().get(turn1),
-            this.gameState.getTile(newPos));
+            this.gameState.getTile(newPos), true);
     }
 
     @Test (expected = IllegalArgumentException.class)
@@ -366,7 +351,7 @@ public class GameStateTest {
         Point newPos = new Point(0,0);
         this.gameState.placePenguin(penguin1,
             null,
-            this.gameState.getTile(newPos));
+            this.gameState.getTile(newPos), true);
     }
 
     @Test (expected = IllegalArgumentException.class)
@@ -374,10 +359,10 @@ public class GameStateTest {
         init();
 
         IPenguin penguin1 = this.gameState.getPlayers().get(turn1).getPenguins().get(turn1);
-        Point newPos = new Point(0,0);
+        Point newPos = null;
         this.gameState.placePenguin(penguin1,
             this.gameState.getPlayers().get(turn1),
-            null);
+            newPos, true);
     }
 
     @Test (expected = IllegalArgumentException.class)
@@ -388,14 +373,14 @@ public class GameStateTest {
         Point newPos = new Point(0,0);
         this.gameState.placePenguin(penguin1,
             this.gameState.getPlayers().get(turn1),
-            this.gameState.getTile(newPos));
+            this.gameState.getTile(newPos), true);
 
 
         IPenguin differentPenguin = this.gameState.getPlayers().get(turn1).getPenguins().get(1);
 
         this.gameState.placePenguin(differentPenguin,
             this.gameState.getPlayers().get(turn1),
-            this.gameState.getTile(newPos));
+            this.gameState.getTile(newPos), true);
     }
 
     @Test (expected = IllegalArgumentException.class)
@@ -406,12 +391,12 @@ public class GameStateTest {
         Point newPos = new Point(0,0);
         this.gameState.placePenguin(penguin1,
             this.gameState.getPlayers().get(turn1),
-            this.gameState.getTile(newPos));
+            this.gameState.getTile(newPos), true);
 
         Point newPos2 = new Point(2,2);
         this.gameState.placePenguin(penguin1,
             this.gameState.getPlayers().get(turn1),
-            this.gameState.getTile(newPos2));
+            this.gameState.getTile(newPos2), true);
     }
 
     /**

@@ -1,8 +1,10 @@
-package model;
+package model.state;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Shape;
+
+import model.board.Tile;
 
 /**
  * Interface for the Penguin class.  A Penguin should be able to move, eat fish,
@@ -23,20 +25,6 @@ public interface IPenguin {
      * @return Color that represents the Penguin's team.
      */
     Color getColor();
-
-    /**
-     * Returns a score representing how many fish the penguin has eaten.
-     *
-     * @return int that represents the number of fish that penguin has eaten.
-     */
-    int getScore();
-
-    /**
-     * Adds points to the Penguins score.
-     *
-     * @param points number of points to add
-     */
-    void addScore(int points);
 
     /**
      * Moves the penguin's position to position of the given Tile.

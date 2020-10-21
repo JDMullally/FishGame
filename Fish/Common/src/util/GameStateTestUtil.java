@@ -11,8 +11,16 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
-import model.GameState;
-import model.Tile;
+import controller.Controller;
+import model.board.Tile;
+import model.state.GameState;
+import model.state.IGameState;
+import model.state.IPenguin;
+import model.state.IPlayer;
+import model.state.ImmutableGameState;
+import model.state.ImmutableGameStateModel;
+import view.IView;
+import view.VisualView;
 
 /**
  * Tests the GameState for the Fish Game.
@@ -40,31 +48,45 @@ public class GameStateTestUtil {
         Map<?, ?> map = gson.fromJson(bufferedReader, Map.class);
 
         // gets the position and board
-        JsonArray position = null;
+        JsonArray players = null;
         JsonArray board = null;
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             String key = entry.getKey().toString();
             String value = entry.getValue().toString();
 
-            if (key.equals("position")) {
-                position = parser.parse(value).getAsJsonArray();
+            if (key.equals("players")) {
+                players = parser.parse(value).getAsJsonArray();
             } else if (key.equals("board")) {
                 board = parser.parse(value).getAsJsonArray();
             }
         }
         bufferedReader.close();
 
+
         // creates GameState
-        if (board != null && position != null) {
-            int rows = board.size();
-            int columns = board.get(0).getAsJsonArray().size();
+        if (board != null && players != null) {
+            GameStateUtil util = new GameStateUtil();
+            IGameState state = util.JsonToGameState(board, players);
 
-            GameState gameState = new GameState(rows, columns, board);
+            // sets game board, view, model and runs them
+            ImmutableGameStateModel immutableModel = new ImmutableGameState((GameState) state);
 
-            Point point = new Point(position.get(1).getAsInt(), position.get(0).getAsInt());
-            List<Tile> viableTiles = gameState.getViableTiles(point);
+            IView view = new VisualView(immutableModel);
+            Controller controller = new Controller();
+            controller.control((GameState) state, view);
 
-            System.out.println(viableTiles.size());
+            IPlayer player = state.playerTurn();
+            IPenguin penguin = player.getPenguins().get(0);
+
+            List<Tile> tilesToMove = state.getPossibleMoves(player).entrySet().iterator().next().getValue();
+
+            IGameState endState = state.move(player, penguin, tilesToMove.get(0), false);
+
+            if (endState == null) {
+                System.out.println("False");
+            } else {
+                System.out.println(new GameStateUtil().GameStateToJson(endState).toString());
+            }
         }
     }
 }

@@ -42,6 +42,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <!--
                 <configuration>
                     <archive>
                         <manifest>
@@ -53,7 +54,8 @@
                     </descriptorRefs>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
-                <!-- To Build Test Script
+                -->
+                <!-- To Build Test Script -->
                 <configuration>
                     <archive>
                         <manifest>
@@ -65,7 +67,7 @@
                     </descriptorRefs>
                     <appendAssemblyId>true</appendAssemblyId>
                 </configuration>
-                -->
+                <!-- -->
                 <executions>
                     <execution>
                         <id>make-assembly</id> <!-- this is used for inheritance merges -->

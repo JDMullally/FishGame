@@ -1,7 +1,11 @@
-package model;
+package model.tree;
 
 import java.awt.Point;
 import java.util.Map;
+
+import model.state.IGameState;
+import model.state.IPenguin;
+import model.state.IPlayer;
 
 /**
  * This interface represents a Player's interface for interacting with the game.
@@ -21,7 +25,7 @@ public interface PlayerInterface {
      * @throws IllegalArgumentException
      */
     IPenguin queuePlacePenguin(IGameState gameState, IPlayer player,
-        IPenguin penguin, Point point) throws IllegalArgumentException;
+                               IPenguin penguin, Point point) throws IllegalArgumentException;
 
     /**
      * Returns 0 if it is the given Player's turn, or an integer between 1 and the number of
@@ -31,7 +35,7 @@ public interface PlayerInterface {
      * @param game
      * @return int
      */
-    int myTurn(IPlayer player, IGame game);
+    int myTurn(IPlayer player, IGameTree game);
 
     /**
      * Returns a Map of Points to GameStates that allows players to see the states the moving to
@@ -42,7 +46,7 @@ public interface PlayerInterface {
      * @param penguin
      * @return Map of Point to IGameState
      */
-    Map<Point,IGameState> possibleMoves(IGame game, IPlayer player, IPenguin penguin);
+    Map<Point,IGameState> possibleMoves(IGameTree game, IPlayer player, IPenguin penguin);
 
     /**
      * Allows a Player to queue a move to be played on their turn.
@@ -54,7 +58,7 @@ public interface PlayerInterface {
      * @param newPoint
      * @throws IllegalArgumentException
      */
-    void queueMove(IGame game, IPlayer player,
+    void queueMove(IGameTree game, IPlayer player,
         IPenguin penguin, Point newPoint) throws IllegalArgumentException;
 
     /**
@@ -62,7 +66,7 @@ public interface PlayerInterface {
      * @param game
      * @return
      */
-    boolean isGameOver(IGame game);
+    boolean isGameOver(IGameTree game);
 
     /**
      * Returns the points they have gathered across all of their penguins in this game.

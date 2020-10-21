@@ -10,9 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import controller.Controller;
-import model.GameState;
-import model.ImmutableGameState;
-import model.ImmutableGameStateModel;
+import model.state.GameState;
+import model.state.IPlayer;
+import model.state.ImmutableGameState;
+import model.state.ImmutableGameStateModel;
+import model.state.Player;
+import util.ColorUtil;
 import view.IView;
 import view.VisualView;
 
@@ -26,6 +29,7 @@ public class Main {
     private static List<Point> holes;
     private static int minOneFishTiles;
     private static int sameFish;
+    private static List<IPlayer> players;
 
     /**
      * Entry point for the Fish Game.
@@ -36,7 +40,7 @@ public class Main {
         parseArgs(args);
 
         // sets game board, view, model and runs them
-        GameState model = new GameState(rows, columns, holes, minOneFishTiles, sameFish);
+        GameState model = new GameState(rows, columns, holes, minOneFishTiles, sameFish, players);
         ImmutableGameStateModel immutableModel = new ImmutableGameState(model);
 
         IView view = new VisualView(immutableModel);
@@ -51,6 +55,7 @@ public class Main {
      * --holes [List<Integer>] , example: '--holes 1 2 5 6' means points at [1,2] and [5,6]
      * --minOneFishTiles [int]
      * --sameFish [int] (between 1-5 inclusive)
+     * --players [List<String>] , example: '--players 'red' 'brown' means players with colors red and brown
      * @param args program arguments
      */
     private static void parseArgs(String[] args) throws ArgumentParserException {
@@ -84,6 +89,12 @@ public class Main {
                 .type(Integer.class)
                 .required(false)
                 .help("If all of the tiles should have the same number of fish and how many");
+        parser.addArgument("-p", "--players")
+                .dest("players")
+                .type(String.class)
+                .nargs("*")
+                .required(true)
+                .help("The players playing the game");
 
         // parses program arguments
         try {
@@ -97,6 +108,7 @@ public class Main {
             holes = toPointList(nameSpace.getList("holes"));
             minOneFishTiles = minOneFishTilesTemp == null ? 0 : minOneFishTilesTemp;
             sameFish = sameFishTemp == null ? 0 : sameFishTemp;
+            players = toPlayers(nameSpace.getList("players"));
         } catch (ArgumentParserException e) {
             parser.handleError(e);
             throw e;
@@ -121,5 +133,23 @@ public class Main {
         }
 
         return points;
+    }
+
+    /**
+     * Converts a List of Strings to a list of IPlayer's.
+     * @param list List of String
+     * @return List<Point>
+     */
+    private static List<IPlayer> toPlayers(List<String> list) {
+        if (list == null) {
+            return new ArrayList<>();
+        }
+
+        List<IPlayer> players = new ArrayList<>();
+        for (int i = 0; i < list.size(); i ++) {
+            players.add(new Player(ColorUtil.toColor(list.get(i)), i + 1, new ArrayList<>()));
+        }
+
+        return players;
     }
 }
