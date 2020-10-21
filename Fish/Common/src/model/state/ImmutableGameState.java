@@ -108,16 +108,16 @@ public class ImmutableGameState implements ImmutableGameStateModel {
 
     @Override
     public IGameState clone() {
-        return null;
+        return this.gameState.clone();
     }
 
     @Override
-    public void placePenguin(IPenguin penguin, IPlayer player, Tile tile, boolean addToPlayer) throws IllegalArgumentException {
+    public void placePenguin(IPenguin penguin, IPlayer player, Tile tile) throws IllegalArgumentException {
         throw new UnsupportedOperationException("GameState is immutable.");
     }
 
     @Override
-    public void placePenguin(IPenguin penguin, IPlayer player, Point point, boolean addToPlayer) throws IllegalArgumentException {
+    public void placePenguin(IPenguin penguin, IPlayer player, Point point) throws IllegalArgumentException {
         throw new UnsupportedOperationException("GameState is immutable.");
     }
 

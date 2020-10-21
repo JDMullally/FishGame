@@ -43,9 +43,11 @@ public class GameTree<X> implements IGameTree<X> {
             IPenguin penguin = moves.getKey();
             List<Tile> tiles = moves.getValue();
 
+            IGameState state = startState.clone();
+
             // add all possible moves
             for (Tile tile : tiles) {
-                IGameTree subtree = new GameTree(startState.move(player, penguin, tile, false));
+                IGameTree subtree = new GameTree(state.move(player, penguin, tile, false));
                 substates.add(subtree);
             }
         }
@@ -71,7 +73,7 @@ public class GameTree<X> implements IGameTree<X> {
     @Override
     public IGameState queryAction(IGameState state, Action action) throws IllegalArgumentException {
         try {
-            return action.apply(state);
+            return action.apply(state.clone());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("queryAction: Action is illegal");
         }
@@ -81,7 +83,7 @@ public class GameTree<X> implements IGameTree<X> {
     public List<X> applyFunction(IGameState state, Function<IGameState, X> func) {
         List<X> result = new ArrayList<>();
         for (IGameTree substate : this.createSubstates(state)) {
-            result.add(func.apply(substate.getState()));
+            result.add(func.apply(substate.getState().clone()));
         }
 
         return result;

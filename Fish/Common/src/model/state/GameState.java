@@ -50,7 +50,6 @@ public class GameState extends GameBoard implements IGameState {
 
         this.sortPlayers();
         this.validatePlayers();
-        this.placePlayerPenguins(); //TODO: makes tests fail, but should be called
     }
 
     public GameState(int rows, int columns, Tile[][] board, List<IPlayer> players) {
@@ -64,7 +63,6 @@ public class GameState extends GameBoard implements IGameState {
 
         this.sortPlayers();
         this.validatePlayers();
-        this.placePlayerPenguins(); //TODO: makes tests fail, but should be called
     }
 
     /**
@@ -82,7 +80,6 @@ public class GameState extends GameBoard implements IGameState {
 
         this.sortPlayers();
         this.validatePlayers();
-        this.placePlayerPenguins();
     }
 
     /**
@@ -153,17 +150,6 @@ public class GameState extends GameBoard implements IGameState {
                         throw new IllegalArgumentException("2 players have the same color: " + player.getColor().toString());
                     }
                 }
-            }
-        }
-    }
-
-    /**
-     * Places the player's penguins on the game board.
-     */
-    private void placePlayerPenguins() {
-        for (IPlayer player : this.players) {
-            for (IPenguin penguin : player.getPenguins()) {
-                this.placePenguin(penguin, player, penguin.getPosition(), false);
             }
         }
     }
@@ -248,17 +234,17 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     @Override
-    public void placePenguin(IPenguin penguin, IPlayer player, Tile tile, boolean addToPlayer) throws IllegalArgumentException {
-        this.placePenguin(penguin, player, tile.getPosition(), addToPlayer);
+    public void placePenguin(IPenguin penguin, IPlayer player, Tile tile) throws IllegalArgumentException {
+        this.placePenguin(penguin, player, tile.getPosition());
     }
 
     @Override
-    public void placePenguin(IPenguin penguin, IPlayer player, Point point, boolean addToPlayer) throws IllegalArgumentException {
+    public void placePenguin(IPenguin penguin, IPlayer player, Point point) throws IllegalArgumentException {
         if(penguin == null || player == null || point == null) {
             throw new IllegalArgumentException("Enter a valid Penguin, Player, and Tile.");
-        } else if (addToPlayer && this.pointContainsPenguin(point)) {
+        } else if (this.pointContainsPenguin(point)) {
             throw new IllegalArgumentException("Can't place a Penguin on another Penguin.");
-        } else if (addToPlayer && penguin.getPosition() != null) {
+        } else if (penguin.getPosition() != null) {
             throw new IllegalArgumentException("Can't place a Penguin already on the board.");
         }
 
@@ -277,7 +263,7 @@ public class GameState extends GameBoard implements IGameState {
             throw new IllegalArgumentException("Penguin and Player doesn't have the same color");
         } else if (validPlayer.getPenguins().size() > (6 - this.players.size())) {
             throw new IllegalArgumentException("Cannot place another penguin, already have too many");
-        } else if (addToPlayer) {
+        } else {
             validPlayer.addPenguin(penguin);
         }
 
@@ -341,8 +327,7 @@ public class GameState extends GameBoard implements IGameState {
 
     @Override
     public IGameState clone() {
-        //return new GameState(this.getRows(), this.getColumns(), this.getGameBoard(), this.pl)
-        return null;
+        return new GameState(this.getRows(), this.getColumns(), this.getGameBoard(), new ArrayList<>(this.players));
     }
 
 }

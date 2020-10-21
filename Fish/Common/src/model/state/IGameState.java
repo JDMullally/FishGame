@@ -51,9 +51,8 @@ public interface IGameState extends IGameBoard {
      * @param penguin Penguin to be owned by Player player
      * @param player Player placing the Penguin
      * @param tile Tile the Player is placing Penguin
-     * @param addToPlayer whether the penguin should be added to the player or not
      */
-    void placePenguin(IPenguin penguin, IPlayer player, Tile tile, boolean addToPlayer) throws IllegalArgumentException;
+    void placePenguin(IPenguin penguin, IPlayer player, Tile tile) throws IllegalArgumentException;
 
     /**
      * Allows players to place penguins on the current GameBoard.
@@ -62,9 +61,8 @@ public interface IGameState extends IGameBoard {
      * @param penguin Penguin to be owned by Player player
      * @param player Player placing the Penguin
      * @param point Point the Player is placing Penguin
-     * @param addToPlayer whether the penguin should be added to the player or not
      */
-    void placePenguin(IPenguin penguin, IPlayer player, Point point, boolean addToPlayer) throws IllegalArgumentException;
+    void placePenguin(IPenguin penguin, IPlayer player, Point point) throws IllegalArgumentException;
 
     /**
      * Moves a Player's Penguin from it's currentTile to a newTile, or throws an error if the move

@@ -209,7 +209,7 @@ public class GameBoard implements IGameBoard {
 
     @Override
     public Tile[][] getGameBoard() {
-        return this.board.clone();
+        return Arrays.stream(this.board).map(Tile[]::clone).toArray($ -> this.board.clone());
     }
 
     @Override
