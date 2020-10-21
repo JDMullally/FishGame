@@ -176,7 +176,7 @@ public class GameState extends GameBoard implements IGameState {
         // Checks if the endpoint is within the bounds of the board.
         int rows = this.getRows();
         int cols = this.getColumns();
-        if (endpoint.x < 0 || endpoint.x >= rows || endpoint.y < 0 || endpoint.y >= cols) {
+        if (endpoint.x < 0 || endpoint.x >= cols || endpoint.y < 0 || endpoint.y >= rows) {
             throw new IllegalArgumentException("Invalid Move: That Point is outside the Board");
         }
 

@@ -83,7 +83,7 @@ public class GameStateUtil {
      * @return inverted game board
      */
     private Tile[][] invert(Tile[][] board) {
-        Tile[][] newBoard = new Tile[board.length][board.length];
+        Tile[][] newBoard = new Tile[board[0].length][board.length];
 
         for (Tile[] col : board) {
             for (Tile tile: col) {

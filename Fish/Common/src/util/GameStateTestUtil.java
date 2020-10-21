@@ -68,23 +68,15 @@ public class GameStateTestUtil {
             GameStateUtil util = new GameStateUtil();
             IGameState state = util.JsonToGameState(board, players);
 
-            // sets game board, view, model and runs them
-            ImmutableGameStateModel immutableModel = new ImmutableGameState((GameState) state);
-
-            IView view = new VisualView(immutableModel);
-            Controller controller = new Controller();
-            controller.control((GameState) state, view);
-
             IPlayer player = state.playerTurn();
             IPenguin penguin = player.getPenguins().get(0);
 
             List<Tile> tilesToMove = state.getPossibleMoves(player).entrySet().iterator().next().getValue();
 
-            IGameState endState = state.move(player, penguin, tilesToMove.get(0), false);
-
-            if (endState == null) {
+            if (tilesToMove.size() == 0) {
                 System.out.println("False");
             } else {
+                IGameState endState = state.move(player, penguin, tilesToMove.get(0), false);
                 System.out.println(new GameStateUtil().GameStateToJson(endState).toString());
             }
         }
