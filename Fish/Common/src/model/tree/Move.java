@@ -12,10 +12,10 @@ import model.board.Tile;
  */
 public class Move implements Action {
 
-    IPlayer player;
-    IPenguin penguin;
-    Point newPoint;
-    boolean pass;
+    private IPlayer player;
+    private IPenguin penguin;
+    private Point newPoint;
+    private boolean pass;
 
     /**
      * Constructor takes in required arguments to make a move

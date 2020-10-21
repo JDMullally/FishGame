@@ -1,5 +1,6 @@
 package model.tree;
 
+import java.util.List;
 import java.util.function.Function;
 
 import model.state.IGameState;
@@ -10,6 +11,13 @@ import model.state.IGameState;
  * the player whose turn it is in this state.
  */
 public interface IGameTree<X> {
+
+    /**
+     * Returns the topmost IGameState of the GameTree.
+     *
+     * @return IGameState
+     */
+    public IGameState getState();
 
     /**
      * Creates a complete tree for this IGameTree's state to which players will not add any
@@ -36,6 +44,7 @@ public interface IGameTree<X> {
      *
      * @param state IGameState
      * @param func Function<IGameState, X>
+     * @return the resulting substates after applying the function to them
      */
-    public void applyFunction(IGameState state, Function<IGameState, X> func);
+    public List<X> applyFunction(IGameState state, Function<IGameState, X> func);
 }
