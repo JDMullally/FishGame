@@ -14,7 +14,13 @@ The arguments `-r` and `-c` are required arguments representing the number of ro
 the game board. All other arguments are optional.
 
 ### Testing
-To run the testing harness, go to the `Fish/3` directory and run the following, passing a Board-Posn to STDIN:
+To run the testing harness for milestone 4, go to the `Fish/4` directory and run the following, passing a State to STDIN:
+
+```
+$  ./xstate
+```
+
+To run the testing harness for milestone 3, go to the `Fish/3` directory and run the following, passing a Board-Posn to STDIN:
 
 ```
 $  ./xboard
