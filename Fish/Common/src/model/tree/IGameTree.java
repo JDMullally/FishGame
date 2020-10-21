@@ -28,6 +28,16 @@ public interface IGameTree<X> {
     public IGameTree createCompleteTree();
 
     /**
+     * Creates a tree up to a given depth with a given starting state.
+     * The starting state will not add any new penguins.
+     *
+     * @param state IGameState
+     * @param depth int
+     * @return IGameTree
+     */
+    public IGameTree createTreeToDepth(IGameState state, int depth);
+
+    /**
      * For a given state and action either signals that the action is illegal or returns the state
      * that would result from taking the action.
      *

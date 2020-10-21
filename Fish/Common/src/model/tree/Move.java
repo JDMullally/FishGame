@@ -38,9 +38,9 @@ public class Move implements Action {
      * @param pass
      */
     public Move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) {
-        this.player = player;
-        this.penguin = penguin;
-        this.newPoint = newPoint;
+        this.player = player.clone();
+        this.penguin = penguin.clone();
+        this.newPoint = new Point(newPoint);
         this.pass = pass;
     }
 

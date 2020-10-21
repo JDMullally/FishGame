@@ -3,8 +3,10 @@ package model.state;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,6 +54,14 @@ public class GameState extends GameBoard implements IGameState {
         this.validatePlayers();
     }
 
+    /**
+     * Allows the creation of a GameState with a 2D Array of Tiles that keeps track
+     * of the holes and values of the fish.
+     * @param rows
+     * @param columns
+     * @param board
+     * @param players
+     */
     public GameState(int rows, int columns, Tile[][] board, List<IPlayer> players) {
         super(rows, columns, board);
 
@@ -63,6 +73,19 @@ public class GameState extends GameBoard implements IGameState {
 
         this.sortPlayers();
         this.validatePlayers();
+    }
+
+    /**
+     * Constructor that keeps track of the turns that have been taken in the GameState.
+     * @param rows int
+     * @param columns int
+     * @param board Tile[][]
+     * @param players List of IPlayer
+     * @param turn int
+     */
+    public GameState(int rows, int columns, Tile[][] board, List<IPlayer> players, int turn) {
+        this(rows, columns, board, players);
+        this.turn = turn;
     }
 
     /**
@@ -326,8 +349,20 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o instanceof GameState) {
+            GameState other = (GameState) o;
+            return Arrays.deepEquals(this.getGameBoard(), other.getGameBoard())
+                && this.getColumns() == other.getColumns()
+                && this.getRows() == other.getRows()
+                && this.players.equals(other.players);
+        }
+        return false;
+    }
+
+    @Override
     public IGameState clone() {
-        return new GameState(this.getRows(), this.getColumns(), this.getGameBoard(), new ArrayList<>(this.players));
+        return new GameState(this.getRows(), this.getColumns(), this.getGameBoard(), new ArrayList<>(this.players), this.turn);
     }
 
 }

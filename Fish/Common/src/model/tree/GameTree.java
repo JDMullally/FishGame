@@ -4,6 +4,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.function.Function;
 
 import model.board.Tile;
@@ -27,7 +28,7 @@ public class GameTree<X> implements IGameTree<X> {
      * @param state IGameState
      */
     public GameTree(IGameState state) {
-        this.state = state;
+        this.state = state.clone();
     }
 
     /**
@@ -38,15 +39,13 @@ public class GameTree<X> implements IGameTree<X> {
     private List<IGameTree> createSubstates(IGameState startState) {
         List<IGameTree> substates = new ArrayList<>();
         IPlayer player = startState.playerTurn();
-
         for (Map.Entry<IPenguin, List<Tile>> moves : startState.getPossibleMoves(player).entrySet()) {
-            IPenguin penguin = moves.getKey();
+            IPenguin penguin = moves.getKey().clone();
             List<Tile> tiles = moves.getValue();
-
-            IGameState state = startState.clone();
 
             // add all possible moves
             for (Tile tile : tiles) {
+                IGameState state = startState.clone();
                 IGameTree subtree = new GameTree(state.move(player, penguin, tile, false));
                 substates.add(subtree);
             }
@@ -57,14 +56,30 @@ public class GameTree<X> implements IGameTree<X> {
 
     @Override
     public IGameState getState() {
-        return this.state;
+        return this.state.clone();
+    }
+
+    //TODO
+    @Override
+    public IGameTree createCompleteTree() {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Pass in your desired depth");
+        while (scan.hasNextInt()) {
+            int depth = scan.nextInt();
+            //return createTreeToDepth()
+        }
+        return null;
     }
 
     @Override
-    public IGameTree createCompleteTree() {
+    public IGameTree createTreeToDepth(IGameState state, int depth) {
+        if(depth == 0) {
+            return this;
+        }
+
         this.substates = this.createSubstates(this.state);
         for (IGameTree substate : this.substates) {
-            substate.createCompleteTree();
+            substate.createTreeToDepth(substate.getState(), depth - 1);
         }
 
         return this;

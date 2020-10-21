@@ -5,6 +5,10 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+import model.board.GameBoard;
+import model.board.IGameBoard;
+import model.board.Tile;
 import model.state.GameState;
 import model.state.IGameState;
 import model.state.IPenguin;
@@ -26,8 +30,9 @@ public class GameTreeTest {
     private Penguin peng1, peng2, peng3, peng4, peng5, peng6, peng7, peng8;
     private List<IPlayer> players;
     private Player p1, p2;
-    private IGameTree gameTree;
+    private IGameTree<IGameTree> gameTree;
     private Action moveDown;
+    private Function<IGameState, IGameTree> func;
 
 
     private void init() {
@@ -54,7 +59,14 @@ public class GameTreeTest {
 
         this.placeAllPenguins();
 
-        this.gameTree = new GameTree(this.gameState);
+        this.gameTree = new GameTree<IGameTree>(this.gameState);
+
+        this.func = new Function<IGameState, IGameTree>() {
+            @Override
+            public IGameTree apply(IGameState gameState) {
+                return new GameTree(gameState.clone());
+            }
+        };
     }
 
     private void placeAllPenguins() {
@@ -62,7 +74,7 @@ public class GameTreeTest {
             IPlayer player = this.players.get(j);
             for (int i = 0; i < player.getPenguins().size(); i++)
                 this.gameState.placePenguin(player.getPenguins().get(i), player,
-                    this.gameState.getTile(new Point(j, i)), true);
+                    this.gameState.getTile(new Point(j, i)));
         }
     }
 
@@ -76,13 +88,20 @@ public class GameTreeTest {
         assertEquals(this.gameState, state);
     }
 
-    @Test //TODO
-    public void getStateChanged() {
-
-    }
-
+    /**
+     * Tests that we cannot mutate our state after receiving it from getState.
+     */
     @Test
-    public void createCompleteTree() {
+    public void getStateChanged() {
+        init();
+        IGameState state = this.gameTree.getState();
+        assertEquals(8, state.getTurn());
+        IPlayer current = state.playerTurn();
+        IPenguin lastPenguinInList = current.getPenguins().get(current.getPenguins().size() - 1);
+        Point newPos = new Point(lastPenguinInList.getPosition().x, lastPenguinInList.getPosition().y + 2);
+        state.move(current, lastPenguinInList, newPos, false);
+
+        assertNotEquals(this.gameTree.getState().getTurn(), state.getTurn());
     }
 
     /**
@@ -99,10 +118,72 @@ public class GameTreeTest {
 
         IGameState newState = this.gameTree.queryAction(state, this.moveDown);
 
-        assertNotEquals(state.getTurn(), newState.getTurn());
+        assertNotEquals(state, newState);
+    }
+
+    /**
+     * Query Action should throw an error if the action is invalid
+     */
+    @Test (expected = IllegalArgumentException.class)
+    public void queryActionIncorrect() {
+        init();
+        IGameState state = this.gameTree.getState();
+        IPlayer current = state.playerTurn();
+        IPenguin firstPenguinInList = current.getPenguins().get(0);
+        Point newPos = new Point(firstPenguinInList.getPosition().x, firstPenguinInList.getPosition().y - 2);
+
+        //Player should not be able to move their first penguin up.
+        Action moveUp = new Move(current, firstPenguinInList, newPos, false);
+
+        IGameState newState = this.gameTree.queryAction(state, moveUp);
+    }
+
+    /**
+     * Query Action should throw an error if the action is invalid
+     */
+    @Test (expected = IllegalArgumentException.class)
+    public void queryActionMovingOntoIncorrectTile() {
+        init();
+        IGameState state = this.gameTree.getState();
+        IPlayer current = state.playerTurn();
+        IPenguin lastPenguinInList = current.getPenguins().get(current.getPenguins().size() - 1);
+        Point oldPos = new Point(lastPenguinInList.getPosition());
+
+        Point newPos = new Point(lastPenguinInList.getPosition().x, lastPenguinInList.getPosition().y + 2);
+        this.moveDown = new Move(current, lastPenguinInList, newPos, false);
+        Action moveUp = new Move(current, lastPenguinInList, oldPos, false);
+
+        IGameState newState = this.gameTree.queryAction(state, this.moveDown);
+        IGameTree newTree = new GameTree(newState);
+        newState = newTree.queryAction(newState, moveUp);
     }
 
     @Test
-    public void applyFunction() {
+    public void queryActionPass() {
+        init();
+
+        IGameState state = this.gameTree.getState();
+        IPlayer current = state.playerTurn();
+        IPenguin lastPenguinInList = current.getPenguins().get(current.getPenguins().size() - 1);
+        Point newPos = new Point(lastPenguinInList.getPosition().x, lastPenguinInList.getPosition().y + 2);
+        this.moveDown = new Move(current, lastPenguinInList, newPos, true);
+
+        IGameState newState = this.gameTree.queryAction(state, this.moveDown);
+
+        assertEquals(state.getTurn() + 1, newState.getTurn());
+    }
+
+    @Test
+    public void applyFunctionToTurnGameStatesIntoGameTree() {
+        init();
+
+        List<IGameTree> listOfGameTree =
+            this.gameTree.applyFunction(this.gameTree.getState(), this.func);
+
+        boolean createsGameTrees = true;
+        for (IGameTree gameTree: listOfGameTree) {
+            createsGameTrees = createsGameTrees && gameTree != null;
+        }
+        assertTrue(createsGameTrees);
     }
 }
