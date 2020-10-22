@@ -20,6 +20,13 @@ public interface IGameTree<X> {
     public IGameState getState();
 
     /**
+     * Returns the currently reachable substates of the current GameTree.
+     *
+     *  @return List of IGameTree
+     */
+    public List<IGameTree> getSubstates();
+
+    /**
      * Creates a complete tree for this IGameTree's state to which players will not add any
      * more penguins. This is done in the following manner:
      *

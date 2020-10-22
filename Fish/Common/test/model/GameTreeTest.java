@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+import model.board.Tile;
 import model.state.GameState;
 import model.state.IGameState;
 import model.state.IPenguin;
@@ -23,13 +24,14 @@ import static org.junit.Assert.*;
 
 public class GameTreeTest {
 
-    private IGameState gameState, emptyState;
+    private IGameState gameState, emptyState, smallerGameState;
     private Penguin peng1, peng2, peng3, peng4, peng5, peng6, peng7, peng8;
     private List<IPlayer> players;
     private Player p1, p2;
-    private IGameTree<IGameTree> gameTree;
-    private Action moveDown;
-    private Function<IGameState, IGameTree> func;
+    private IGameTree<IGameTree> gameTree, smallGameTree;
+    private Action moveDown, pass;
+    private Function<IGameState, IGameTree> func, func2, func3, failfunc;
+    //private Function<IGameState, IGameState> func3;
 
 
     private void init() {
@@ -54,7 +56,11 @@ public class GameTreeTest {
 
         this.gameState = new GameState(8,8, new ArrayList<>(), 0, 2, this.players);
 
+        this.smallerGameState = new GameState(8,2, new ArrayList<>(), 0, 2, this.players);
+
         this.gameTree = new GameTree<>(this.gameState);
+
+        this.smallGameTree = new GameTree<>(this.smallerGameState);
 
         this.func = new Function<IGameState, IGameTree>() {
             @Override
@@ -62,23 +68,21 @@ public class GameTreeTest {
                 return new GameTree(gameState.clone());
             }
         };
+
     }
 
-    /**
-     * Places penguins
-     */
     private void init2() {
-        this.peng1 = new Penguin(Color.WHITE, null);
-        this.peng2 = new Penguin(Color.WHITE,null);
-        this.peng3 = new Penguin(Color.WHITE, null);
-        this.peng4 = new Penguin(Color.WHITE, null);
+        this.peng1 = new Penguin(Color.WHITE, new Point(0, 0));
+        this.peng2 = new Penguin(Color.WHITE, new Point(1, 0));
+        this.peng3 = new Penguin(Color.WHITE, new Point(2, 0));
+        this.peng4 = new Penguin(Color.WHITE, new Point(3, 0));
 
         List<IPenguin> penguinList1 = Arrays.asList(peng1, peng2, peng3, peng4);
 
-        this.peng5 = new Penguin(Color.BLACK, null);
-        this.peng6 = new Penguin(Color.BLACK, null);
-        this.peng7 = new Penguin(Color.BLACK, null);
-        this.peng8 = new Penguin(Color.BLACK, null);
+        this.peng5 = new Penguin(Color.BLACK, new Point(4, 0));
+        this.peng6 = new Penguin(Color.BLACK, new Point(5, 0));
+        this.peng7 = new Penguin(Color.BLACK, new Point(6, 0));
+        this.peng8 = new Penguin(Color.BLACK, new Point(7, 0));
 
         List<IPenguin> penguinList2= Arrays.asList(peng5, peng6, peng7, peng8);
 
@@ -89,18 +93,61 @@ public class GameTreeTest {
 
         this.gameState = new GameState(8,8, new ArrayList<>(), 0, 2, this.players);
 
-        this.gameTree = new GameTree<IGameTree>(this.gameState);
+        IPlayer current = this.gameState.playerTurn();
+        IPenguin firstPenguinInList = current.getPenguins().get(0);
+        Point newPos = new Point(firstPenguinInList.getPosition().x, firstPenguinInList.getPosition().y + 2);
+        this.pass = new Move(current, firstPenguinInList, newPos, true);
 
-        this.func = new Function<IGameState, IGameTree>() {
+        this.gameTree = new GameTree<>(this.gameState.clone());
+
+        this.func2 = new Function<IGameState, IGameTree>() {
             @Override
             public IGameTree apply(IGameState gameState) {
-                return new GameTree(gameState.clone());
+                IGameState tryMoveDown = new GameTree(gameState.clone()).queryAction(gameState.clone(), pass);
+                try {
+                    return new GameTree(tryMoveDown);
+                } catch (IllegalArgumentException e) {
+                    return new GameTree(gameState);
+                }
+            }
+        };
+
+        this.func3 = new Function<IGameState, IGameTree>() {
+            @Override
+            public IGameTree apply(IGameState gameState) {
+                IPlayer player = gameState.playerTurn();
+                IPenguin penguin = player.getPenguins().get(0);
+                Point penguinPoint = penguin.getPosition();
+                List<Tile> viableTiles = gameState.getViableTiles(penguinPoint);
+                if (viableTiles.isEmpty()) {
+                    return new GameTree(gameState);
+                } else {
+                   return new GameTree(gameState.move(player, penguin, viableTiles.get(0), false));
+                }
+            }
+        };
+
+        this.failfunc = new Function<IGameState, IGameTree>() {
+            public IGameTree apply(IGameState gameState) {
+                IPlayer player = gameState.playerTurn();
+                IPenguin penguin = player.getPenguins().get(0);
+                Point newPoint = new Point(penguin.getPosition().x, penguin.getPosition().y + 2);
+                return new GameTree(gameState.move(player, penguin, newPoint, false));
             }
         };
     }
 
+
+/**************************************************************************************************/
+/***************************************** TESTS **************************************************/
+/**************************************************************************************************/
+
     /**
      * Test for getState
+     */
+
+    /**
+     * General test for getState that tests if we can get the state.
      */
     @Test
     public void getState() {
@@ -127,6 +174,11 @@ public class GameTreeTest {
     /**
      * Tests for queryAction
      */
+
+    /**
+     * Tests a basic action with queryAction that checks that the new state is not equivalent to
+     * the old state.
+     */
     @Test
     public void queryAction() {
         init();
@@ -142,7 +194,8 @@ public class GameTreeTest {
     }
 
     /**
-     * Query Action should throw an error if the action is invalid
+     * Query Action should throw an error if the action is invalid.
+     * Here I have a player try to move a penguin off the map.
      */
     @Test (expected = IllegalArgumentException.class)
     public void queryActionIncorrect() {
@@ -159,25 +212,40 @@ public class GameTreeTest {
     }
 
     /**
-     * Query Action should throw an error if the action is invalid
+     * Query Action should throw an error if the action is invalid.  This test has the player try to
+     * move back to their old position after their opponent has passed.
      */
     @Test (expected = IllegalArgumentException.class)
-    public void queryActionMovingOntoIncorrectTile() {
+    public void queryActionMovingOntoIncorrectTileWithTurns() {
         init();
         IGameState state = this.gameTree.getState();
         IPlayer current = state.playerTurn();
+        IPlayer nextPlayer = state.getPlayers().get(1);
         IPenguin lastPenguinInList = current.getPenguins().get(current.getPenguins().size() - 1);
+        IPenguin lastPenguinInPlayer2List = nextPlayer.getPenguins().get(current.getPenguins().size() - 1);
         Point oldPos = new Point(lastPenguinInList.getPosition());
 
         Point newPos = new Point(lastPenguinInList.getPosition().x, lastPenguinInList.getPosition().y + 2);
         this.moveDown = new Move(current, lastPenguinInList, newPos, false);
+        Action otherPlayerPass  = new Move(nextPlayer, lastPenguinInPlayer2List, newPos, true);
         Action moveUp = new Move(current, lastPenguinInList, oldPos, false);
 
+        //First move by player 1
         IGameState newState = this.gameTree.queryAction(state, this.moveDown);
         IGameTree newTree = new GameTree(newState);
+
+        //Pass by player 2
+        newState = newTree.queryAction(newState, otherPlayerPass);
+        newTree = new GameTree(newState);
+
+        //Player tries to move back to their previous spot
         newState = newTree.queryAction(newState, moveUp);
     }
 
+    /**
+     * Checks that querying actions gives a new state that increments it's turn no matter the action.
+     * In this example, we just used a pass action.
+     */
     @Test
     public void queryActionPass() {
         init();
@@ -193,6 +261,14 @@ public class GameTreeTest {
         assertNotEquals(state.playerTurn(), newState.playerTurn());
     }
 
+    /**
+     * Tests for applyFunction
+     */
+
+    /**
+     * Simple function that returns a list of GameTrees that hold GameStates reachable
+     * from the current GameState.
+     */
     @Test
     public void applyFunctionToTurnGameStatesIntoGameTree() {
         init();
@@ -202,8 +278,166 @@ public class GameTreeTest {
 
         boolean createsGameTrees = true;
         for (IGameTree gameTree: listOfGameTree) {
-            createsGameTrees = createsGameTrees && gameTree != null;
+            createsGameTrees = createsGameTrees && gameTree instanceof GameTree;
         }
         assertTrue(createsGameTrees);
+    }
+
+    /**
+     * If apply function works as intended, this should be turn three, so we will return to player 1.
+     * Uses a simple pass action to test that turns are working as intended.
+     */
+    @Test
+    public void applyFunctionIfNextPlayerPass() {
+        init2();
+
+        IGameState prevState = this.gameTree.getState();
+        List<IGameTree> listOfGameTreeMoveDown =
+            this.gameTree.applyFunction(this.gameTree.getState(), this.func2);
+
+        boolean backToFirstPlayer = true;
+
+        for (IGameTree treeNode :  listOfGameTreeMoveDown) {
+            backToFirstPlayer = backToFirstPlayer && treeNode.getState().playerTurn().equals(prevState.playerTurn());
+        }
+
+        assertTrue(backToFirstPlayer);
+    }
+
+
+    /**
+     * We apply a function to all reachable states that has penguin move to the next possible position.
+     * This test checks that players should acquire some score during these moves.
+     */
+    @Test
+    public void applyFunctionConditionalMoveAndCheckNewScore() {
+        init2();
+
+        IGameState state1 = this.gameTree.getState();
+
+        int currentScore = state1.playerTurn().getScore();
+
+        List<IGameTree> listOfGameTreeFirstMove =
+            this.gameTree.applyFunction(this.gameTree.getState(), this.func3);
+
+        boolean otherPlayersScore = true;
+
+        for (IGameTree treeNode :  listOfGameTreeFirstMove) {
+            otherPlayersScore = otherPlayersScore && (treeNode.getState().playerTurn().getScore() != currentScore
+                && treeNode.getState().getPlayers().get(1).getScore() != currentScore);
+        }
+
+        assertTrue(otherPlayersScore);
+    }
+
+    /**
+     * A function must be designed with the rules in mind and understand it will be applied to all
+     * reachable states.
+     */
+    @Test (expected = IllegalArgumentException.class)
+    public void applyFunctionBadFunction() {
+        init2();
+
+        List<IGameTree> listOfGameTree =
+            this.gameTree.applyFunction(this.gameTree.getState(), this.failfunc);
+    }
+
+    /**
+     * Test for getSubstates
+     */
+
+    /**
+     * Test to check that getSubstates does not return null before the substates are created with
+     * getCompleteTree
+     */
+    @Test
+    public void getSubstatesEmpty() {
+        init();
+
+        assertEquals(new ArrayList<>(),this.gameTree.getSubstates());
+    }
+
+    /**
+     * Test to check that getSubstates does return a list of IGameTree after the substates are
+     * created with getCompleteTree
+     */
+    @Test
+    public void getSubstatesCalledCreateTree() {
+        init();
+
+        this.gameTree.createCompleteTree();
+
+        boolean substatesNotEmpty = !this.gameTree.getSubstates().isEmpty();
+
+        assertTrue(substatesNotEmpty);
+    }
+
+    /**
+     * Test for create Complete tree.
+     */
+
+    /**
+     * Tests that an initial GameTree has empty substates and calling createCompleteTree
+     * fills the substates in the tree.
+     */
+    @Test
+    public void createTreeEmptySubStateThenFilledSubStates() {
+        init();
+
+        List<IGameTree> substates = this.gameTree.getSubstates();
+
+        assertTrue(substates.isEmpty());
+
+        this.gameTree = this.gameTree.createCompleteTree();
+
+        System.out.println(this.gameTree.getSubstates());
+
+        assertFalse(this.gameTree.getSubstates().isEmpty());
+    }
+
+    /**
+     * Tests that additional calls of createCompleteTree increase the depth of the tree by 1.
+     */
+    @Test
+    public void createTreeDepth2() {
+        init();
+        int desiredDepth = 2;
+        for (int i = 0; i < desiredDepth; i++) {
+            this.smallGameTree = this.smallGameTree.createCompleteTree();
+        }
+
+        boolean goesToDepthTwo = false;
+        List<IGameTree> substates = this.smallGameTree.getSubstates();
+        if(substates.isEmpty()) {
+            assertFalse(goesToDepthTwo);
+        } else {
+            for (IGameTree tree : substates) {
+                goesToDepthTwo = goesToDepthTwo || !tree.getSubstates().isEmpty();
+            }
+        }
+        assertTrue(goesToDepthTwo);
+    }
+
+    /**
+     * Test for createTreeToDepth
+     */
+
+    /**
+     * Tests that createTree to Depth works identically to createCompleteTree called once and should
+     * create the same number of sub states.
+     */
+    @Test
+    public void createTreeToDepth1() {
+        init();
+
+        IGameTree newTree = new GameTree(this.gameState.clone());
+
+        this.gameTree.createCompleteTree();
+
+        newTree.createTreeToDepth(newTree.getState(), 1);
+
+        boolean sameNumberOfSubStates = this.gameTree.getSubstates().size() == newTree.getSubstates().size();
+
+        assertTrue(sameNumberOfSubStates);
     }
 }

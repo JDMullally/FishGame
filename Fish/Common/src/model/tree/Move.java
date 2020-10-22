@@ -46,6 +46,7 @@ public class Move implements Action {
 
     @Override
     public IGameState apply(IGameState state) throws IllegalArgumentException {
+
         return state.move(player, penguin, newPoint, pass);
     }
 }

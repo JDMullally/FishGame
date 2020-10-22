@@ -290,15 +290,19 @@ public class GameState extends GameBoard implements IGameState {
 
         // attempts to move
         if (this.isMoveLegal(penguin, player, newPoint)) {
-            IPlayer movedPlayer = this.players.remove(0);
-            this.players.add(movedPlayer);
+
 
             // removes tile
             Tile removed = this.replaceTile(penguin.getPosition());
 
-            // updates penguin
+
+            // updates player
+            IPlayer movedPlayer = this.players.remove(0);
             player.addScore(removed.getFish());
+
+            // updates penguin
             penguin.move(newPoint);
+            this.players.add(player);
 
             return this;
         }
@@ -334,7 +338,11 @@ public class GameState extends GameBoard implements IGameState {
 
     @Override
     public IGameState clone() {
-        return new GameState(this.getRows(), this.getColumns(), this.getGameBoard(), new ArrayList<>(this.players));
+        List<IPlayer> newPlayers = new ArrayList<>();
+        for (IPlayer player : players) {
+            newPlayers.add(player.clone());
+        }
+        return new GameState(this.getRows(), this.getColumns(), this.getGameBoard(), newPlayers);
     }
 
 }

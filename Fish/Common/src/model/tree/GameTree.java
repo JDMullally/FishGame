@@ -30,6 +30,23 @@ public class GameTree<X> implements IGameTree<X> {
      */
     public GameTree(IGameState state) {
         this.state = state.clone();
+        this.substates = new ArrayList<>();
+    }
+
+    /**
+     * GameTree that takes in a starting IGameState and a List of IGameState that
+     * represents all reachable nodes.
+     *
+     * @param state IGameState
+     * @param substates List of IGameState
+     */
+    public GameTree(IGameState state, List<IGameTree> substates) {
+        if (state == null || substates == null) {
+            throw new IllegalArgumentException("Can't have null states or substates");
+        }
+
+        this.state = state.clone();
+        this.substates = substates;
     }
 
     /**
@@ -53,7 +70,6 @@ public class GameTree<X> implements IGameTree<X> {
                 substates.add(subtree);
             }
         }
-
         return substates;
     }
 
@@ -63,9 +79,18 @@ public class GameTree<X> implements IGameTree<X> {
     }
 
     @Override
+    public List<IGameTree> getSubstates() {
+        List<IGameTree> nodes = new ArrayList<>();
+        for (IGameTree node : this.substates) {
+            nodes.add(new GameTree(node.getState().clone(), node.getSubstates()));
+        }
+        return nodes;
+    }
+
+    @Override
     public IGameTree createCompleteTree() {
         if (this.substates.size() == 0) {
-            this.createSubstates(this.state);
+            this.substates = this.createSubstates(this.state);
             return this;
         }
 
