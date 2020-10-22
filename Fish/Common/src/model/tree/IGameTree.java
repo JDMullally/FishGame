@@ -21,7 +21,13 @@ public interface IGameTree<X> {
 
     /**
      * Creates a complete tree for this IGameTree's state to which players will not add any
-     * more penguins.
+     * more penguins. This is done in the following manner:
+     *
+     * Every time the method is called, a new subtree for the bottom most node(s) in the tree will
+     * be created. i.e. the resulting IGameTree that is returned will have 1 more depth to it.
+     *
+     * As a result, this method doesn't produce an 'infinite' or 'very large' tree, but instead
+     * systematically creates the tree when the user wants to see more of it.
      *
      * @return IGameTree
      */

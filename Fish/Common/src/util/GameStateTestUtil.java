@@ -62,11 +62,17 @@ public class GameStateTestUtil {
         }
         bufferedReader.close();
 
-
         // creates GameState
         if (board != null && players != null) {
             GameStateUtil util = new GameStateUtil();
-            IGameState state = util.JsonToGameState(board, players);
+
+            IGameState state;
+            try {
+                state = util.JsonToGameState(board, players);
+            } catch (Exception e) {
+                System.out.println("False");
+                return;
+            }
 
             IPlayer player = state.playerTurn();
             IPenguin penguin = player.getPenguins().get(0);
@@ -76,8 +82,22 @@ public class GameStateTestUtil {
             if (tilesToMove.size() == 0) {
                 System.out.println("False");
             } else {
-                IGameState endState = state.move(player, penguin, tilesToMove.get(0), false);
-                System.out.println(new GameStateUtil().GameStateToJson(endState).toString());
+
+                IGameState endState;
+                try {
+                    endState = state.move(player, penguin, tilesToMove.get(0), false);
+                } catch (Exception e) {
+                    System.out.println("False");
+                    return;
+                }
+
+                // shifts player locations
+                List<IPlayer> ps = endState.getPlayers();
+                IPlayer last = ps.remove(ps.size() - 1);
+                ps.add(0, last);
+
+                IGameState printState = new GameState(endState.getRows(), endState.getColumns(), endState.getGameBoard(), ps);
+                System.out.println(new GameStateUtil().GameStateToJson(printState).toString());
             }
         }
     }

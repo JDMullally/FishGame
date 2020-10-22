@@ -3,7 +3,6 @@ package model.state;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,12 +25,6 @@ public class GameState extends GameBoard implements IGameState {
 
     private List<IPlayer> players; // the players of the game
 
-    /*
-     * the n'th turn of the game
-     * i.e. It is a player's move when ((turn % players.size()) == index of a given player)
-     */
-    private int turn;
-
     /**
      * Constructor that allows the addition of a full list of players.
      * @param rows number of rows on the board
@@ -48,7 +41,6 @@ public class GameState extends GameBoard implements IGameState {
             throw new IllegalArgumentException("Players cannot be null");
         }
         this.players = new ArrayList<>(players);
-        this.turn = 0;
 
         this.sortPlayers();
         this.validatePlayers();
@@ -68,24 +60,11 @@ public class GameState extends GameBoard implements IGameState {
         if (players == null) {
             throw new IllegalArgumentException("Players cannot be null");
         }
+
         this.players = new ArrayList<>(players);
-        this.turn = 0;
 
         this.sortPlayers();
         this.validatePlayers();
-    }
-
-    /**
-     * Constructor that keeps track of the turns that have been taken in the GameState.
-     * @param rows int
-     * @param columns int
-     * @param board Tile[][]
-     * @param players List of IPlayer
-     * @param turn int
-     */
-    public GameState(int rows, int columns, Tile[][] board, List<IPlayer> players, int turn) {
-        this(rows, columns, board, players);
-        this.turn = turn;
     }
 
     /**
@@ -238,13 +217,8 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     @Override
-    public int getTurn() {
-        return this.turn;
-    }
-
-    @Override
     public IPlayer playerTurn() {
-        return this.players.get(this.turn % this.players.size());
+        return this.players.get(0);
     }
 
     @Override
@@ -271,17 +245,12 @@ public class GameState extends GameBoard implements IGameState {
             throw new IllegalArgumentException("Can't place a Penguin already on the board.");
         }
 
-        // checks if the player is in the game
-        IPlayer validPlayer = null;
-        for (IPlayer p: this.players) {
-            if (player.equals(p)) {
-                validPlayer = player.clone();
-            }
-        }
+        // checks if the player is in the game and it's their turn
+        IPlayer validPlayer = player.equals(this.playerTurn()) ? this.playerTurn() : null;
 
         // adds the penguin to the player if possible
         if (validPlayer == null) {
-            throw new IllegalArgumentException("Player specified is not in the game");
+            throw new IllegalArgumentException("It is not this player's turn");
         } else if (validPlayer.getColor().getRGB() != penguin.getColor().getRGB()) {
             throw new IllegalArgumentException("Penguin and Player doesn't have the same color");
         } else if (validPlayer.getPenguins().size() > (6 - this.players.size())) {
@@ -291,7 +260,8 @@ public class GameState extends GameBoard implements IGameState {
         }
 
         penguin.move(point);
-        this.turn++;
+        IPlayer movedPlayer = this.players.remove(0);
+        this.players.add(movedPlayer);
     }
 
     @Override
@@ -313,13 +283,15 @@ public class GameState extends GameBoard implements IGameState {
 
         // if the player passes their turn
         if (pass) {
-            this.turn++;
+            IPlayer movedPlayer = this.players.remove(0);
+            this.players.add(movedPlayer);
             return this;
         }
 
         // attempts to move
         if (this.isMoveLegal(penguin, player, newPoint)) {
-            this.turn++;
+            IPlayer movedPlayer = this.players.remove(0);
+            this.players.add(movedPlayer);
 
             // removes tile
             Tile removed = this.replaceTile(penguin.getPosition());
@@ -362,7 +334,7 @@ public class GameState extends GameBoard implements IGameState {
 
     @Override
     public IGameState clone() {
-        return new GameState(this.getRows(), this.getColumns(), this.getGameBoard(), new ArrayList<>(this.players), this.turn);
+        return new GameState(this.getRows(), this.getColumns(), this.getGameBoard(), new ArrayList<>(this.players));
     }
 
 }

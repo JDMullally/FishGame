@@ -82,11 +82,6 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     }
 
     @Override
-    public int getTurn() {
-        return this.gameState.getTurn();
-    }
-
-    @Override
     public IPlayer playerTurn() {
         return this.gameState.playerTurn();
     }

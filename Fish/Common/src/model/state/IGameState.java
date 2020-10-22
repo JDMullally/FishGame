@@ -22,14 +22,10 @@ public interface IGameState extends IGameBoard {
     List<IPlayer> getPlayers();
 
     /**
-     * Returns the number of turns that have been played in the game
-     *
-     * @return int
-     */
-    int getTurn();
-
-    /**
-     * Returns the IPlayer whose turn it is to move.
+     * Returns the IPlayer whose turn it is to move. The IPlayer who's turn it is to move is always
+     * the first IPlayer in the List of IPlayer's. This is kept track of by shifting the position
+     * of players in the List of Players; Once a player moves, their IPlayer is moved to the back of
+     * the List of Players.
      *
      * @return IPlayer
      */
