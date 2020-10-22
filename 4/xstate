@@ -1,3 +1,3 @@
 #!/bin/bash
 
-java -jar ../Common/xstate.jar $@
+java -jar ../Fish/Common/xstate.jar $@
