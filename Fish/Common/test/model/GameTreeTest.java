@@ -54,7 +54,7 @@ public class GameTreeTest {
 
         this.gameState = new GameState(8,8, new ArrayList<>(), 0, 2, this.players);
 
-        this.gameTree = new GameTree<IGameTree>(this.gameState);
+        this.gameTree = new GameTree<>(this.gameState);
 
         this.func = new Function<IGameState, IGameTree>() {
             @Override

@@ -4,23 +4,17 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
-import controller.Controller;
 import model.board.Tile;
 import model.state.GameState;
 import model.state.IGameState;
 import model.state.IPenguin;
 import model.state.IPlayer;
-import model.state.ImmutableGameState;
-import model.state.ImmutableGameStateModel;
-import view.IView;
-import view.VisualView;
 
 /**
  * Tests the GameState for the Fish Game.

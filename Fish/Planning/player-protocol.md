@@ -10,15 +10,11 @@
 
 A player should be able to do the following in order to interact properly with our API:
 
-- Get All Current Games
 - Get a Game (GameState) by ID 
 - Get a Game's GameTree
 - Get if a Game is over
-- Get All Players in a Game
-- Get a Player in a Game by ID
 - Get a Player's turn in a Game
 - Get a Player's score in a Game
-- Get all of a Player's Penguins in a Game
 - Get all of a Player's possible moves with a Penguins in a Game
 - add a new Player in a Game
 - add a Penguin for a Player in a Game
@@ -33,10 +29,6 @@ The following is an example of the request methods for a player to use.
 
 #### Request Methods
 
-To Get All Current Games:
-
-`GET /games`
-
 To Get a Game (GameState) by ID: 
 
 `GET /games/{id}`
@@ -49,14 +41,6 @@ To Get if a Game is over:
 
 `GET /games/{id}/gameover`
 
-To Get All Players in a Game:
-
-`GET /games/{id}/players`
-
-To Get a Player in a Game by ID:
-
-`GET /games/{id}/players/{id}`
-
 To Get a Player's turn in a Game:
 
 `GET /games/{id}/players/{id}/turn`
@@ -64,10 +48,6 @@ To Get a Player's turn in a Game:
 To Get a Player's score in a Game:
 
 `GET /games/{id}/players/{id}/score`
-
-To Get all of a Player's Penguins in a Game:
-
-`GET /games/{id}/players/{id}/penguins`
 
 To Get all of a Player's possible moves with a Penguins in a Game:
 
