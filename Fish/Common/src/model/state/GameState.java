@@ -103,7 +103,7 @@ public class GameState extends GameBoard implements IGameState {
             List<IPenguin> penguins = new ArrayList<>();
             for (int j = 0; j < jsonPenguins.size(); j++) {
                 JsonArray jsonPoint = jsonPenguins.get(j).getAsJsonArray();
-                Point point = new Point(jsonPoint.get(0).getAsInt(), jsonPoint.get(1).getAsInt());
+                Point point = new Point(jsonPoint.get(1).getAsInt(), jsonPoint.get(0).getAsInt());
 
                 penguins.add(new Penguin(color, point));
             }
@@ -138,10 +138,16 @@ public class GameState extends GameBoard implements IGameState {
                 if (player.getPenguins().size() != (6 - this.players.size())) {
                     throw new IllegalArgumentException("Player '" + player.getColor().toString() + "' has the wrong number of penguins");
                 }
+
                 // checks that penguin colors are correct
                 for (IPenguin penguin : player.getPenguins()) {
                     if (player.getColor().getRGB() != penguin.getColor().getRGB()) {
                         throw new IllegalArgumentException("Player has invalid Penguin colors");
+                    }
+
+                    Point penguinPoint = penguin.getPosition();
+                    if (this.getGameBoard()[penguinPoint.x][penguinPoint.y].isEmpty()) {
+                        throw new IllegalArgumentException("Player's penguin is placed on an empty tile");
                     }
                 }
                 // checks that there are no duplicate player colors
@@ -180,6 +186,18 @@ public class GameState extends GameBoard implements IGameState {
         int cols = this.getColumns();
         if (endpoint.x < 0 || endpoint.x >= cols || endpoint.y < 0 || endpoint.y >= rows) {
             throw new IllegalArgumentException("Invalid Move: That Point is outside the Board");
+        }
+
+        // checks that the player has this penguin
+        IPenguin validPenguin = null;
+        for (IPenguin penguinTemp : playerTurn().getPenguins()) {
+            if (penguin.equals(penguinTemp)) {
+                validPenguin = penguinTemp;
+            }
+        }
+
+        if (validPenguin == null) {
+            System.out.println("The player's penguin does not exist");
         }
 
         // Checks if the Penguin can actually move to the endpoint.
@@ -225,7 +243,13 @@ public class GameState extends GameBoard implements IGameState {
     public LinkedHashMap<IPenguin, List<Tile>> getPossibleMoves(IPlayer player) {
         LinkedHashMap<IPenguin, List<Tile>> possibleMoves = new LinkedHashMap<>();
         for (IPenguin p : player.getPenguins()) {
-            possibleMoves.put(p, this.getViableTiles(p.getPosition()));
+            List<Tile> viableTiles = new ArrayList<>();
+            for (Tile tile : this.getViableTiles(p.getPosition())) {
+                if (!this.pointContainsPenguin(tile.getPosition())) {
+                    viableTiles.add(tile);
+                }
+            }
+            possibleMoves.put(p, viableTiles);
         }
         return possibleMoves;
     }
@@ -291,18 +315,23 @@ public class GameState extends GameBoard implements IGameState {
         // attempts to move
         if (this.isMoveLegal(penguin, player, newPoint)) {
 
-
             // removes tile
             Tile removed = this.replaceTile(penguin.getPosition());
 
-
             // updates player
             IPlayer movedPlayer = this.players.remove(0);
-            player.addScore(removed.getFish());
+            movedPlayer.addScore(removed.getFish());
 
             // updates penguin
-            penguin.move(newPoint);
-            this.players.add(player);
+            // checks that the player has this penguin
+            IPenguin validPenguin = null;
+            for (IPenguin penguinTemp : movedPlayer.getPenguins()) {
+                if (penguin.equals(penguinTemp)) {
+                    validPenguin = penguinTemp;
+                }
+            }
+            validPenguin.move(newPoint);
+            this.players.add(movedPlayer);
 
             return this;
         }

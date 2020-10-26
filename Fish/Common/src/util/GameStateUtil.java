@@ -34,8 +34,8 @@ public class GameStateUtil {
             JsonArray penguinArray = new JsonArray();
             for (IPenguin p : penguins) {
                 JsonArray point = new JsonArray();
-                point.add(p.getPosition().x);
                 point.add(p.getPosition().y);
+                point.add(p.getPosition().x);
                 penguinArray.add(point);
             }
 

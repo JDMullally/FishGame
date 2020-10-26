@@ -30,17 +30,17 @@ public class GameStateTest {
     Player p1, p2;
 
     private void init() {
-        this.peng1 = new Penguin(Color.WHITE, null);
-        this.peng2 = new Penguin(Color.WHITE,null);
-        this.peng3 = new Penguin(Color.WHITE, null);
-        this.peng4 = new Penguin(Color.WHITE, null);
+        this.peng1 = new Penguin(Color.WHITE, new Point(1, 1));
+        this.peng2 = new Penguin(Color.WHITE,new Point(1, 1));
+        this.peng3 = new Penguin(Color.WHITE, new Point(1, 1));
+        this.peng4 = new Penguin(Color.WHITE, new Point(1, 1));
 
         List<IPenguin> penguinList1 = Arrays.asList(peng1, peng2, peng3, peng4);
 
-        this.peng5 = new Penguin(Color.BLACK, null);
-        this.peng6 = new Penguin(Color.BLACK, null);
-        this.peng7 = new Penguin(Color.BLACK, null);
-        this.peng8 = new Penguin(Color.BLACK, null);
+        this.peng5 = new Penguin(Color.BLACK, new Point(1, 1));
+        this.peng6 = new Penguin(Color.BLACK, new Point(1, 1));
+        this.peng7 = new Penguin(Color.BLACK, new Point(1, 1));
+        this.peng8 = new Penguin(Color.BLACK, new Point(1, 1));
 
         List<IPenguin> penguinList2= Arrays.asList(peng5, peng6, peng7, peng8);
 
@@ -50,7 +50,6 @@ public class GameStateTest {
         this.players = Arrays.asList(this.p1, this.p2);
 
         this.gameState = new GameState(8,8, new ArrayList<>(), 0, 2, this.players);
-        this.emptyState = new GameState(5,5, this.getFullHoleList(5,5), 0, 2, this.players);
     }
 
     /**
@@ -77,7 +76,6 @@ public class GameStateTest {
         this.players = Arrays.asList(this.p1, this.p2);
 
         this.gameState = new GameState(8,8, new ArrayList<>(), 0, 2, this.players);
-        this.emptyState = new GameState(5,5, this.getFullHoleList(5,5), 0, 2, this.players);
     }
 
     /**
@@ -284,7 +282,7 @@ public class GameStateTest {
 
         List<Tile> peng1moves = moves.get(peng1);
 
-        assertEquals(this.gameState.getViableTiles(this.peng1.getPosition()), peng1moves);
+        assertNotEquals(this.gameState.getViableTiles(this.peng1.getPosition()), peng1moves);
     }
 
     /**

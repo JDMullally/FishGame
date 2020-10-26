@@ -25,7 +25,7 @@ public interface Tile {
     int getFish();
 
     /**
-     * Returns the position of the tile on the GameBoard.
+     * Returns the position of the Tile on the GameBoard.
      *
      * @return Point
      */
