@@ -197,7 +197,7 @@ public class GameState extends GameBoard implements IGameState {
         }
 
         if (validPenguin == null) {
-            System.out.println("The player's penguin does not exist");
+           throw new IllegalArgumentException("The player's penguin does not exist");
         }
 
         // Checks if the Penguin can actually move to the endpoint.

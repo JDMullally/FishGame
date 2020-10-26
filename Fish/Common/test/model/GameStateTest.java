@@ -197,11 +197,11 @@ public class GameStateTest {
 
     @Test (expected = IllegalArgumentException.class)
     public void gameStateConstructorInvalidPenguinColors() {
-        this.peng1 = new Penguin(Color.WHITE, null);
-        this.peng2 = new Penguin(Color.WHITE,null);
-        this.peng3 = new Penguin(Color.WHITE, null);
-        this.peng4 = new Penguin(Color.WHITE, null);
-        this.peng5 = new Penguin(Color.WHITE, null);
+        this.peng1 = new Penguin(Color.WHITE, new Point(1,1));
+        this.peng2 = new Penguin(Color.WHITE,new Point(1,1));
+        this.peng3 = new Penguin(Color.WHITE, new Point(1,1));
+        this.peng4 = new Penguin(Color.WHITE, new Point(1,1));
+        this.peng5 = new Penguin(Color.WHITE, new Point(1,1));
         List<IPenguin> penguinList1 = Arrays.asList(peng1, peng2, peng3, peng4, peng5);
 
         IPlayer player1 = new Player(Color.BLACK, 4, penguinList1);
@@ -214,17 +214,17 @@ public class GameStateTest {
 
     @Test (expected = IllegalArgumentException.class)
     public void gameStateConstructorTwoPlayersSameColor() {
-        this.peng1 = new Penguin(Color.WHITE, null);
-        this.peng2 = new Penguin(Color.WHITE, null);
-        this.peng3 = new Penguin(Color.WHITE, null);
-        this.peng4 = new Penguin(Color.WHITE, null);
+        this.peng1 = new Penguin(Color.WHITE, new Point(1,1));
+        this.peng2 = new Penguin(Color.WHITE, new Point(1,1));
+        this.peng3 = new Penguin(Color.WHITE, new Point(1,1));
+        this.peng4 = new Penguin(Color.WHITE, new Point(1,1));
 
         List<IPenguin> penguinList1 = Arrays.asList(peng1, peng2, peng3, peng4);
 
-        this.peng5 = new Penguin(Color.WHITE, null);
-        this.peng6 = new Penguin(Color.WHITE, null);
-        this.peng7 = new Penguin(Color.WHITE, null);
-        this.peng8 = new Penguin(Color.WHITE, null);
+        this.peng5 = new Penguin(Color.WHITE, new Point(1,1));
+        this.peng6 = new Penguin(Color.WHITE, new Point(1,1));
+        this.peng7 = new Penguin(Color.WHITE, new Point(1,1));
+        this.peng8 = new Penguin(Color.WHITE, new Point(1,1));
 
         List<IPenguin> penguinList2 = Arrays.asList(peng5, peng6, peng7, peng8);
 
@@ -260,7 +260,8 @@ public class GameStateTest {
     /**
      * Tests for getPossibleMoves
      */
-    @Test (expected = NullPointerException.class)
+
+    //Deprecated Test : You can never get possible moves with a null Penguin.
     public void getPossibleMovesNull() {
         init();
 
@@ -288,15 +289,17 @@ public class GameStateTest {
     /**
      * place Penguin methods.
      * A Penguin should always be able to be placed during placement rounds,
-     * especially if it's current position is null;
      */
-    @Test
-    public void placePenguin() {
+
+    /**
+     * Test for placing a penguin on the board that is already placed.
+     */
+    @Test (expected = IllegalArgumentException.class)
+    public void placePenguinAlreadyPlaced() {
         init();
 
         IPenguin penguin1 = this.gameState.getPlayers().get(0).getPenguins().get(0);
 
-        assertNull(penguin1.getPosition());
 
         Point newPos = new Point(0,0);
         this.gameState.placePenguin(penguin1,
@@ -453,13 +456,12 @@ public class GameStateTest {
         assertFalse(gameOver);
     }
 
-    @Test
+    //Deprecated Test : Board can never be fully empty.
     public void isGameOverBoardEmpty() {
         init2();
         boolean gameOver = this.emptyState.isGameOver();
 
         assertTrue(gameOver);
-
     }
 
     @Test

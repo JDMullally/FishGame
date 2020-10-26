@@ -340,6 +340,11 @@ public class GameTreeTest {
 
         List<IGameTree> listOfGameTree =
             this.gameTree.applyFunction(this.gameTree.getState(), this.failfunc);
+
+        for (IGameTree tree: listOfGameTree
+        ) {
+            tree.applyFunction(tree.getState(), this.failfunc);
+        }
     }
 
     /**
