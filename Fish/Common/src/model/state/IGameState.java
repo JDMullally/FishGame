@@ -41,24 +41,33 @@ public interface IGameState extends IGameBoard {
     LinkedHashMap<IPenguin, List<Tile>> getPossibleMoves(IPlayer player);
 
     /**
-     * Allows players to place penguins on the current GameBoard.
-     * Effect: Adds the specified penguin to the player.
+     * Returns a List of Tiles that do not have holes or penguins currently on them.  The List is
+     * organized following a zig zag pattern that starts at the top left corner. The list
+     * goes from left to right in each row and moves down to the next row when one is filled up
      *
-     * @param penguin Penguin to be owned by Player player
-     * @param player Player placing the Penguin
-     * @param tile Tile the Player is placing Penguin
+     * @return List of Tile
      */
-    void placePenguin(IPenguin penguin, IPlayer player, Tile tile) throws IllegalArgumentException;
+    List<Tile> getPenguinPlacementTiles();
 
     /**
      * Allows players to place penguins on the current GameBoard.
      * Effect: Adds the specified penguin to the player.
      *
-     * @param penguin Penguin to be owned by Player player
+     * @param player Player placing the Penguin
+     * @param tile Tile the Player is placing Penguin
+     * @return IGameState
+     */
+    IGameState placePenguin(IPlayer player, Tile tile) throws IllegalArgumentException;
+
+    /**
+     * Allows players to place penguins on the current GameBoard.
+     * Effect: Adds the specified penguin to the player.
+     *
      * @param player Player placing the Penguin
      * @param point Point the Player is placing Penguin
+     * @return IGameState
      */
-    void placePenguin(IPenguin penguin, IPlayer player, Point point) throws IllegalArgumentException;
+    IGameState placePenguin(IPlayer player, Point point) throws IllegalArgumentException;
 
     /**
      * Moves a Player's Penguin from it's currentTile to a newTile, or throws an error if the move

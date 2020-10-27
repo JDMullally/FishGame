@@ -230,6 +230,23 @@ public class GameState extends GameBoard implements IGameState {
         return false;
     }
 
+    /**
+     * Inverts a Game Board representation.
+     *
+     * @param board the game board
+     * @return inverted game board
+     */
+    private Tile[][] invertBoard(Tile[][] board) {
+        Tile[][] newBoard = new Tile[board[0].length][board.length];
+
+        for (Tile[] col : board) {
+            for (Tile tile: col) {
+                newBoard[tile.getPosition().y][tile.getPosition().x] = tile.clone();
+            }
+        }
+        return newBoard;
+    }
+
     @Override
     public List<IPlayer> getPlayers() {
         return new ArrayList<>(this.players);
@@ -262,19 +279,34 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     @Override
-    public void placePenguin(IPenguin penguin, IPlayer player, Tile tile) throws IllegalArgumentException {
-        this.placePenguin(penguin, player, tile.getPosition());
+    public List<Tile> getPenguinPlacementTiles() {
+        List<Tile> tiles = new ArrayList<>();
+        Tile[][] invertedBoard = this.invertBoard(this.getGameBoard());
+        for (Tile[] rows : invertedBoard) {
+            for (Tile tile : rows) {
+                if (!tile.isEmpty() && !this.pointContainsPenguin(tile.getPosition())) {
+                    tiles.add(tile);
+                }
+            }
+        }
+
+        return tiles;
     }
 
     @Override
-    public void placePenguin(IPenguin penguin, IPlayer player, Point point) throws IllegalArgumentException {
-        if(penguin == null || player == null || point == null) {
-            throw new IllegalArgumentException("Enter a valid Penguin, Player, and Tile.");
+    public IGameState placePenguin(IPlayer player, Tile tile) throws IllegalArgumentException {
+        return this.placePenguin(player, tile.getPosition());
+    }
+
+    @Override
+    public IGameState placePenguin(IPlayer player, Point point) throws IllegalArgumentException {
+        if(player == null || point == null) {
+            throw new IllegalArgumentException("Enter a valid Player, and Tile.");
         } else if (this.pointContainsPenguin(point)) {
             throw new IllegalArgumentException("Can't place a Penguin on another Penguin.");
-        } else if (penguin.getPosition() != null) {
-            throw new IllegalArgumentException("Can't place a Penguin already on the board.");
         }
+
+        IPenguin penguin = new Penguin(player.getColor(), point);
 
         // checks if the player is in the game and it's their turn
         IPlayer validPlayer = player.equals(this.playerTurn()) ? this.playerTurn() : null;
@@ -282,8 +314,6 @@ public class GameState extends GameBoard implements IGameState {
         // adds the penguin to the player if possible
         if (validPlayer == null) {
             throw new IllegalArgumentException("It is not this player's turn");
-        } else if (validPlayer.getColor().getRGB() != penguin.getColor().getRGB()) {
-            throw new IllegalArgumentException("Penguin and Player doesn't have the same color");
         } else if (validPlayer.getPenguins().size() > (6 - this.players.size())) {
             throw new IllegalArgumentException("Cannot place another penguin, already have too many");
         } else {
@@ -293,6 +323,8 @@ public class GameState extends GameBoard implements IGameState {
         penguin.move(point);
         IPlayer movedPlayer = this.players.remove(0);
         this.players.add(movedPlayer);
+
+        return this;
     }
 
     @Override
