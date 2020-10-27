@@ -9,12 +9,14 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLOutput;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import controller.Controller;
+import model.board.Direction;
 import model.board.Tile;
 import model.state.GameState;
 import model.state.IGameState;
@@ -88,12 +90,6 @@ public class GameTreeTestUtil {
                 return;
             }
 
-            // TODO : Remove! used for testing
-            ImmutableGameStateModel immutableModel = new ImmutableGameState((GameState) gameState);
-            IView view = new VisualView(immutableModel);
-            Controller controller = new Controller();
-            controller.control((GameState) gameState, view);
-
             Point from = new Point(fromPosition.get(1).getAsInt(), fromPosition.get(0).getAsInt());
             Point to = new Point(toPosition.get(1).getAsInt(), toPosition.get(0).getAsInt());
 
@@ -127,27 +123,30 @@ public class GameTreeTestUtil {
             // updates player to next player to move
             player = gameState.playerTurn();
 
-            // TODO : Remove! used for testing
-            immutableModel = new ImmutableGameState((GameState) gameState);
-            view = new VisualView(immutableModel);
-            controller = new Controller();
-            controller.control((GameState) gameState, view);
-
             LinkedHashMap<IPenguin, List<Tile>> tilesToMove = gameState.getPossibleMoves(player);
 
             // checks if the player can move a penguin next to 'to' variable.
             if (tilesToMove.size() == 0) {
                 System.out.println("false");
             } else {
-                Map<Point, Point> actions = new HashMap<>();
+                Map<Direction, Map<Point, Point>> actions = new HashMap<>();
                 for (Map.Entry<IPenguin, List<Tile>> entrySet : tilesToMove.entrySet()) {
                     IPenguin penguin = entrySet.getKey();
                     List<Tile> tiles = entrySet.getValue();
 
                     for (Tile tile : tiles) {
                         Point point = tile.getPosition();
-                        if (this.isNeighbor(to, point)) {
-                            actions.put(penguin.getPosition(), point);
+                        Direction direction = this.neighborDirection(point, to);
+                        if (direction != null) {
+                            if (actions.containsKey(direction)) {
+                                Map<Point, Point> action = actions.get(direction);
+                                action.put(penguin.getPosition(), point);
+                                actions.put(direction, action);
+                            } else {
+                                Map<Point, Point> action = new HashMap<>();
+                                action.put(penguin.getPosition(), point);
+                                actions.put(direction, action);
+                            }
                         }
                     }
                 }
@@ -158,21 +157,29 @@ public class GameTreeTestUtil {
     }
 
     /**
-     * Returns true if the 2 given points are neighbors. Assumes that the two points are valid
+     * Returns the direction point1 is relative to point2 if the 2 given points are neighbors. Assumes that the two points are valid
      * points on the GameBoard.
      *
      * @param point1 first point
      * @param point2 second point
-     * @return boolean
+     * @return Direction or null if they points aren't neighbors
      */
-    private boolean isNeighbor(Point point1, Point point2) {
-        return (point1.x == point2.x && Math.abs(point1.y - point2.y) == 2) ||
-                (point1.y % 2 == 0 ?
-                        (point1.x == point2.x && Math.abs(point1.y - point2.y) == 1) :
-                        (point1.x + 1 == point2.x && Math.abs(point1.y - point2.y) == 1)) ||
-                (point1.y % 2 == 0 ?
-                        (point1.x - 1 == point2.x && Math.abs(point1.y - point2.y) == 1) :
-                        (point1.x == point2.x && Math.abs(point1.y - point2.y) == 1));
+    private Direction neighborDirection(Point point1, Point point2) {
+        if (point1.x == point2.x && point1.y == point2.y - 2) {
+            return Direction.UP;
+        } else if (point1.y % 2 == 0 ? point1.x == point2.x && point1.y == point2.y - 1 : point1.x == point2.x - 1 && point1.y == point2.y - 1) {
+            return Direction.DIAGONAL_UP_LEFT;
+        } else if (point1.y % 2 == 0 ? point1.x == point2.x && point1.y == point2.y + 1 : point1.x == point2.x - 1 && point1.y == point2.y + 1) {
+            return Direction.DIAGONAL_DOWN_LEFT;
+        } else if (point1.x == point2.x && point1.y == point2.y + 2) {
+            return Direction.DOWN;
+        } else if (point1.y % 2 == 0 ? point1.x == point2.x + 1 && point1.y == point2.y + 1 : point1.x == point2.x && point1.y == point2.y + 1) {
+            return Direction.DIAGONAL_DOWN_RIGHT;
+        } else if (point1.y % 2 == 0 ? point1.x == point2.x + 1 && point1.y == point2.y - 1 : point1.x == point2.x && point1.y == point2.y - 1) {
+            return Direction.DIAGONAL_UP_RIGHT;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -185,15 +192,31 @@ public class GameTreeTestUtil {
      *
      * @param actions potential actions to make
      */
-    private void tieBreak(Map<Point, Point> actions) {
+    private void tieBreak(Map<Direction, Map<Point, Point>> actions) {
         if (actions.size() == 0) {
             System.out.println("false");
             return;
         }
 
+        Map<Point, Point> directionActions;
+        if (actions.containsKey(Direction.UP)) {
+            directionActions = actions.get(Direction.UP);
+        } else if (actions.containsKey(Direction.DIAGONAL_UP_RIGHT)) {
+            directionActions = actions.get(Direction.DIAGONAL_UP_RIGHT);
+        } else if (actions.containsKey(Direction.DIAGONAL_DOWN_RIGHT)) {
+            directionActions = actions.get(Direction.DIAGONAL_DOWN_RIGHT);
+        } else if (actions.containsKey(Direction.DOWN)) {
+            directionActions = actions.get(Direction.DOWN);
+        } else if (actions.containsKey(Direction.DIAGONAL_DOWN_LEFT)) {
+            directionActions = actions.get(Direction.DIAGONAL_DOWN_LEFT);
+        } else {
+            directionActions = actions.get(Direction.DIAGONAL_UP_LEFT);
+        }
+
+        // does tie break
         Point from = null;
         Point to = null;
-        for (Map.Entry<Point, Point> entry : actions.entrySet()) {
+        for (Map.Entry<Point, Point> entry : directionActions.entrySet()) {
             Point fromTemp = entry.getKey();
             Point toTemp = entry.getValue();
 

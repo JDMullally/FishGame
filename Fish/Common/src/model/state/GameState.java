@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import model.board.GameBoard;
+import model.board.IGameBoard;
 import model.board.Tile;
 import util.ColorUtil;
 
@@ -241,14 +242,20 @@ public class GameState extends GameBoard implements IGameState {
 
     @Override
     public LinkedHashMap<IPenguin, List<Tile>> getPossibleMoves(IPlayer player) {
+        // creates a GameState where all penguins are instead holes.
+        // this is so that getting viable tiles treats penguin locations as holes thus providing
+        // the correct viable tiles.
+        IGameState gameState = this.clone();
+        for (IPlayer iPlayer : gameState.getPlayers()) {
+            for (IPenguin iPenguin : iPlayer.getPenguins()) {
+                gameState.replaceTile(iPenguin.getPosition());
+            }
+        }
+
+        // generates viable tiles
         LinkedHashMap<IPenguin, List<Tile>> possibleMoves = new LinkedHashMap<>();
         for (IPenguin p : player.getPenguins()) {
-            List<Tile> viableTiles = new ArrayList<>();
-            for (Tile tile : this.getViableTiles(p.getPosition())) {
-                if (!this.pointContainsPenguin(tile.getPosition())) {
-                    viableTiles.add(tile);
-                }
-            }
+            List<Tile> viableTiles = new ArrayList<>(gameState.getViableTiles(p.getPosition()));
             possibleMoves.put(p, viableTiles);
         }
         return possibleMoves;
