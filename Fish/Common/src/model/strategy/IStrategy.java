@@ -18,7 +18,7 @@ public interface IStrategy {
      * @param state IGameState
      * @return Action
      */
-    Action placePenguins(IGameState state);
+    Action choosePlacePenguinAction(IGameState state);
 
     /**
      * Takes in the current GameState and returns a Move Action for moving a Penguin to the
@@ -29,5 +29,5 @@ public interface IStrategy {
      * @param turns int
      * @return Action
      */
-    Action makeMove(IGameState state, int turns);
+    Action chooseMoveAction(IGameState state, int turns);
 }

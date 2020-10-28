@@ -41,7 +41,7 @@ import model.tree.PlacePenguin;
 public class Strategy implements IStrategy {
 
     @Override
-    public Action placePenguins(IGameState state) {
+    public Action choosePlacePenguinAction(IGameState state) {
         if (state == null) {
             throw new IllegalArgumentException("State cannot be null");
         }
@@ -57,7 +57,7 @@ public class Strategy implements IStrategy {
     }
 
     @Override
-    public Action makeMove(IGameState state, int turns) {
+    public Action chooseMoveAction(IGameState state, int turns) {
         if (state == null) {
             throw new IllegalArgumentException("State cannot be null");
         } else if (turns <= 0) {
