@@ -1,13 +1,24 @@
 package model.strategy;
 
-import java.awt.Point;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
 import model.board.Tile;
 import model.state.IGameState;
 import model.state.IPenguin;
 import model.state.IPlayer;
 import model.state.Penguin;
 import model.tree.Action;
+import model.tree.GameTree;
+import model.tree.IGameTree;
+import model.tree.Move;
 import model.tree.PlacePenguin;
 
 /**
@@ -31,6 +42,10 @@ public class Strategy implements IStrategy {
 
     @Override
     public Action placePenguins(IGameState state) {
+        if (state == null) {
+            throw new IllegalArgumentException("State cannot be null");
+        }
+
         IPlayer player = state.playerTurn();
 
         List<Tile> availableTiles = state.getPenguinPlacementTiles();
@@ -43,6 +58,104 @@ public class Strategy implements IStrategy {
 
     @Override
     public Action makeMove(IGameState state, int turns) {
-        return null;
+        if (state == null) {
+            throw new IllegalArgumentException("State cannot be null");
+        } else if (turns <= 0) {
+            throw new IllegalArgumentException("Turns must be greater than zero");
+        }
+
+        IGameTree<?> gameTree = new GameTree(state).createTreeToDepth(state, turns);
+        return this.minimax(gameTree, turns);
+    }
+
+    /**
+     * Performs minimax on the given game tree, returning the best action for the current player
+     * to make.
+     *
+     * @param tree IGameTree<?>
+     * @return Action
+     */
+    private Action minimax(IGameTree<?> tree, int depth) {
+        IGameState startState = tree.getState();
+        IPlayer player = startState.playerTurn();
+
+        // retrieves a score for a all actions where 'score' is a function of the difference between
+        // 'player' score and all the other players scores.
+        Map<IPenguin, Map<Action, Integer>> penguinActions = new LinkedHashMap<>();
+        for (Map.Entry<IPenguin, List<Tile>> moves : startState.getPossibleMoves(player).entrySet()) {
+            IPenguin penguin = moves.getKey().clone();
+            List<Tile> tiles = moves.getValue();
+
+            Map<Action, Integer> actions = new HashMap<>();
+            for (Tile tile : tiles) {
+                Action action = new Move(player, penguin, tile, false);
+                IGameTree subtree = new GameTree(action.apply(startState.clone()));
+                actions.put(action, this.minimaxHelper(subtree, player, depth - 1));
+            }
+
+            penguinActions.put(penguin, actions);
+        }
+
+        // returns the best actions based on the best 'score' and performs a tiebreak if necessary
+        int bestScore = Integer.MIN_VALUE;
+        Action bestAction = null;
+        IPenguin bestPenguin = null;
+        for (Map.Entry<IPenguin, Map<Action, Integer>> entry : penguinActions.entrySet()) {
+            IPenguin penguin = entry.getKey();
+
+            for (Map.Entry<Action, Integer> entry2 : entry.getValue().entrySet()) {
+                Action action = entry2.getKey();
+                Integer score = entry2.getValue();
+
+                if (bestAction == null || score > bestScore) {
+                    bestScore = score;
+                    bestAction = action;
+                    bestPenguin = penguin;
+                } else if (score == bestScore) {
+                    Point point1 = penguin.getPosition();
+                    Point point2 = bestPenguin.getPosition();
+
+                    if (point1.y < point2.y || point1.y == point2.y && point1.x < point2.x) {
+                        bestAction = action;
+                        bestPenguin = penguin;
+                    }
+                }
+            }
+        }
+
+        return bestAction;
+    }
+
+    /**
+     * Performs minimax on the given game tree, returning the best score for the current player
+     * to make, where the best score is a function of the difference between 'player' score and all
+     * the other players scores.
+     *
+     * @param tree IGameTree<?>
+     * @param player IPlayer
+     * @param depth int
+     * @return int
+     */
+    private int minimaxHelper(IGameTree<?> tree, IPlayer player, int depth) {
+        IGameState state = tree.getState();
+
+        // if depth is 0 or the game is over, return the minimax score
+        if (depth == 0 || state.isGameOver()) {
+            int score = 0;
+            for (IPlayer playerTemp : state.getPlayers()) {
+                if (player.equals(playerTemp)) {
+                    score += player.getScore();
+                } else {
+                    score -= player.getScore();
+                }
+            }
+            return score;
+        }
+
+        List<Integer> scores = new ArrayList<>();
+        for (IGameTree subtree : tree.getSubstates()) {
+            scores.add(this.minimaxHelper(subtree, player, depth - 1));
+        }
+        return Collections.max(scores);
     }
 }
