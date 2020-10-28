@@ -18,7 +18,13 @@ The referee sets up a board and interacts with the players according to the inte
 
 - When the game is over, it reports the outcome of the game and the failing and cheating player;
 
-- during the game it may need to inform game observers of on-going actions.
+- during the game it may need to inform game observers of on-going actions, preferably with a State.
+
+State is
+     
+      { "players" : Player*,
+
+        "board" : Board }
 
 To do these things, we need our referee to be able to remove a cheating player and their penguins,
 and save that player who cheated and report them.  The referee must also be able to determine when 
@@ -30,14 +36,27 @@ can render itself.
 
 An external interface to help represent our data model for our referee:
 
-`removePlayer(Color cheater);` : If an Illegal move is made, the referee is able to remove a player
- by their color.  This action should only remove that player's penguins from the game.
+`runGame();`
 
-`reportGameOver();`: Should check if the most recent GameState is over and 
-report the winner and cheaters to STDOUT. 
+`removePlayer();`
+- The signature of this method should be `Color -> GameState`
+    - Color is the color of the cheating player
+    - GameState is a new GameState with that player's penguins removed.
+- If an Illegal move is made, the referee is able to remove a player by their color.
+- This action should only remove that player's penguins from the game.
 
-`getRenderableGameState();` : Sends the current GameState to STDOUT as a Json Object to be rendered. 
+`reportGameOver();`: 
+- The signature of this method should be `GameState -> Json Element`
+    - GameState is the current Game State
+    - Json Element is one of:
+        - Boolean that indicates that the game is not over
+        - Json Object should have a field with the winner and a field with the cheaters.
+            - The winner will be represented by a Player.
+            - The cheaters will be represented with a Json Array of Player.
 
+`getRenderableGameState();` :
+- The signature of this method should be `GameState -> Json Object`
+    - GameState is the current Game State
+    - Json Object is a State (defined above)
+- This State allows observers to render the state.
 
-These three methods used in tandem would allow a Player or Referee to see moves in advance and build
-out a data structure to represent full games (such as using a list or a tree).

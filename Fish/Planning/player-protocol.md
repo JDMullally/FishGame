@@ -10,57 +10,36 @@
 
 A player should be able to do the following in order to interact properly with our API:
 
-- Get a Game (GameState) by ID 
-- Get a Game's GameTree
-- Get if a Game is over
-- Get a Player's turn in a Game
-- Get a Player's score in a Game
-- Get all of a Player's possible moves with a Penguins in a Game
-- add a new Player in a Game
-- add a Penguin for a Player in a Game
-- move a Penguin for a Player in a Game
+- Place a penguin on the board during placement rounds when called on by the referee.
 
-This implies the a User has a one to many relationship between them and Games, a Game has a one to
-many relationship with players, and a player has a one to many relationship with their penguins.
+- Make a move on the board after placement rounds when called on by the referee.
 
-We decided that best protocol for our API would be a RESTFUL one.
+We narrowed this down to two methods that should return Actions.
 
-The following is an example of the request methods for a player to use.
+An Action is one of:
+- MovePenguin
+- PlacePenguin
 
-#### Request Methods
+`placePenguin()`
+- The signature of this method is `GameState -> Action`
+    - GameState is the current Game State
+    - The Action should be a PlacePenguin Action
+- This should only occur in the initial phase of the game. If this occurs after the placement rounds,
+the player should be removed.
+- If a player places the penguin in an invalid position, in a hole or on another penguin, they 
+will be removed from the game.
+- A player will be given 10 seconds to place a penguin.  If they time out, they will be removed
+ from the game.
 
-To Get a Game (GameState) by ID: 
 
-`GET /games/{id}`
-
-To Get a Game's GameTree:
-
-`GET /games/{id}/tree`
-
-To Get if a Game is over:
-
-`GET /games/{id}/gameover`
-
-To Get a Player's turn in a Game:
-
-`GET /games/{id}/players/{id}/turn`
-
-To Get a Player's score in a Game:
-
-`GET /games/{id}/players/{id}/score`
-
-To Get all of a Player's possible moves with a Penguins in a Game:
-
-`GET /games/{id}/players/{id}/penguins/{id}/moves`
-
-To add a new Player in a Game:
-
-`POST /games/{id}/players`
-
-To add a Penguin for a Player in a Game:
-
-`POST /games/{id}/players/{id}/penguins/{id}`
-
-To move a Penguin for a Player in a Game:
-
-`POST /games/{id}/players/{id}/penguins/{id}/move`
+`movePenguin()`
+- The signature of this method is `(GameState, Natural Number) -> Action`
+    - GameState is the current Game State
+    - Natural Number is the number of  turns the player should look forward.
+    - The Action should be a Move Action
+- This cannot occur in the initial phase of the game.  If it is attempted during placement rounds,
+ the player should be removed.
+ - If a player attempts to move to an invalid position, in a hole or on another penguin, they 
+ will be removed from the game.
+ - A player will be given 30 seconds to move a penguin.  If they time out, they will be removed
+  from the game.
