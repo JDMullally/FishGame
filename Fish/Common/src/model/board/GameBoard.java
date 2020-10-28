@@ -16,6 +16,14 @@ import static constants.Constants.HEX_SIZE;
  * Class represents the entire GameBoard.
  * A GameBoard knows it's dimensions and has access to all of it's piece which are represented by Tiles.
  * A GameBoard can generate a board of Tiles, Find viable paths from a given point, and remove Tiles.
+ *
+ * The GameBoard's row and column locations are inverted. An example 4x3 GameBoard with positions
+ * can be seen below:
+ *
+ *  (0,0)    (1, 0)   (2, 0)
+ *      (0, 1)    (1, 1)    (2, 1)
+ *  (0, 2)   (1, 2)   (2, 2)
+ *      (0, 3)    (1, 3)    (2, 3)
  */
 public class GameBoard implements IGameBoard {
 
