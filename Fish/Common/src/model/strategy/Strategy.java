@@ -15,7 +15,7 @@ import model.state.IPlayer;
 import model.tree.Action;
 import model.tree.GameTree;
 import model.tree.IGameTree;
-import model.tree.Move;
+import model.tree.MovePenguin;
 import model.tree.PlacePenguin;
 
 /**
@@ -85,7 +85,7 @@ public class Strategy implements IStrategy {
 
             Map<Action, Integer> actions = new HashMap<>();
             for (Tile tile : tiles) {
-                Action action = new Move(player, penguin, tile, false);
+                Action action = new MovePenguin(player, penguin, tile, false);
                 IGameTree subtree = new GameTree(action.apply(startState.clone()));
                 actions.put(action, this.minimaxHelper(subtree, player, depth - 1));
             }

@@ -8,55 +8,39 @@
 
 `Date:` 10/26/2020
 
-The Fish.Com plan for a referee goes as follows.
+A Referee should be able to do the following in order to interact properly with our API:
 
-A referee supervises an individual game after being handed a number of players.
+- Get a copy of the current Game State when called on by a Player
 
-The referee sets up a board and interacts with the players according to the interface protocol.
+- Gets the player's turn in the current Game State when called on by a Player
 
-- It removes a player—really its penguins—that fails or cheats.
+- Apply an Action to the current Game State when called on by a Player
 
-- When the game is over, it reports the outcome of the game and the failing and cheating player;
 
-- during the game it may need to inform game observers of on-going actions, preferably with a State.
-
-State is
-     
-      { "players" : Player*,
-
-        "board" : Board }
-
-To do these things, we need our referee to be able to remove a cheating player and their penguins,
-and save that player who cheated and report them.  The referee must also be able to determine when 
-the game is over, so they would most like keep track of the game states.  If the referee keeps track
-of the game states, they will be able to inform observers of the current game state as our GameState
-can render itself.
 
 **External Interface**
 
-An external interface to help represent our data model for our referee:
+An external interface to help represent our data model for our Referee:
 
-`runGame();`
-
-`removePlayer();`
-- The signature of this method should be `Color -> GameState`
-    - Color is the color of the cheating player
-    - GameState is a new GameState with that player's penguins removed.
-- If an Illegal move is made, the referee is able to remove a player by their color.
-- This action should only remove that player's penguins from the game.
-
-`reportGameOver();`: 
-- The signature of this method should be `GameState -> Json Element`
+`getGameState()`
+- The signature of this method should be `() -> GameState`
     - GameState is the current Game State
-    - Json Element is one of:
-        - Boolean that indicates that the game is not over
-        - Json Object should have a field with the winner and a field with the cheaters.
-            - The winner will be represented by a Player.
-            - The cheaters will be represented with a Json Array of Player.
+- The returned Game State is a copy that can be used to check future moves,
+ their score or render the game.
 
-`getRenderableGameState();` :
-- The signature of this method should be `GameState -> Json Object`
-    - GameState is the current Game State
-    - Json Object is a State (defined above)
-- This State allows observers to render the state.
+`getPlayerTurn()`
+- The signature of this method should be `() -> Whole Number`
+    - Whole Number represents the player's place in line to make a move
+        - Returns 0 if it is this player's turn or the number of moves until their turn
+    
+`applyAction()`
+- The signature of this method should be `Action -> Maybe GameState`
+    - Action is one of:
+        - MovePenguin
+        - PlacePenguin
+    - Maybe GameState is one of:
+        - GameState: a GameState with the Action applied
+        - Error: the action isn't valid
+- If the function returns an error, the player should be removed from the game for cheating.
+
 

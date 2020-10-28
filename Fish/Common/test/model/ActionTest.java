@@ -12,9 +12,8 @@ import model.state.IPlayer;
 import model.state.Penguin;
 import model.state.Player;
 import model.tree.Action;
-import model.tree.Move;
+import model.tree.MovePenguin;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 
 public class ActionTest {
@@ -47,9 +46,9 @@ public class ActionTest {
 
         this.gameState = new GameState(8,8, new ArrayList<>(), 0, 2, this.players);
 
-        this.pass = new Move(this.player1, this.player1.getPenguins().get(0),new Point(0,0), true);
+        this.pass = new MovePenguin(this.player1, this.player1.getPenguins().get(0),new Point(0,0), true);
 
-        this.moveUp = new Move(this.player2, this.player2.getPenguins().get(2), new Point(2, 4), false);
+        this.moveUp = new MovePenguin(this.player2, this.player2.getPenguins().get(2), new Point(2, 4), false);
     }
 
     //TODO write some more tests for this that show Actions enforce rules;
