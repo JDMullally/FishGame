@@ -1,8 +1,8 @@
 package model.strategy;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -87,7 +87,8 @@ public class Strategy implements IStrategy {
             for (Tile tile : tiles) {
                 Action action = new MovePenguin(player, penguin, tile, false);
                 IGameTree subtree = new GameTree(action.apply(startState.clone()));
-                actions.put(action, this.minimaxHelper(subtree, player, depth - 1));
+                IGameState resultingState = this.minimaxHelper(subtree, depth - 1);
+                actions.put(action, this.evaluationFunction(resultingState, player));
             }
 
             penguinActions.put(penguin, actions);
@@ -129,30 +130,54 @@ public class Strategy implements IStrategy {
      * the other players scores.
      *
      * @param tree IGameTree<?>
-     * @param player IPlayer
      * @param depth int
      * @return int
      */
-    private int minimaxHelper(IGameTree<?> tree, IPlayer player, int depth) {
+    private IGameState minimaxHelper(IGameTree<?> tree, int depth) {
         IGameState state = tree.getState();
 
         // if depth is 0 or the game is over, return the minimax score
         if (depth == 0 || state.isGameOver()) {
-            int score = 0;
-            for (IPlayer playerTemp : state.getPlayers()) {
-                if (player.equals(playerTemp)) {
-                    score += player.getScore();
-                } else {
-                    score -= player.getScore();
-                }
-            }
-            return score;
+            return state;
         }
 
-        List<Integer> scores = new ArrayList<>();
+        IPlayer player = state.playerTurn();
+        LinkedHashMap<IGameState, Integer> scores = new LinkedHashMap<>();
         for (IGameTree subtree : tree.getSubstates()) {
-            scores.add(this.minimaxHelper(subtree, player, depth - 1));
+            IGameState resultingState = this.minimaxHelper(subtree, depth - 1);
+            scores.put(resultingState, this.evaluationFunction(subtree.getState(), player));
         }
-        return Collections.max(scores);
+
+        // returns the IGameState with the maximum score
+        return Collections.max(scores.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
+    }
+
+    /**
+     * Returns the evaluation of a GameState for a given Iplayer based on the difference in player
+     * scores compared to this player's score.
+     *
+     * @param state IGameState
+     * @param player IPlayer
+     * @return int score
+     */
+    private int evaluationFunction(IGameState state, IPlayer player) {
+        IPlayer validPlayer = null;
+        for (IPlayer playerTemp : state.getPlayers()) {
+            if (player.equals(playerTemp)) {
+               validPlayer = playerTemp;
+            }
+        }
+
+        if (validPlayer == null) {
+            throw new IllegalArgumentException("Invalid player specified");
+        }
+
+        int score = 0;
+        for (IPlayer playerTemp : state.getPlayers()) {
+            if (!player.equals(playerTemp)) {
+                score += validPlayer.getScore() - player.getScore();
+            }
+        }
+        return score;
     }
 }
