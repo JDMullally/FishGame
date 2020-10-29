@@ -130,4 +130,9 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     public IGameState move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) throws IllegalArgumentException {
         throw new UnsupportedOperationException("GameState is immutable.");
     }
+
+    @Override
+    public boolean isCurrentPlayerStuck() {
+        return this.gameState.isCurrentPlayerStuck();
+    }
 }

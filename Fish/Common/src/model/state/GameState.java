@@ -10,13 +10,14 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import java.util.Map;
 import model.board.GameBoard;
 import model.board.IGameBoard;
 import model.board.Tile;
 import util.ColorUtil;
 
 /**
- * GameState represents a Fish Game, which more specifically is made up of a GameBoard and a
+ * GameState represents a Fish Game, which more specifically is a GameBoard that has a
  * List of Players playing the game.
  * Implementation that represents the GameState for Fish.
  * A GameState should be able to change the GameBoard, show it's Players, add Players to the game,
@@ -144,6 +145,9 @@ public class GameState extends GameBoard implements IGameState {
         return true;
     }
 
+    /**
+     * Initial check for players.
+     */
     private void validateInitialPlayers() {
         if (this.players.isEmpty() || this.players.size() <= 1) {
             throw new IllegalArgumentException("Cannot have a game with zero or one players");
@@ -179,6 +183,12 @@ public class GameState extends GameBoard implements IGameState {
         }
     }
 
+    /**
+     * Checks if a Player's Penguins are owned by that player (have the same color)
+     * and not placed on an empty tile.
+     *
+     * @param player IPlayer
+     */
     private void checkPlayerPenguins(IPlayer player) {
         for (IPenguin penguin : player.getPenguins()) {
             if (player.getColor().getRGB() != penguin.getColor().getRGB()) {
@@ -439,6 +449,18 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     @Override
+    public boolean isCurrentPlayerStuck() {
+        boolean isStuck = true;
+        for (Map.Entry<IPenguin, List<Tile>> moves : this.getPossibleMoves(this.playerTurn()).entrySet()) {
+            IPenguin penguin = moves.getKey().clone();
+            List<Tile> tiles = moves.getValue();
+
+                isStuck = isStuck && tiles.isEmpty();
+        }
+        return isStuck;
+    }
+
+    @Override
     public boolean isGameOver() {
         for (IPlayer player : this.players) {
             for (IPenguin penguin : player.getPenguins()) {
@@ -451,6 +473,7 @@ public class GameState extends GameBoard implements IGameState {
         }
         return true;
     }
+
 
     @Override
     public boolean equals(Object o) {

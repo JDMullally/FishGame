@@ -103,7 +103,7 @@ public class GameTreeTest {
         this.func2 = new Function<IGameState, IGameTree>() {
             @Override
             public IGameTree apply(IGameState gameState) {
-                System.out.println(gameState.playerTurn());
+                //System.out.println(gameState.playerTurn());
                 Action pass = new MovePenguin(gameState.playerTurn(), gameState.playerTurn().getPenguins().get(0), newPos, true);
                 IGameState tryMoveDown = new GameTree(gameState.clone()).queryAction(gameState.clone(), pass);
                 try {
@@ -397,7 +397,7 @@ public class GameTreeTest {
 
         this.gameTree = this.gameTree.createCompleteTree();
 
-        System.out.println(this.gameTree.getSubstates());
+        //System.out.println(this.gameTree.getSubstates());
 
         assertFalse(this.gameTree.getSubstates().isEmpty());
     }

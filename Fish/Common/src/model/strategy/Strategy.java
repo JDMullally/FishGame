@@ -84,8 +84,9 @@ public class Strategy implements IStrategy {
             IPenguin penguin = moves.getKey().clone();
             List<Tile> tiles = moves.getValue();
 
-            if (tiles.isEmpty())
+            if (tiles.isEmpty()) {
                 break;
+            }
 
             Map<Action, Integer> actions = new HashMap<>();
             for (Tile tile : tiles) {
@@ -96,6 +97,7 @@ public class Strategy implements IStrategy {
             }
             penguinActions.put(penguin, actions);
         }
+
         if (penguinActions.isEmpty()) {
             Action passAction = new MovePenguin(player, player.getPenguins().get(0),
                 player.getPenguins().get(0).getPosition(), true);
@@ -155,7 +157,7 @@ public class Strategy implements IStrategy {
                 return state;
             }
         }
-        //System.out.println(tree.getSubstates());
+
         LinkedHashMap<IGameState, Integer> scores = new LinkedHashMap<>();
         for (IGameTree subtree : tree.getSubstates()) {
             IGameState resultingState = this.minimaxHelper(subtree, depth - 1);

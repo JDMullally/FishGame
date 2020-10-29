@@ -452,5 +452,42 @@ public class GameStateTest {
 
         assertFalse(gameState.isGameOver());
     }
+
+    /**
+     * Tests for isCurrentPlayerStuck
+     */
+
+    /**
+     * Tests that a Player isn't stuck if only one of their penguins cannot move.  In this case two
+     * of the Penguins are blocked by the other two penguins in that column, but the player isn't
+     * stuck.
+     */
+    @Test
+    public void isCurrentPlayerStuckFalseOtherPenguinsCanMove() {
+        IGameState gameState = getOnePenguinCannotMove();
+
+        assertFalse(gameState.isCurrentPlayerStuck());
+    }
+
+    /**
+     * Tests that a Player is stuck if their penguins are surrounded by holes.
+     */
+
+    @Test
+    public void isCurrentPlayerStuckTrue() {
+        IGameState gameState = getHolesAroundPenguin();
+
+        assertTrue(gameState.isCurrentPlayerStuck());
+    }
+
+    /**
+     * Players should not be stuck at the beginning of a game.
+     */
+    @Test
+    public void isCurreentPlayerStuckBeginningOfAGame() {
+        init2();
+
+        assertFalse(this.gameState.isCurrentPlayerStuck());
+    }
 }
 

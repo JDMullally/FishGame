@@ -9,6 +9,9 @@ import model.board.IGameBoard;
 import model.board.Tile;
 
 /**
+ * A GameState is a GameBoard that has a List of Players playing the game.
+ * It needs to manage more information which continuing to utilize IGameBoard methods.
+ *
  * Represents the GameState for Fish. A GameState should be able to change the GameBoard,
  * show it's Players, add Players to the game, let Players place Penguins,
  * get the possible moves for a Penguin, and check if the game is over.
@@ -96,6 +99,14 @@ public interface IGameState extends IGameBoard {
      * @throws IllegalArgumentException if the move is invalid
      */
     IGameState move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) throws IllegalArgumentException;
+
+
+    /**
+     * Returns true if the current player cannot make a move with any of their penguins.
+     *
+     * @return boolean
+     */
+    boolean isCurrentPlayerStuck();
 
     /**
      * Returns true if no players can make a move and false otherwise.
