@@ -120,7 +120,7 @@ public class GameTree<X> implements IGameTree<X> {
         try {
             return action.apply(state.clone());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("queryAction: Action is illegal");
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 

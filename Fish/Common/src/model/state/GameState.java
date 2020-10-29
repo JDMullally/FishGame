@@ -398,6 +398,10 @@ public class GameState extends GameBoard implements IGameState {
             throw new IllegalArgumentException("Enter a non-null Player, Penguin and Point");
         }
 
+        if (!player.equals(this.playerTurn())) {
+            throw new IllegalArgumentException("Not this Player's Turn");
+        }
+
         this.validatePlayers();
 
         // if the player passes their turn

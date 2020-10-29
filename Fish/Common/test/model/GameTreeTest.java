@@ -50,7 +50,7 @@ public class GameTreeTest {
         List<IPenguin> penguinList2= Arrays.asList(peng5, peng6, peng7, peng8);
 
         this.p1 = new Player(Color.WHITE,20, penguinList1);
-        this.p2 = new Player(Color.BLACK,20, penguinList2);
+        this.p2 = new Player(Color.BLACK,10, penguinList2);
 
         this.players = Arrays.asList(this.p1, this.p2);
 
@@ -103,6 +103,8 @@ public class GameTreeTest {
         this.func2 = new Function<IGameState, IGameTree>() {
             @Override
             public IGameTree apply(IGameState gameState) {
+                System.out.println(gameState.playerTurn());
+                Action pass = new MovePenguin(gameState.playerTurn(), gameState.playerTurn().getPenguins().get(0), newPos, true);
                 IGameState tryMoveDown = new GameTree(gameState.clone()).queryAction(gameState.clone(), pass);
                 try {
                     return new GameTree(tryMoveDown);
