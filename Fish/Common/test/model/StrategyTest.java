@@ -5,15 +5,21 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import model.board.EmptyTile;
+import model.board.FishTile;
+import model.board.Tile;
 import model.state.GameState;
 import model.state.IGameState;
+import model.state.IPenguin;
 import model.state.IPlayer;
 import model.state.Player;
 import model.strategy.IStrategy;
 import model.strategy.Strategy;
 import model.tree.Action;
+import model.tree.MovePenguin;
 import model.tree.PlacePenguin;
 import org.junit.Test;
+import sun.print.PSPrinterJob.EPSPrinter;
 
 import static org.junit.Assert.*;
 
@@ -22,10 +28,10 @@ public class StrategyTest {
 
     private IPlayer player1, player2;
     private List<IPlayer> players;
-    private IGameState gameState, gameStateMinimax;
+    private IGameState gameState, gameStateMinimax, gameStateMinimax2, gameStateMinimax3;
 
     private void init() {
-        this.player1 = new Player(Color.BLACK, 15, new ArrayList<>());
+        this.player1 = new Player(Color.BLACK, 14, new ArrayList<>());
         this.player2 = new Player(Color.WHITE, 15, new ArrayList<>());
 
         this.players = Arrays.asList(player1, player2);
@@ -33,10 +39,46 @@ public class StrategyTest {
         this.gameState = new GameState(7,7, new ArrayList<>(), 0, 2, this.players);
 
         this.gameStateMinimax = new GameState(4, 4, this.craftedBoard(), this.players);
+
+        this.gameStateMinimax2 = new GameState(3,4, this.minimaxBoard(), this.players);
+
+        this.gameStateMinimax3 = new GameState(4,4, this.noMoreMovesBoard(), this.players);
     }
 
     private Tile[][] craftedBoard() {
+        Tile[][] board = new Tile[4][4];
 
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                board[i][j] = new FishTile(i, j, j + 1);
+            }
+        }
+        return board;
+    }
+
+    private Tile[][] minimaxBoard() {
+        Tile[][] board = new Tile[4][3];
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                board[i][j] = new FishTile(i, j, j + 1);
+            }
+        }
+        return board;
+    }
+
+    private Tile[][] noMoreMovesBoard() {
+        Tile[][] board = new Tile[4][4];
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                board[i][j] = new FishTile(i, j, j + 1);
+                if (j > 1) {
+                    board[i][j] = new EmptyTile(i,j);
+                }
+            }
+        }
+        return board;
     }
 
 
@@ -55,12 +97,13 @@ public class StrategyTest {
         }
     }
 
-    private void placeAllPenguinsMiniMaxTest(IStrategy strategy) {
+    private IGameState placeAllPenguinsState(IStrategy strategy, IGameState state) {
         Action placeNextPenguin;
         for (int i = 0; i < 2 * (6 - this.players.size()); i++) {
-            placeNextPenguin = strategy.choosePlacePenguinAction(this.gameStateMinimax);
-            this.gameStateMinimax = placeNextPenguin.apply(this.gameStateMinimax);
+            placeNextPenguin = strategy.choosePlacePenguinAction(state);
+            state = placeNextPenguin.apply(state);
         }
+        return state;
     }
 
     /**
@@ -75,9 +118,9 @@ public class StrategyTest {
     public void choosePlacePenguinActionFirstAction() {
         init();
 
-        IStrategy strat = new Strategy();
+        IStrategy strategy = new Strategy();
 
-        Action action = strat.choosePlacePenguinAction(this.gameState);
+        Action action = strategy.choosePlacePenguinAction(this.gameState);
 
         assertEquals(new PlacePenguin(this.gameState.playerTurn(), new Point(0,0)), action);
     }
@@ -90,9 +133,9 @@ public class StrategyTest {
         init();
         this.placeNPenguins(4);
 
-        IStrategy strat = new Strategy();
+        IStrategy strategy = new Strategy();
 
-        Action action = strat.choosePlacePenguinAction(this.gameState);
+        Action action = strategy.choosePlacePenguinAction(this.gameState);
 
         assertEquals(new PlacePenguin(this.gameState.playerTurn(), new Point(4,0)), action);
     }
@@ -106,9 +149,9 @@ public class StrategyTest {
         init();
         this.placeNPenguins(7);
 
-        IStrategy strat = new Strategy();
+        IStrategy strategy = new Strategy();
 
-        Action action = strat.choosePlacePenguinAction(this.gameState);
+        Action action = strategy.choosePlacePenguinAction(this.gameState);
 
         assertEquals(new PlacePenguin(this.gameState.playerTurn(), new Point(0,1)), action);
     }
@@ -116,20 +159,96 @@ public class StrategyTest {
     /**
      * Tests for chooseMoveAction that tests if a Player uses minimax to move their penguins
      * to the correct place.
+     *
+     * Here is an example of the minimax game we have set up for the test.
+     *
+     * Each Tile has a number of fish equal to y + 1
+     *
+     *  B(0,0)  W(1, 0)   B(2, 0)      W(3, 0)            Score Per Tile: 1
+     *      B(0, 1)    W(1, 1)    B(2, 1)      W(3, 1)    Score Per Tile: 2
+     *  (0, 2)   (1, 2)   (2, 2)      (3, 2)              Score Per Tile: 3
+     *      (0, 3)    (1, 3)    (2, 3)      (3, 3)        Score Per Tile: 4
+     *
      */
 
+    /**
+     * No matter the case, if a player has played an odd number of rounds with tiles that increase
+     * in value as you go down, the player that has made more moves should have a higher score.
+     */
     @Test
-    public void chooseMoveAction() {
+    public void FirstPlayerShouldWinAfterOddRounds() {
         init();
-        IStrategy strat = new Strategy();
+        IStrategy strategy = new Strategy();
 
-        this.placeAllPenguinsMiniMaxTest(strat);
+        this.gameStateMinimax = this.placeAllPenguinsState(strategy, this.gameStateMinimax);
+        Action action;
+        for (int i = 0; i < 5; i++) {
+            action = strategy.chooseMoveAction(this.gameStateMinimax, 3);
 
-        // System.out.println(this.gameStateMinimax.getPossibleMoves(this.gameStateMinimax.playerTurn()));
-        Action action = strat.chooseMoveAction(this.gameStateMinimax, 1);
+            this.gameStateMinimax = action.apply(this.gameStateMinimax);
+        }
 
-        // System.out.println(this.gameStateMinimax);
+        boolean blackScoresHigherThanWhite = this.gameStateMinimax.getPlayers().get(1).getScore() -
+            this.gameStateMinimax.playerTurn().getScore() > 0;
 
-        System.out.println(action);
+        assertTrue(blackScoresHigherThanWhite);
     }
+
+    /**
+     * During the first move, the first player would plan to maximize their gain while minimizing
+     * their opponent's potential gain.  If two moves give equivalent gain, the algorithm should move
+     * the penguin with the lowest row and column number.
+     *
+     * In the example below, the expected move of the first player (Black) should be to move from
+     * (0,1) --> (0,2) as it would provide the most gain and minimize the opponent's gain.
+     * Since this is the first move, it would provide identical gain as the moves from
+     * (0, 1) --> (1, 2) , (2,1) --> (3, 2) ,  (2, 1) --> (2, 2), but it should be closer to left
+     * side to have the lowest rows and column number.
+     *
+     *      *  B(0,0)     W(1, 0)     B(2, 0)      W(3, 0)             Score Per Tile: 1
+     *      *        B(0, 1)     W(1, 1)     B(2, 1)      W(3, 1)      Score Per Tile: 2
+     *      *  (0, 2)     (1, 2)       (2, 2)      (3, 2)              Score Per Tile: 3
+     */
+    @Test
+    public void MinMaxingGainFirstMoveWithTieBreak() {
+        init();
+        IStrategy strategy = new Strategy();
+
+        this.gameStateMinimax2 = this.placeAllPenguinsState(strategy, this.gameStateMinimax2);
+
+        IPlayer currentPlayer = this.gameStateMinimax2.playerTurn();
+        IPenguin penguinAt01 = this.gameStateMinimax2.playerTurn().getPenguins().get(2);
+
+        Action action;
+
+        Action test = new MovePenguin(currentPlayer, penguinAt01, new Point(0,2), false);
+
+        action = strategy.chooseMoveAction(this.gameStateMinimax2, 3);
+
+        assertEquals(test, action);
+    }
+
+    /**
+     * If there are no more places for this Player to move their Penguin, they will return a
+     * MovePenguin that has them pass their turn.
+     */
+    @Test
+    public void MinMaxNoMoreMoves() {
+        init();
+        IStrategy strategy = new Strategy();
+
+        this.gameStateMinimax3 = this.placeAllPenguinsState(strategy, this.gameStateMinimax3);
+
+        Action action;
+
+        action = strategy.chooseMoveAction(this.gameStateMinimax3, 5);
+
+        Action dummyPass = new MovePenguin(this.gameStateMinimax3.playerTurn(),
+            this.gameStateMinimax3.playerTurn().getPenguins().get(0),
+            this.gameStateMinimax3.playerTurn().getPenguins().get(0).getPosition(), true);
+
+        assertEquals(dummyPass,action);
+
+    }
+
 }

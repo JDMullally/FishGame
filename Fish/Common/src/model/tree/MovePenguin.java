@@ -51,7 +51,11 @@ public class MovePenguin implements Action {
 
     @Override
     public String toString() {
-        return this.player.getColor() + ": " + this.penguin.getPosition() + " --> " + this.newPoint;
+        if(pass) {
+            return this.player.getColor() + ": passed their turn!";
+        } else {
+            return this.player.getColor() + ": " + this.penguin.getPosition() + " --> " + this.newPoint;
+        }
     }
 
     @Override

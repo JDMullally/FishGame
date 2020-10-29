@@ -112,7 +112,7 @@ public class Player implements IPlayer {
 
     @Override
     public String toString() {
-        return this.color + ": " + this.score + " " + this.penguins;
+        return this.color + ": [" + this.score + "]";
     }
 
     @Override
