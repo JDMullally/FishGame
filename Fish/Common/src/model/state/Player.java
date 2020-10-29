@@ -111,6 +111,11 @@ public class Player implements IPlayer {
     }
 
     @Override
+    public String toString() {
+        return this.color + ": " + this.score + " " + this.penguins;
+    }
+
+    @Override
     public IPlayer clone() {
         List<IPenguin> newPenguins = new ArrayList<>();
         for (IPenguin penguin: this.penguins

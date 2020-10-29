@@ -36,4 +36,20 @@ public class PlacePenguin implements Action {
     public IGameState apply(IGameState state) {
         return state.clone().placePenguin(this.player, this.position);
     }
+
+    @Override
+    public String toString() {
+        return this.player.getColor() + " --> " + this.position;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof PlacePenguin) {
+            PlacePenguin other = (PlacePenguin) o;
+            return this.position.x == other.position.x
+                && this.position.y == other.position.y
+                && this.player.equals(other.player);
+        }
+        return false;
+    }
 }

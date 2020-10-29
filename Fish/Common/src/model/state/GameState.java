@@ -43,8 +43,10 @@ public class GameState extends GameBoard implements IGameState {
         }
         this.players = new ArrayList<>(players);
 
-        this.sortPlayers();
-        this.validatePlayers();
+        if (this.newPlayers()) {
+            this.sortPlayers();
+        }
+        this.validateInitialPlayers();
     }
 
     /**
@@ -64,8 +66,10 @@ public class GameState extends GameBoard implements IGameState {
 
         this.players = new ArrayList<>(players);
 
-        this.sortPlayers();
-        this.validatePlayers();
+        if (this.newPlayers()) {
+            this.sortPlayers();
+        }
+        this.validateInitialPlayers();
     }
 
     /**
@@ -81,8 +85,11 @@ public class GameState extends GameBoard implements IGameState {
 
         this.players = this.jsonToPlayers(players);
 
-        this.sortPlayers();
-        this.validatePlayers();
+        if (this.newPlayers()) {
+            this.sortPlayers();
+        }
+        //this.sortPlayers();
+        this.validateInitialPlayers();
     }
 
     /**
@@ -123,6 +130,69 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     /**
+     * A checker so that players are only sorted by age once when they are initialized with no
+     * penguins.
+     * @return
+     */
+    private boolean newPlayers() {
+        validateInitialPlayers();
+        for (IPlayer player : this.players) {
+          if(!player.getPenguins().isEmpty()) {
+              return false;
+          }
+        }
+        return true;
+    }
+
+    private void validateInitialPlayers() {
+        if (this.players.isEmpty() || this.players.size() <= 1) {
+            throw new IllegalArgumentException("Cannot have a game with zero or one players");
+        } else if (this.players.size() > 4) {
+            throw new IllegalArgumentException("Cannot have a game with more than 4 players");
+        } else {
+            for (int i = 0; i < this.players.size(); i++) {
+                IPlayer player = this.players.get(i);
+
+                if (!player.getPenguins().isEmpty()) {
+                    if (player.getPenguins().size() > (6 - this.players.size())) {
+                        throw new IllegalArgumentException("Cannot have a player with more than 6 - N Penguins");
+                    }
+                    checkPlayerPenguins(player);
+                }
+
+                checkDuplicatePlayerColor(i, player);
+            }
+        }
+    }
+
+    /**
+     * Abstracted method that checks if any Players have the same colors.  It throws an error if the Player
+     * @param i int
+     * @param player IPlayer.
+     */
+    private void checkDuplicatePlayerColor(int i, IPlayer player) {
+        for (int j = 0; j < this.players.size(); j++) {
+            IPlayer player2 = this.players.get(j);
+            if (i != j && player.getColor().getRGB() == player2.getColor().getRGB()) {
+                throw new IllegalArgumentException("2 players have the same color: " + player.getColor().toString());
+            }
+        }
+    }
+
+    private void checkPlayerPenguins(IPlayer player) {
+        for (IPenguin penguin : player.getPenguins()) {
+            if (player.getColor().getRGB() != penguin.getColor().getRGB()) {
+                throw new IllegalArgumentException("Player has invalid Penguin colors");
+            }
+
+            Point penguinPoint = penguin.getPosition();
+            if (this.getGameBoard()[penguinPoint.x][penguinPoint.y].isEmpty()) {
+                throw new IllegalArgumentException("Player's penguin is placed on an empty tile");
+            }
+        }
+    }
+
+    /**
      * Validates that all players are initialized correctly on the basis of unique color, having a
      * valid number of players (1-4), and each player having exactly (6 - players.size()) penguins.
      */
@@ -140,25 +210,11 @@ public class GameState extends GameBoard implements IGameState {
                     throw new IllegalArgumentException("Player '" + player.getColor().toString() + "' has the wrong number of penguins");
                 }
 
-                // checks that penguin colors are correct
-                for (IPenguin penguin : player.getPenguins()) {
-                    if (player.getColor().getRGB() != penguin.getColor().getRGB()) {
-                        throw new IllegalArgumentException("Player has invalid Penguin colors");
-                    }
+                // checks that penguin colors are correct and that there are no duplicate player colors
+                checkPlayerPenguins(player);
 
-                    Point penguinPoint = penguin.getPosition();
-                    if (this.getGameBoard()[penguinPoint.x][penguinPoint.y].isEmpty()) {
-                        throw new IllegalArgumentException("Player's penguin is placed on an empty tile");
-                    }
-                }
                 // checks that there are no duplicate player colors
-                for (int j = 0; j < this.players.size(); j++) {
-                    IPlayer player2 = this.players.get(j);
-
-                    if (i != j && player.getColor().getRGB() == player2.getColor().getRGB()) {
-                        throw new IllegalArgumentException("2 players have the same color: " + player.getColor().toString());
-                    }
-                }
+                checkDuplicatePlayerColor(i, player);
             }
         }
     }
@@ -314,7 +370,7 @@ public class GameState extends GameBoard implements IGameState {
         // adds the penguin to the player if possible
         if (validPlayer == null) {
             throw new IllegalArgumentException("It is not this player's turn");
-        } else if (validPlayer.getPenguins().size() > (6 - this.players.size())) {
+        } else if (validPlayer.getPenguins().size() + 1 > (6 - this.players.size())) {
             throw new IllegalArgumentException("Cannot place another penguin, already have too many");
         } else {
             validPlayer.addPenguin(penguin);

@@ -90,6 +90,11 @@ public class Penguin implements IPenguin{
     }
 
     @Override
+    public String toString() {
+        return this.position.toString();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o instanceof Penguin) {
             Penguin other = (Penguin) o;

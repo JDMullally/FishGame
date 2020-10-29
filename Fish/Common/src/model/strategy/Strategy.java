@@ -100,7 +100,6 @@ public class Strategy implements IStrategy {
         IPenguin bestPenguin = null;
         for (Map.Entry<IPenguin, Map<Action, Integer>> entry : penguinActions.entrySet()) {
             IPenguin penguin = entry.getKey();
-
             for (Map.Entry<Action, Integer> entry2 : entry.getValue().entrySet()) {
                 Action action = entry2.getKey();
                 Integer score = entry2.getValue();

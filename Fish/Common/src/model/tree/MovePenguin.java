@@ -48,4 +48,22 @@ public class MovePenguin implements Action {
     public IGameState apply(IGameState state) throws IllegalArgumentException {
         return state.clone().move(player, penguin, newPoint, pass);
     }
+
+    @Override
+    public String toString() {
+        return this.player.getColor() + ": " + this.penguin.getPosition() + " --> " + this.newPoint;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof MovePenguin) {
+            MovePenguin other = (MovePenguin) o;
+            return this.newPoint.x == other.newPoint.x
+                && this.newPoint.y == other.newPoint.y
+                && this.player.equals(other.player)
+                && this.penguin.equals(other.penguin)
+                && this.pass == other.pass;
+        }
+        return false;
+    }
 }
