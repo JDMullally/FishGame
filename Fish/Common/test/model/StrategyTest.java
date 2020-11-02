@@ -217,9 +217,9 @@ public class StrategyTest {
      * the penguin with the lowest row and column number.
      *
      * In the example below, the expected move of the first player (Black) should be to move from
-     * (0,1) --> (1,2) as it would provide the most gain and minimize the opponent's gain.
+     * (0,1) --> (0,2) as it would provide the most gain and minimize the opponent's gain.
      * Since this is the first move, it would provide identical gain as the moves from
-     * (0,1) --> (0, 2), (2, 1) --> (3, 2), (2, 1) -> (2, 2) but it should be closer to left
+     * (0,1) --> (1, 2), (2, 1) --> (3, 2), (2, 1) -> (2, 2) but it should be closer to left
      * side to have the lowest rows and column number.
      *
      *      *  B(0,0)     W(1, 0)     B(2, 0)      W(3, 0)             Score Per Tile: 1
@@ -238,7 +238,7 @@ public class StrategyTest {
 
         Action action;
 
-        Action test = new MovePenguin(currentPlayer, penguinAt01, new Point(1,2), false);
+        Action test = new MovePenguin(currentPlayer, penguinAt01, new Point(0,2), false);
 
         action = strategy.chooseMoveAction(this.gameStateMinimax2, 3);
 
@@ -246,10 +246,10 @@ public class StrategyTest {
     }
 
     /**
-     * If there are no more places for this Player to move their Penguin, they will return a
-     * MovePenguin that has them pass their turn.
+     * If a player cannot move, they should throw an Illegal State Exception stating that they cannot move.
+     * This should only occur if that person has no possible moves.
      */
-    @Test
+    @Test (expected = IllegalStateException.class)
     public void MinMaxNoMoreMoves() {
         init();
         IStrategy strategy = new Strategy();
@@ -269,46 +269,24 @@ public class StrategyTest {
     }
 
     /**
-     * If a player cannot move, they should return a special MovePenguin Object with a pass flag.
-     * This should only occur if that person has no possible moves.  If the other player can make
-     * a move, they should still be able to move.
+     * There is only one move that this player can make, so this test checks if it
+     * is correctly outputted.
      */
+
     @Test
-    public void OnePlayerExactlyCanGoButItIsNotTheirTurn() {
+    public void OnePlayerExactlyCanGo() {
         init();
         IStrategy strategy = new Strategy();
 
         this.gameStateMinimax4 = this.placeAllPenguinsState(strategy, this.gameStateMinimax4);
 
-        //First we need the game in a state where it is White's turn, but they have no moves,
-        // so we first skip Black's turn.
-
-        assertEquals(this.gameStateMinimax4.playerTurn().getColor(), new Color(0,0,0));
-
-        this.gameStateMinimax4 = this.gameStateMinimax4.move(this.gameStateMinimax4.playerTurn(),
-            this.gameStateMinimax4.getPlayers().get(1).getPenguins().get(0), new Point(100,100), true);
-
-        IPlayer whitePlayer = this.gameStateMinimax4.playerTurn();
-
-        Action pass = strategy.chooseMoveAction(this.gameStateMinimax4, 5);
-
-        this.gameStateMinimax4 = pass.apply(this.gameStateMinimax4);
-
-        IPlayer whitePlayerAfterTurn = this.gameStateMinimax4.getPlayers().get(players.size() - 1);
-
-        //no change in score indicates that a pass occured.
-        assertEquals(new MovePenguin(whitePlayer, whitePlayer.getPenguins().get(0),
-            whitePlayer.getPenguins().get(0).getPosition(), true), pass);
-
         Action lastAction = strategy.chooseMoveAction(this.gameStateMinimax4, 5);
 
-        IPenguin penguin = this.gameStateMinimax4.playerTurn().getPenguins().get(0);
+        IPenguin penguin = this.gameStateMinimax4.playerTurn().getPenguins().get(2);
 
        this.gameStateMinimax4 = lastAction.apply(this.gameStateMinimax4);
 
        assertTrue(this.gameStateMinimax4.isGameOver());
-
-        //System.out.println(this.gameStateMinimax4);
 
        IPlayer playerWhoMoved = this.gameStateMinimax4.getPlayers().get(1);
 
