@@ -9,23 +9,16 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.SQLOutput;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import controller.Controller;
 import model.board.Direction;
 import model.board.Tile;
-import model.state.GameState;
 import model.state.IGameState;
 import model.state.IPenguin;
 import model.state.IPlayer;
-import model.state.ImmutableGameState;
-import model.state.ImmutableGameStateModel;
-import view.IView;
-import view.VisualView;
 
 /**
  * Tests the GameTree for the Fish Game.

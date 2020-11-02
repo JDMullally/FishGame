@@ -91,7 +91,7 @@ public class GameStateTestUtil {
                 ps.add(0, last);
 
                 IGameState printState = new GameState(endState.getRows(), endState.getColumns(), endState.getGameBoard(), ps);
-                System.out.println(new GameStateUtil().GameStateToJson(printState).toString());
+                System.out.println(new GameStateUtil().GameStateToJson(printState, null).toString());
             }
         }
     }

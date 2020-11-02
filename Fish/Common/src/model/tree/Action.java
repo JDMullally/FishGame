@@ -1,5 +1,7 @@
 package model.tree;
 
+import java.awt.*;
+
 import model.state.IGameState;
 
 /**
@@ -14,4 +16,18 @@ public interface Action {
      * @return resulting IGameState
      */
     IGameState apply(IGameState state);
+
+    /**
+     * Returns the position that is being moved from
+     *
+     * @return Point
+     */
+    Point getFromPosition();
+
+    /**
+     * Returns the position that is being moved to
+     *
+     * @return Point
+     */
+    Point getToPosition();
 }

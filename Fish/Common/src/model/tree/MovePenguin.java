@@ -14,7 +14,8 @@ public class MovePenguin implements Action {
 
     private IPlayer player;
     private IPenguin penguin;
-    private Point newPoint;
+    private Point fromPosition;
+    private Point toPosition;
     private boolean pass;
 
     /**
@@ -40,21 +41,32 @@ public class MovePenguin implements Action {
     public MovePenguin(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) {
         this.player = player.clone();
         this.penguin = penguin.clone();
-        this.newPoint = new Point(newPoint);
+        this.fromPosition = new Point(penguin.getPosition());
+        this.toPosition = new Point(newPoint);
         this.pass = pass;
     }
 
     @Override
     public IGameState apply(IGameState state) throws IllegalArgumentException {
-        return state.clone().move(player, penguin, newPoint, pass);
+        return state.clone().move(player, penguin, toPosition, pass);
+    }
+
+    @Override
+    public Point getFromPosition() {
+        return this.penguin.getPosition();
+    }
+
+    @Override
+    public Point getToPosition() {
+        return this.toPosition;
     }
 
     @Override
     public String toString() {
-        if(pass) {
+        if(this.pass) {
             return this.player.getColor() + ": passed their turn!";
         } else {
-            return this.player.getColor() + ": " + this.penguin.getPosition() + " --> " + this.newPoint;
+            return this.player.getColor() + ": " + this.fromPosition + " --> " + this.toPosition;
         }
     }
 
@@ -62,11 +74,13 @@ public class MovePenguin implements Action {
     public boolean equals(Object o) {
         if (o instanceof MovePenguin) {
             MovePenguin other = (MovePenguin) o;
-            return this.newPoint.x == other.newPoint.x
-                && this.newPoint.y == other.newPoint.y
-                && this.player.equals(other.player)
-                && this.penguin.equals(other.penguin)
-                && this.pass == other.pass;
+            return this.toPosition.x == other.toPosition.x
+                    && this.toPosition.y == other.toPosition.y
+                    && this.fromPosition.x == other.fromPosition.x
+                    && this.fromPosition.y == other.fromPosition.y
+                    && this.player.equals(other.player)
+                    && this.penguin.equals(other.penguin)
+                    && this.pass == other.pass;
         }
         return false;
     }

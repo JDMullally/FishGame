@@ -42,7 +42,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
+                <!-- <configuration>
                     <archive>
                         <manifest>
                             <mainClass>main.Main</mainClass>
@@ -52,12 +52,12 @@
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <appendAssemblyId>false</appendAssemblyId>
-                </configuration>
-                <!-- To Build Test Script
+                </configuration> -->
+                <!-- To Build Test Script -->
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>util.GameTreeTestUtil</mainClass>
+                            <mainClass>util.GameStrategyTestUtil</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -65,7 +65,7 @@
                     </descriptorRefs>
                     <appendAssemblyId>true</appendAssemblyId>
                 </configuration>
-                -->
+                <!-- -->
                 <executions>
                     <execution>
                         <id>make-assembly</id> <!-- this is used for inheritance merges -->

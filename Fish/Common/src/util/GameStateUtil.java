@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import model.state.GameState;
@@ -18,16 +19,41 @@ import model.board.Tile;
 public class GameStateUtil {
 
     /**
-     * Formats the current GameState into a JSON Object and prints it out.
+     * Formats the current GameState into a JSON Object and prints it out. If the IPlayer first is
+     * not null, then iterate through the list setting the order such that the given player is first
      *
+     * @param gameState the IGameState to convert to JSON
+     * @param first the First player in the list of players or optionally null
      * @return JsonObject
      */
-    public JsonObject GameStateToJson(IGameState gameState) {
+    public JsonObject GameStateToJson(IGameState gameState, IPlayer first) {
         JsonObject jsonGameState = new JsonObject();
+
+        // shifts order of players in list
+        List<IPlayer> players = new ArrayList<>();
+        if (first != null) {
+            boolean foundPlayer = false;
+            int counter = 1;
+            for (IPlayer player : gameState.getPlayers()) {
+                if (player.equals(first)) {
+                    players.add(0, player);
+                    foundPlayer = true;
+                } else if (foundPlayer) {
+                    players.add(counter, player);
+                    counter++;
+                } else {
+                    players.add(player);
+                }
+            }
+
+            if (!foundPlayer) {
+                throw new IllegalArgumentException("Couldn't find first player");
+            }
+        }
 
         // creates player object
         JsonArray jsonPlayers = new JsonArray();
-        for (IPlayer player : gameState.getPlayers()) {
+        for (IPlayer player : players) {
             JsonObject o = new JsonObject();
 
             List<IPenguin> penguins = player.getPenguins();
