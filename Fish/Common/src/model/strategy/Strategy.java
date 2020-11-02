@@ -62,7 +62,7 @@ public class Strategy implements IStrategy {
         }
 
         int depth = state.getPlayers().size() * (turns - 1) + 1;
-        IGameTree<?> gameTree = new GameTree(state).createTreeToDepth(state, depth);
+        IGameTree<?> gameTree = new GameTree(state).createCompleteTree();
         return this.minimax(gameTree, depth);
     }
 
@@ -93,6 +93,12 @@ public class Strategy implements IStrategy {
             for (Tile tile : tiles) {
                 Action action = new MovePenguin(player, penguin, tile, false);
                 IGameTree subtree = new GameTree(action.apply(startState.clone()));
+
+                // create tree to depth-1 if applicable
+                if (depth != 1) {
+                    subtree = subtree.createTreeToDepth(subtree.getState(), depth - 1);
+                }
+
                 IGameState resultingState = this.minimaxHelper(subtree, depth - 1);
                 actions.put(action, this.evaluationFunction(resultingState, player));
             }
@@ -111,6 +117,13 @@ public class Strategy implements IStrategy {
             for (Map.Entry<Action, Integer> entry2 : entry.getValue().entrySet()) {
                 Action action = entry2.getKey();
                 Integer score = entry2.getValue();
+
+                // TODO: Remove
+                Point from1t = action.getFromPosition();
+                Point to1t = action.getToPosition();
+                Point from1swapped = new Point(from1t.y, from1t.x);
+                Point to1swapped = new Point(to1t.y, to1t.x);
+                System.out.println("Score: " + score + ", " + from1swapped + " --> " + to1swapped);
 
                 if (bestAction == null || score > bestScore) {
                     bestScore = score;
