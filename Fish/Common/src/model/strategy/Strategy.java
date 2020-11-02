@@ -61,8 +61,9 @@ public class Strategy implements IStrategy {
             throw new IllegalArgumentException("Turns must be greater than zero");
         }
 
-        IGameTree<?> gameTree = new GameTree(state).createTreeToDepth(state, turns);
-        return this.minimax(gameTree, turns);
+        int depth = state.getPlayers().size() * (turns - 1) + 1;
+        IGameTree<?> gameTree = new GameTree(state).createTreeToDepth(state, depth);
+        return this.minimax(gameTree, depth);
     }
 
     /**
