@@ -11,9 +11,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import controller.Controller;
+import model.state.GameState;
 import model.state.IGameState;
+import model.state.ImmutableGameState;
+import model.state.ImmutableGameStateModel;
 import model.strategy.Strategy;
 import model.tree.Action;
+import view.IView;
+import view.VisualView;
 
 /**
  * Tests the GameStrategy for the Fish Game.
@@ -59,6 +65,12 @@ public class GameStrategyTestUtil {
             System.out.println("false");
             return;
         }
+
+        // TODO: Remove, used for testing
+        ImmutableGameStateModel immutableModel = new ImmutableGameState((GameState) gameState);
+        IView view = new VisualView(immutableModel);
+        Controller controller = new Controller();
+        controller.control((GameState) gameState, view);
 
         Strategy strategy = new Strategy();
         try {

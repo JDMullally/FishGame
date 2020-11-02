@@ -78,14 +78,14 @@ public class Strategy implements IStrategy {
 
         // retrieves a score for a all actions where 'score' is a function of the difference between
         // 'player' score and all the other players scores.
-
         Map<IPenguin, Map<Action, Integer>> penguinActions = new LinkedHashMap<>();
         for (Map.Entry<IPenguin, List<Tile>> moves : startState.getPossibleMoves(player).entrySet()) {
             IPenguin penguin = moves.getKey().clone();
             List<Tile> tiles = moves.getValue();
 
+            // if the player has no moves to make
             if (tiles.isEmpty()) {
-                break;
+                continue;
             }
 
             Map<Action, Integer> actions = new HashMap<>();
@@ -98,18 +98,15 @@ public class Strategy implements IStrategy {
             penguinActions.put(penguin, actions);
         }
 
+        // if the player cannot move
         if (penguinActions.isEmpty()) {
-            Action passAction = new MovePenguin(player, player.getPenguins().get(0),
-                player.getPenguins().get(0).getPosition(), true);
-            return passAction;
+            throw new IllegalStateException("The current player can't move");
         }
 
         // returns the best actions based on the best 'score' and performs a tiebreak if necessary
         int bestScore = Integer.MIN_VALUE;
         Action bestAction = null;
-        IPenguin bestPenguin = null;
         for (Map.Entry<IPenguin, Map<Action, Integer>> entry : penguinActions.entrySet()) {
-            IPenguin penguin = entry.getKey();
             for (Map.Entry<Action, Integer> entry2 : entry.getValue().entrySet()) {
                 Action action = entry2.getKey();
                 Integer score = entry2.getValue();
@@ -117,14 +114,18 @@ public class Strategy implements IStrategy {
                 if (bestAction == null || score > bestScore) {
                     bestScore = score;
                     bestAction = action;
-                    bestPenguin = penguin;
                 } else if (score == bestScore) {
-                    Point point1 = penguin.getPosition();
-                    Point point2 = bestPenguin.getPosition();
+                    Point from1 = action.getFromPosition();
+                    Point from2 = bestAction.getFromPosition();
+                    Point to1 = action.getToPosition();
+                    Point to2 = bestAction.getToPosition();
 
-                    if (point1.y < point2.y || point1.y == point2.y && point1.x < point2.x) {
+                    // if the scores are the same but one penguins 'from' position is more desirable
+                    // or if they are the same penguin, choose the more desirable 'to' position
+                    if (from1.y < from2.y || (from1.y == from2.y && from1.x < from2.x)) {
                         bestAction = action;
-                        bestPenguin = penguin;
+                    } else if ((from1.y == from2.y && from1.x == from2.x) && (to1.y < to2.y || (to1.y == to2.y && to1.x < to2.x))) {
+                        bestAction = action;
                     }
                 }
             }
@@ -144,24 +145,19 @@ public class Strategy implements IStrategy {
      */
     private IGameState minimaxHelper(IGameTree<?> tree, int depth) {
         IGameState state = tree.getState();
+        List<IGameTree> substates = tree.getSubstates();
 
-        // if depth is 0 or the game is over, return the minimax score
-        if (depth == 0 || state.isGameOver()) {
+        // if depth is 0, the game is over, or there are no moves then return the minimax score
+        if (depth == 0 || state.isGameOver() || substates.isEmpty()) {
             return state;
         }
 
         IPlayer player = state.playerTurn();
-        if(tree.getSubstates().isEmpty()) {
-            tree.createCompleteTree();
-            if(tree.getSubstates().isEmpty()) {
-                return state;
-            }
-        }
 
         LinkedHashMap<IGameState, Integer> scores = new LinkedHashMap<>();
-        for (IGameTree subtree : tree.getSubstates()) {
+        for (IGameTree subtree : substates) {
             IGameState resultingState = this.minimaxHelper(subtree, depth - 1);
-            scores.put(resultingState, this.evaluationFunction(subtree.getState(), player));
+            scores.put(resultingState, this.evaluationFunction(resultingState, player));
         }
 
         // returns the IGameState with the maximum score
