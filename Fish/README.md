@@ -14,6 +14,18 @@ The arguments `-r` and `-c` are required arguments representing the number of ro
 the game board. All other arguments are optional.
 
 ### Testing
+To run unit tests, go to the `Fish` directory (this directory) and run
+
+```
+$  ./xtest
+```
+
+To run the testing harness for milestone 6, go to the `../6` directory and run the following, passing a Depth-State to STDIN:
+
+```
+$ ./xstrategy
+```
+
 To run the testing harness for milestone 5, go to the `../5` directory and run the following, passing a Move-Response-Query to STDIN:
 
 ```
@@ -30,10 +42,4 @@ To run the testing harness for milestone 3, go to the `../3` directory and run t
 
 ```
 $  ./xboard
-```
-
-To run unit tests, go to the `Fish` directory (this directory) and run
-
-```
-$  ./xtest
 ```
