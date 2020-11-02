@@ -65,7 +65,7 @@ public class GameTree<X> implements IGameTree<X> {
 
             // add all possible moves
             for (Tile tile : tiles) {
-                Action action = new MovePenguin(player, penguin, tile, false);
+                Action action = new MovePenguin(player, penguin, tile);
                 IGameTree subtree = new GameTree(action.apply(startState.clone()));
                 substates.add(subtree);
             }

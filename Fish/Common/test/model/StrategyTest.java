@@ -17,6 +17,7 @@ import model.strategy.IStrategy;
 import model.strategy.Strategy;
 import model.tree.Action;
 import model.tree.MovePenguin;
+import model.tree.PassPenguin;
 import model.tree.PlacePenguin;
 import org.junit.Test;
 import sun.print.PSPrinterJob.EPSPrinter;
@@ -238,7 +239,7 @@ public class StrategyTest {
 
         Action action;
 
-        Action test = new MovePenguin(currentPlayer, penguinAt01, new Point(0,2), false);
+        Action test = new MovePenguin(currentPlayer, penguinAt01, new Point(0,2));
 
         action = strategy.chooseMoveAction(this.gameStateMinimax2, 3);
 
@@ -260,9 +261,7 @@ public class StrategyTest {
 
         action = strategy.chooseMoveAction(this.gameStateMinimax3, 5);
 
-        Action dummyPass = new MovePenguin(this.gameStateMinimax3.playerTurn(),
-            this.gameStateMinimax3.playerTurn().getPenguins().get(0),
-            this.gameStateMinimax3.playerTurn().getPenguins().get(0).getPosition(), true);
+        Action dummyPass = new PassPenguin(this.gameStateMinimax3.playerTurn());
 
         assertEquals(dummyPass,action);
 
@@ -290,8 +289,7 @@ public class StrategyTest {
 
        IPlayer playerWhoMoved = this.gameStateMinimax4.getPlayers().get(1);
 
-       Action expectedMove = new MovePenguin(playerWhoMoved, penguin,
-           new Point(0,2), false);
+       Action expectedMove = new MovePenguin(playerWhoMoved, penguin, new Point(0,2));
 
        assertEquals(expectedMove, lastAction);
     }

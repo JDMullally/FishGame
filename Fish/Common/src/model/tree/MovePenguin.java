@@ -8,7 +8,7 @@ import model.state.IPlayer;
 import model.board.Tile;
 
 /**
- * A Move represents a specific action that attempts to move a penguin on a game board.
+ * A Move Penguin represents a specific action that attempts to move a penguin on a game board.
  */
 public class MovePenguin implements Action {
 
@@ -16,7 +16,6 @@ public class MovePenguin implements Action {
     private IPenguin penguin;
     private Point fromPosition;
     private Point toPosition;
-    private boolean pass;
 
     /**
      * Constructor takes in required arguments to make a move
@@ -24,10 +23,9 @@ public class MovePenguin implements Action {
      * @param player
      * @param penguin
      * @param newTile
-     * @param pass
      */
-    public MovePenguin(IPlayer player, IPenguin penguin, Tile newTile, boolean pass) {
-        this(player, penguin, new Point(newTile.getPosition().x, newTile.getPosition().y), pass);
+    public MovePenguin(IPlayer player, IPenguin penguin, Tile newTile) {
+        this(player, penguin, new Point(newTile.getPosition().x, newTile.getPosition().y));
     }
 
     /**
@@ -36,19 +34,17 @@ public class MovePenguin implements Action {
      * @param player
      * @param penguin
      * @param newPoint
-     * @param pass
      */
-    public MovePenguin(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) {
+    public MovePenguin(IPlayer player, IPenguin penguin, Point newPoint) {
         this.player = player.clone();
         this.penguin = penguin.clone();
         this.fromPosition = new Point(penguin.getPosition());
         this.toPosition = new Point(newPoint);
-        this.pass = pass;
     }
 
     @Override
     public IGameState apply(IGameState state) throws IllegalArgumentException {
-        return state.clone().move(player, penguin, toPosition, pass);
+        return state.clone().move(this.player, this.penguin, this.toPosition, false);
     }
 
     @Override
@@ -63,11 +59,7 @@ public class MovePenguin implements Action {
 
     @Override
     public String toString() {
-        if(this.pass) {
-            return this.player.getColor() + ": passed their turn!";
-        } else {
-            return this.player.getColor() + ": " + this.fromPosition + " --> " + this.toPosition;
-        }
+        return this.player.getColor() + ": " + this.fromPosition + " --> " + this.toPosition;
     }
 
     @Override
@@ -79,8 +71,7 @@ public class MovePenguin implements Action {
                     && this.fromPosition.x == other.fromPosition.x
                     && this.fromPosition.y == other.fromPosition.y
                     && this.player.equals(other.player)
-                    && this.penguin.equals(other.penguin)
-                    && this.pass == other.pass;
+                    && this.penguin.equals(other.penguin);
         }
         return false;
     }

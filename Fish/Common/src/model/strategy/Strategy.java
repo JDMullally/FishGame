@@ -8,15 +8,22 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import controller.Controller;
 import model.board.Tile;
+import model.state.GameState;
 import model.state.IGameState;
 import model.state.IPenguin;
 import model.state.IPlayer;
+import model.state.ImmutableGameState;
+import model.state.ImmutableGameStateModel;
 import model.tree.Action;
 import model.tree.GameTree;
 import model.tree.IGameTree;
 import model.tree.MovePenguin;
+import model.tree.PassPenguin;
 import model.tree.PlacePenguin;
+import view.IView;
+import view.VisualView;
 
 /**
  * Represents a Strategy for a Player in terms of placing penguins and making moves.
@@ -91,7 +98,7 @@ public class Strategy implements IStrategy {
 
             Map<Action, Integer> actions = new HashMap<>();
             for (Tile tile : tiles) {
-                Action action = new MovePenguin(player, penguin, tile, false);
+                Action action = new MovePenguin(player, penguin, tile);
                 IGameTree subtree = new GameTree(action.apply(startState.clone()));
 
                 // create tree to depth-1 if applicable
@@ -99,7 +106,7 @@ public class Strategy implements IStrategy {
                     subtree = subtree.createTreeToDepth(subtree.getState(), depth - 1);
                 }
 
-                IGameState resultingState = this.minimaxHelper(subtree, depth - 1);
+                IGameState resultingState = this.minimaxHelper(subtree, player,depth - 1);
                 actions.put(action, this.evaluationFunction(resultingState, player));
             }
             penguinActions.put(penguin, actions);
@@ -117,13 +124,6 @@ public class Strategy implements IStrategy {
             for (Map.Entry<Action, Integer> entry2 : entry.getValue().entrySet()) {
                 Action action = entry2.getKey();
                 Integer score = entry2.getValue();
-
-                // TODO: Remove
-                Point from1t = action.getFromPosition();
-                Point to1t = action.getToPosition();
-                Point from1swapped = new Point(from1t.y, from1t.x);
-                Point to1swapped = new Point(to1t.y, to1t.x);
-                System.out.println("Score: " + score + ", " + from1swapped + " --> " + to1swapped);
 
                 if (bestAction == null || score > bestScore) {
                     bestScore = score;
@@ -157,21 +157,37 @@ public class Strategy implements IStrategy {
      * @param depth int
      * @return int
      */
-    private IGameState minimaxHelper(IGameTree<?> tree, int depth) {
+    private IGameState minimaxHelper(IGameTree<?> tree, IPlayer player, int depth) {
         IGameState state = tree.getState();
         List<IGameTree> substates = tree.getSubstates();
 
-        // if depth is 0, the game is over, or there are no moves then return the minimax score
-        if (depth == 0 || state.isGameOver() || substates.isEmpty()) {
+        // if depth is 0 or the game is over return the minimax score
+        if (depth == 0 || state.isGameOver()) {
             return state;
         }
 
-        IPlayer player = state.playerTurn();
+        // if the current player has no more moves, then return the state
+        // if another player has no more moves, then pass their turn
+        IPlayer curPlayer = state.playerTurn();
+        if (substates.isEmpty() && player.equals(curPlayer)) {
+            return state;
+        } else if (substates.isEmpty()) {
+            Action passAction = new PassPenguin(curPlayer);
+            IGameState resultingState = passAction.apply(tree.getState());
+            IGameTree resultingTree;
+            if (depth == 1) {
+                resultingTree = new GameTree(resultingState);
+            } else {
+                resultingTree = new GameTree(resultingState).createTreeToDepth(resultingState, depth - 1);
+            }
+
+            return this.minimaxHelper(resultingTree, player, depth - 1);
+        }
 
         LinkedHashMap<IGameState, Integer> scores = new LinkedHashMap<>();
         for (IGameTree subtree : substates) {
-            IGameState resultingState = this.minimaxHelper(subtree, depth - 1);
-            scores.put(resultingState, this.evaluationFunction(resultingState, player));
+            IGameState resultingState = this.minimaxHelper(subtree, player,depth - 1);
+            scores.put(resultingState, this.evaluationFunction(resultingState, curPlayer));
         }
 
         // returns the IGameState with the maximum score
@@ -191,6 +207,7 @@ public class Strategy implements IStrategy {
         for (IPlayer playerTemp : state.getPlayers()) {
             if (player.equals(playerTemp)) {
                validPlayer = playerTemp;
+               break;
             }
         }
 
@@ -198,10 +215,11 @@ public class Strategy implements IStrategy {
             throw new IllegalArgumentException("Invalid player specified");
         }
 
+        int playerScore = validPlayer.getScore();
         int score = 0;
         for (IPlayer playerTemp : state.getPlayers()) {
-            if (!player.equals(playerTemp)) {
-                score += validPlayer.getScore() - player.getScore();
+            if (!validPlayer.equals(playerTemp)) {
+                score += (playerScore - playerTemp.getScore());
             }
         }
         return score;

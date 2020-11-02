@@ -66,12 +66,6 @@ public class GameStrategyTestUtil {
             return;
         }
 
-        // TODO: Remove, used for testing
-        ImmutableGameStateModel immutableModel = new ImmutableGameState((GameState) gameState);
-        IView view = new VisualView(immutableModel);
-        Controller controller = new Controller();
-        controller.control((GameState) gameState, view);
-
         Strategy strategy = new Strategy();
         try {
             // takes actions and applies it to the game state

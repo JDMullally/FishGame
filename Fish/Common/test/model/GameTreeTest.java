@@ -18,6 +18,8 @@ import model.tree.Action;
 import model.tree.GameTree;
 import model.tree.IGameTree;
 import model.tree.MovePenguin;
+import model.tree.PassPenguin;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -96,7 +98,7 @@ public class GameTreeTest {
         IPlayer current = this.gameState.playerTurn();
         IPenguin firstPenguinInList = current.getPenguins().get(0);
         Point newPos = new Point(firstPenguinInList.getPosition().x, firstPenguinInList.getPosition().y + 2);
-        this.pass = new MovePenguin(current, firstPenguinInList, newPos, true);
+        this.pass = new PassPenguin(current);
 
         this.gameTree = new GameTree<>(this.gameState.clone());
 
@@ -104,7 +106,7 @@ public class GameTreeTest {
             @Override
             public IGameTree apply(IGameState gameState) {
                 //System.out.println(gameState.playerTurn());
-                Action pass = new MovePenguin(gameState.playerTurn(), gameState.playerTurn().getPenguins().get(0), newPos, true);
+                Action pass = new PassPenguin(gameState.playerTurn());
                 IGameState tryMoveDown = new GameTree(gameState.clone()).queryAction(gameState.clone(), pass);
                 try {
                     return new GameTree(tryMoveDown);
@@ -188,7 +190,7 @@ public class GameTreeTest {
         IPlayer current = state.playerTurn();
         IPenguin lastPenguinInList = current.getPenguins().get(current.getPenguins().size() - 1);
         Point newPos = new Point(lastPenguinInList.getPosition().x, lastPenguinInList.getPosition().y + 2);
-        this.moveDown = new MovePenguin(current, lastPenguinInList, newPos, false);
+        this.moveDown = new MovePenguin(current, lastPenguinInList, newPos);
 
         IGameState newState = this.gameTree.queryAction(state, this.moveDown);
 
@@ -208,7 +210,7 @@ public class GameTreeTest {
         Point newPos = new Point(firstPenguinInList.getPosition().x, firstPenguinInList.getPosition().y - 2);
 
         //Player should not be able to move their first penguin up.
-        Action moveUp = new MovePenguin(current, firstPenguinInList, newPos, false);
+        Action moveUp = new MovePenguin(current, firstPenguinInList, newPos);
 
         IGameState newState = this.gameTree.queryAction(state, moveUp);
     }
@@ -228,9 +230,9 @@ public class GameTreeTest {
         Point oldPos = new Point(lastPenguinInList.getPosition());
 
         Point newPos = new Point(lastPenguinInList.getPosition().x, lastPenguinInList.getPosition().y + 2);
-        this.moveDown = new MovePenguin(current, lastPenguinInList, newPos, false);
-        Action otherPlayerPass  = new MovePenguin(nextPlayer, lastPenguinInPlayer2List, newPos, true);
-        Action moveUp = new MovePenguin(current, lastPenguinInList, oldPos, false);
+        this.moveDown = new MovePenguin(current, lastPenguinInList, newPos);
+        Action otherPlayerPass = new PassPenguin(nextPlayer);
+        Action moveUp = new MovePenguin(current, lastPenguinInList, oldPos);
 
         //First move by player 1
         IGameState newState = this.gameTree.queryAction(state, this.moveDown);
@@ -256,7 +258,7 @@ public class GameTreeTest {
         IPlayer current = state.playerTurn();
         IPenguin lastPenguinInList = current.getPenguins().get(current.getPenguins().size() - 1);
         Point newPos = new Point(lastPenguinInList.getPosition().x, lastPenguinInList.getPosition().y + 2);
-        this.moveDown = new MovePenguin(current, lastPenguinInList, newPos, true);
+        this.moveDown = new PassPenguin(current);
 
         IGameState newState = this.gameTree.queryAction(state, this.moveDown);
 

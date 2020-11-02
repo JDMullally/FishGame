@@ -16,6 +16,7 @@ import model.state.Penguin;
 import model.state.Player;
 import model.tree.Action;
 import model.tree.MovePenguin;
+import model.tree.PassPenguin;
 import model.tree.PlacePenguin;
 import org.junit.Test;
 
@@ -60,14 +61,13 @@ public class MovePenguinTest {
 
         IPenguin penguin = this.gameState.playerTurn().getPenguins().get(0);
 
-        this.pass = new MovePenguin(this.gameState.playerTurn(),
-            this.gameState.playerTurn().getPenguins().get(0), new Point(100,100), true);
+        this.pass = new PassPenguin(this.gameState.playerTurn());
 
         assertEquals(new Point(0,0), this.gameState.playerTurn().getPenguins().get(0).getPosition());
 
         this.gameState = this.pass.apply(this.gameState);
 
-        this.moveDown = new MovePenguin(this.gameState.playerTurn(), this.gameState.playerTurn().getPenguins().get(1), new Point(3, 2), false);
+        this.moveDown = new MovePenguin(this.gameState.playerTurn(), this.gameState.playerTurn().getPenguins().get(1), new Point(3, 2));
 
         this.gameState = this.moveDown.apply(this.gameState);
 
@@ -86,7 +86,7 @@ public class MovePenguinTest {
         this.placeNPenguins(7);
         new PlacePenguin(this.gameState.playerTurn(), new Point(2,2)).apply(this.gameState);
         this.moveDown = new MovePenguin(this.gameState.playerTurn(),
-            this.gameState.playerTurn().getPenguins().get(1), new Point(2, 2), false);
+            this.gameState.playerTurn().getPenguins().get(1), new Point(2, 2));
         this.gameState = this.moveDown.apply(this.gameState);
     }
 
@@ -100,7 +100,7 @@ public class MovePenguinTest {
         IPlayer player = this.gameState.getPlayers().get(1);
 
         this.moveDown = new MovePenguin(player, player.getPenguins().get(0),
-            new Point(0,2), false);
+            new Point(0,2));
 
         this.gameState = this.moveDown.apply(this.gameState);
     }
@@ -116,7 +116,7 @@ public class MovePenguinTest {
         IPenguin otherPenguin = this.gameState.getPlayers().get(1).getPenguins().get(0);
 
         this.moveDown = new MovePenguin(this.gameState.playerTurn(), otherPenguin,
-            new Point(1,2), false);
+            new Point(1,2));
 
         this.gameState = this.moveDown.apply(this.gameState);
     }
@@ -131,7 +131,7 @@ public class MovePenguinTest {
 
         this.moveDown = new MovePenguin(this.gameState.playerTurn(),
             this.gameState.playerTurn().getPenguins().get(0),
-            new Point(0,2), false);
+            new Point(0,2));
 
         this.gameState = this.moveDown.apply(this.gameState);
 
@@ -139,14 +139,13 @@ public class MovePenguinTest {
 
         assertEquals(new Point(0,2), penguin.getPosition());
 
-        this.pass = new MovePenguin(this.gameState.playerTurn(),
-            this.gameState.playerTurn().getPenguins().get(0), new Point(100,100), true);
+        this.pass = new PassPenguin(this.gameState.playerTurn());
 
         this.gameState = this.pass.apply(this.gameState);
 
         Action moveUp = new MovePenguin(this.gameState.playerTurn(),
             this.gameState.playerTurn().getPenguins().get(1),
-            new Point(0,0), false);
+            new Point(0,0));
 
         moveUp.apply(this.gameState);
     }
