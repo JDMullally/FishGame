@@ -1,0 +1,1 @@
+// see Common/src/model/games/ManagerInterface.java
