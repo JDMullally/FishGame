@@ -1,8 +1,6 @@
 package model.tree;
 
-
 import java.awt.*;
-import java.util.List;
 
 import model.state.IGameState;
 import model.state.IPenguin;

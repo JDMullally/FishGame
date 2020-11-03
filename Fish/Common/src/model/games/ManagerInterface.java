@@ -40,11 +40,11 @@ public interface ManagerInterface {
 
     /**
      * Called only by a Referee.
-     * Allows a Referee to report an ongoing GameAction to the Tournament Manager.
+     * Allows a Referee to report an ongoing EGameAction to the Tournament Manager.
      *
      * @param gameAction IGameAction
      */
-    void reportOngoingAction(IGameAction gameAction);
+    void reportOngoingAction(GameAction gameAction);
 
     /**
      * Called only by an Observer.
@@ -52,14 +52,14 @@ public interface ManagerInterface {
      *
      * @return List of IGameAction
      */
-    List<IGameAction> getOngoingActions();
+    List<GameAction> getOngoingActions();
 
     /**
      * Called only by an Observer or Player
      * Allows an observer to see the placements of all players of a given tournament.
      *
      * @return List of IGameAction
-     * @throws IllegalStateException
+     * @throws IllegalStateException if the tournament isn't over yet
      */
     List<IPlayer> getTournamentResults() throws IllegalStateException;
 
@@ -68,7 +68,7 @@ public interface ManagerInterface {
      * Allows an observer to see the results of a given tournament round.
      *
      * @return List of IGameResult
-     * @throws IllegalStateException
+     * @throws IllegalStateException if the round provided in the tournament isn't over yet
      */
     List<IGameResult> getRoundResults() throws IllegalStateException;
 

@@ -52,6 +52,9 @@ up in this time frame.
 - Referee calls this method on Tournament Manager
 - The signature of this method is `GameAction -> ()`
     - A GameAction can be one of the following:
+        - A Player placing a penguin
+        - A Player making a move
+        - A Player forced to pass their turn
         - A Player was caught cheating
         - A game has ended
         - Other game information deemed important
