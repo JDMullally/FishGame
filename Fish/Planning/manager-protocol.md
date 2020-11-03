@@ -87,9 +87,9 @@ up in this time frame.
 
 `getTournamentStatistics()`
 - Player or Observer calls this method on Tournament Manger
-- The signature of this method is `() -> Statistic`
-    - A Statistic represents the current statistics for all players in the tournament
-    - A Statistic can include the following:
+- The signature of this method is `() -> String`
+    - A Statistic String represents the current statistics for all players in the tournament
+    - A Statistic String can include the following:
         - Player's current or final placement (depending on whether the tournament is ongoing or over)
         - Player's number of wins and losses
         - If a Player cheated
