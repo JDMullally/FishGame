@@ -33,7 +33,7 @@ public class ColorUtil {
     }
 
     /**
-     * Converts a color string ('red' | 'white' | 'brown' | 'black') to java.awt.Color
+     * Converts a Color to a String: java.awt.Color to ('red' | 'white' | 'brown' | 'black')
      *
      * @param color color as string
      * @return Color

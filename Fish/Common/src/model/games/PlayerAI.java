@@ -1,6 +1,7 @@
 package model.games;
 
 import model.state.IGameState;
+import model.state.IPlayer;
 import model.strategy.IStrategy;
 import model.tree.Action;
 import model.tree.PlayerInterface;
@@ -15,12 +16,14 @@ import model.tree.PlayerInterface;
 public class PlayerAI implements PlayerInterface {
 
     private IStrategy strategy;
+    IPlayer player;
 
-    PlayerAI(IStrategy strategy) {
-        if (strategy == null) {
-            throw new IllegalArgumentException("Cannot have a null IStrategy.");
+    PlayerAI(IStrategy strategy, IPlayer player) {
+        if (strategy == null || player == null) {
+            throw new IllegalArgumentException("Cannot have a null IStrategy or IPlayer");
         }
 
+        this.player = player;
         this.strategy = strategy;
     }
 
