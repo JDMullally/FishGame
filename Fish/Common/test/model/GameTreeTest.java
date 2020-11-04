@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import model.board.Tile;
 import model.state.GameState;
@@ -363,7 +365,7 @@ public class GameTreeTest {
     public void getSubstatesEmpty() {
         init();
 
-        assertEquals(new ArrayList<>(),this.gameTree.getSubstates());
+        assertEquals(this.gameTree.getSubstates().size(), 0);
     }
 
     /**
@@ -393,7 +395,7 @@ public class GameTreeTest {
     public void createTreeEmptySubStateThenFilledSubStates() {
         init();
 
-        List<IGameTree> substates = this.gameTree.getSubstates();
+        Map<Action, IGameTree> substates = this.gameTree.getSubstates();
 
         assertTrue(substates.isEmpty());
 
@@ -416,12 +418,12 @@ public class GameTreeTest {
         }
 
         boolean goesToDepthTwo = false;
-        List<IGameTree> substates = this.smallGameTree.getSubstates();
+        Map<Action, IGameTree> substates = this.smallGameTree.getSubstates();
         if(substates.isEmpty()) {
             assertFalse(goesToDepthTwo);
         } else {
-            for (IGameTree tree : substates) {
-                goesToDepthTwo = goesToDepthTwo || !tree.getSubstates().isEmpty();
+            for (Map.Entry<Action, IGameTree> tree : substates.entrySet()) {
+                goesToDepthTwo = goesToDepthTwo || !tree.getValue().getSubstates().isEmpty();
             }
         }
         assertTrue(goesToDepthTwo);
@@ -445,8 +447,6 @@ public class GameTreeTest {
 
         newTree.createTreeToDepth(newTree.getState(), 1);
 
-        boolean sameNumberOfSubStates = this.gameTree.getSubstates().size() == newTree.getSubstates().size();
-
-        assertTrue(sameNumberOfSubStates);
+        assertEquals(this.gameTree.getSubstates().size(), newTree.getSubstates().size());
     }
 }

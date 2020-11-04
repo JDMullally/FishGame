@@ -1,29 +1,19 @@
 package model.strategy;
 
 import java.awt.*;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.AbstractMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import controller.Controller;
 import model.board.Tile;
-import model.state.GameState;
 import model.state.IGameState;
-import model.state.IPenguin;
 import model.state.IPlayer;
-import model.state.ImmutableGameState;
-import model.state.ImmutableGameStateModel;
 import model.tree.Action;
 import model.tree.GameTree;
 import model.tree.IGameTree;
-import model.tree.MovePenguin;
 import model.tree.PassPenguin;
 import model.tree.PlacePenguin;
-import view.IView;
-import view.VisualView;
 
 /**
  * Represents a Strategy for a Player in terms of placing penguins and making moves.
@@ -82,70 +72,45 @@ public class Strategy implements IStrategy {
      */
     private Action minimax(IGameTree<?> tree, int depth) {
         IGameState startState = tree.getState();
+        Map<Action, IGameTree> substates = tree.getSubstates();
         IPlayer player = startState.playerTurn();
 
-        // retrieves a score for a all actions where 'score' is a function of the difference between
-        // 'player' score and all the other players scores.
-        Map<IPenguin, Map<Action, Integer>> penguinActions = new LinkedHashMap<>();
-        for (Map.Entry<IPenguin, List<Tile>> moves : startState.getPossibleMoves(player).entrySet()) {
-            IPenguin penguin = moves.getKey().clone();
-            List<Tile> tiles = moves.getValue();
-
-            // if the player has no moves to make
-            if (tiles.isEmpty()) {
-                continue;
-            }
-
-            Map<Action, Integer> actions = new HashMap<>();
-            for (Tile tile : tiles) {
-                Action action = new MovePenguin(player, penguin, tile);
-                IGameTree subtree = new GameTree(action.apply(startState.clone()));
-
-                // create tree to depth-1 if applicable
-                if (depth != 1) {
-                    subtree = subtree.createTreeToDepth(subtree.getState(), depth - 1);
-                }
-
-                IGameState resultingState = this.minimaxHelper(subtree, player,depth - 1);
-                actions.put(action, this.evaluationFunction(resultingState, player));
-            }
-            penguinActions.put(penguin, actions);
-        }
-
-        // if the player cannot move
-        if (penguinActions.isEmpty()) {
+        // if the player can't move
+        if (substates == null || substates.isEmpty()) {
             throw new IllegalStateException("The current player can't move");
         }
 
-        // returns the best actions based on the best 'score' and performs a tiebreak if necessary
-        int bestScore = Integer.MIN_VALUE;
-        Action bestAction = null;
-        for (Map.Entry<IPenguin, Map<Action, Integer>> entry : penguinActions.entrySet()) {
-            for (Map.Entry<Action, Integer> entry2 : entry.getValue().entrySet()) {
-                Action action = entry2.getKey();
-                Integer score = entry2.getValue();
+        // retrieves a score for all player actions
+        Map<Action, Map.Entry<IGameState, Integer>> actions = new LinkedHashMap<>();
+        for (Map.Entry<Action, IGameTree> map : substates.entrySet()) {
+            Action action = map.getKey();
+            IGameTree subtree = map.getValue();
+            IGameState substate = subtree.getState();
 
-                if (bestAction == null || score > bestScore) {
-                    bestScore = score;
-                    bestAction = action;
-                } else if (score == bestScore) {
-                    Point from1 = action.getFromPosition();
-                    Point from2 = bestAction.getFromPosition();
-                    Point to1 = action.getToPosition();
-                    Point to2 = bestAction.getToPosition();
-
-                    // if the scores are the same but one penguins 'from' position is more desirable
-                    // or if they are the same penguin, choose the more desirable 'to' position
-                    if (from1.y < from2.y || (from1.y == from2.y && from1.x < from2.x)) {
-                        bestAction = action;
-                    } else if ((from1.y == from2.y && from1.x == from2.x) && (to1.y < to2.y || (to1.y == to2.y && to1.x < to2.x))) {
-                        bestAction = action;
-                    }
-                }
+            // create tree to depth-1 if applicable
+            if (depth != 1) {
+                subtree = subtree.createTreeToDepth(substate, depth - 1);
             }
+
+            IGameState resultingState = this.minimaxHelper(subtree, player,depth - 1);
+
+            actions.put(action, new AbstractMap.SimpleEntry<>(resultingState, this.evaluationFunction(resultingState, player)));
         }
 
-        return bestAction;
+        // TODO: Remove
+        for (Map.Entry<Action, Map.Entry<IGameState, Integer>> map : actions.entrySet()) {
+            Action action = map.getKey();
+            IGameState state = map.getValue().getKey();
+            Integer score = map.getValue().getValue();
+            Point from1t = action.getFromPosition();
+            Point to1t = action.getToPosition();
+            Point from1swapped = new Point(from1t.y, from1t.x);
+            Point to1swapped = new Point(to1t.y, to1t.x);
+            System.out.println("Score: " + score + ", " + from1swapped + " --> " + to1swapped);
+        }
+
+        Map.Entry<Action, IGameState> bestAction = this.bestAction(actions, true);
+        return bestAction.getKey();
     }
 
     /**
@@ -159,7 +124,7 @@ public class Strategy implements IStrategy {
      */
     private IGameState minimaxHelper(IGameTree<?> tree, IPlayer player, int depth) {
         IGameState state = tree.getState();
-        List<IGameTree> substates = tree.getSubstates();
+        Map<Action, IGameTree> substates = tree.getSubstates();
 
         // if depth is 0 or the game is over return the minimax score
         if (depth == 0 || state.isGameOver()) {
@@ -184,19 +149,22 @@ public class Strategy implements IStrategy {
             return this.minimaxHelper(resultingTree, player, depth - 1);
         }
 
-        LinkedHashMap<IGameState, Integer> scores = new LinkedHashMap<>();
-        for (IGameTree subtree : substates) {
+        Map<Action, Map.Entry<IGameState, Integer>> actions = new LinkedHashMap<>();
+        for (Map.Entry<Action, IGameTree> map : substates.entrySet()) {
+            Action action = map.getKey();
+            IGameTree subtree = map.getValue();
+
             IGameState resultingState = this.minimaxHelper(subtree, player,depth - 1);
-            scores.put(resultingState, this.evaluationFunction(resultingState, curPlayer));
+            actions.put(action, new AbstractMap.SimpleEntry(resultingState, this.evaluationFunction(resultingState, player)));
         }
 
-        // returns the IGameState with the maximum score
-        return Collections.max(scores.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
+        Map.Entry<Action, IGameState> bestAction = this.bestAction(actions, player.equals(curPlayer));
+        return bestAction.getValue();
     }
 
     /**
-     * Returns the evaluation of a GameState for a given Iplayer based on the difference in player
-     * scores compared to this player's score.
+     * Returns the evaluation of a GameState for a given IPlayer which should always be the first
+     * player to make a move in the tree.
      *
      * @param state IGameState
      * @param player IPlayer
@@ -206,22 +174,53 @@ public class Strategy implements IStrategy {
         IPlayer validPlayer = null;
         for (IPlayer playerTemp : state.getPlayers()) {
             if (player.equals(playerTemp)) {
-               validPlayer = playerTemp;
-               break;
+                validPlayer = playerTemp;
+                break;
             }
         }
 
-        if (validPlayer == null) {
-            throw new IllegalArgumentException("Invalid player specified");
-        }
+        assert validPlayer != null;
+        return validPlayer.getScore();
+    }
 
-        int playerScore = validPlayer.getScore();
-        int score = 0;
-        for (IPlayer playerTemp : state.getPlayers()) {
-            if (!validPlayer.equals(playerTemp)) {
-                score += (playerScore - playerTemp.getScore());
+    /**
+     * returns the best actions based on the best 'score' and performs a tiebreak if necessary.
+     *
+     * @param actions Map of Action to Map.Entry of IGameState to Integer
+     * @param maximize boolean
+     * @return Map.Entry of Action to IGameState
+     */
+    private Map.Entry<Action, IGameState> bestAction(Map<Action, Map.Entry<IGameState, Integer>> actions, boolean maximize) {
+        int bestScore = maximize ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        Action bestAction = null;
+        IGameState bestState = null;
+        for (Map.Entry<Action, Map.Entry<IGameState, Integer>> map : actions.entrySet()) {
+            Action action = map.getKey();
+            IGameState state = map.getValue().getKey();
+            Integer score = map.getValue().getValue();
+
+            if (bestAction == null || (maximize ? score > bestScore : score < bestScore)) {
+                bestScore = score;
+                bestAction = action;
+                bestState = state;
+            } else if (score == bestScore) {
+                Point from1 = action.getFromPosition();
+                Point from2 = bestAction.getFromPosition();
+                Point to1 = action.getToPosition();
+                Point to2 = bestAction.getToPosition();
+
+                // if the scores are the same but one penguins 'from' position is more desirable
+                // or if they are the same penguin, choose the more desirable 'to' position
+                if (from1.y < from2.y || (from1.y == from2.y && from1.x < from2.x)) {
+                    bestAction = action;
+                    bestState = state;
+                } else if ((from1.y == from2.y && from1.x == from2.x) && (to1.y < to2.y || (to1.y == to2.y && to1.x < to2.x))) {
+                    bestAction = action;
+                    bestState = state;
+                }
             }
         }
-        return score;
+
+        return new AbstractMap.SimpleEntry<>(bestAction, bestState);
     }
 }

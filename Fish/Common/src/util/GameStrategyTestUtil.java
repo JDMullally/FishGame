@@ -66,6 +66,13 @@ public class GameStrategyTestUtil {
             return;
         }
 
+        // Todo: Remove
+        ImmutableGameStateModel immutableModel = new ImmutableGameState((GameState) gameState);
+
+        IView view = new VisualView(immutableModel);
+        Controller controller = new Controller();
+        controller.control((GameState) gameState, view);
+
         Strategy strategy = new Strategy();
         try {
             // takes actions and applies it to the game state

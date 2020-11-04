@@ -1,6 +1,7 @@
 package model.tree;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -21,7 +22,7 @@ public class GameTree<X> implements IGameTree<X> {
     private IGameState state;
 
     // substates of the tree
-    private List<IGameTree> substates;
+    private Map<Action, IGameTree> substates;
 
     /**
      * GameTree takes in a starting IGameState
@@ -30,7 +31,7 @@ public class GameTree<X> implements IGameTree<X> {
      */
     public GameTree(IGameState state) {
         this.state = state.clone();
-        this.substates = new ArrayList<>();
+        this.substates = new LinkedHashMap<>();
     }
 
     /**
@@ -40,7 +41,7 @@ public class GameTree<X> implements IGameTree<X> {
      * @param state IGameState
      * @param substates List of IGameState
      */
-    public GameTree(IGameState state, List<IGameTree> substates) {
+    public GameTree(IGameState state, Map<Action, IGameTree> substates) {
         if (state == null || substates == null) {
             throw new IllegalArgumentException("Can't have null states or substates");
         }
@@ -55,10 +56,10 @@ public class GameTree<X> implements IGameTree<X> {
      * @param startState starting state
      * @return List of IGameTree
      */
-    private List<IGameTree> createSubstates(IGameState startState) {
+    private Map<Action, IGameTree> createSubstates(IGameState startState) {
         IPlayer player = startState.playerTurn();
 
-        List<IGameTree> substates = new ArrayList<>();
+        Map<Action, IGameTree> substates = new LinkedHashMap<>();
         for (Map.Entry<IPenguin, List<Tile>> moves : startState.getPossibleMoves(player).entrySet()) {
             IPenguin penguin = moves.getKey().clone();
             List<Tile> tiles = moves.getValue();
@@ -67,7 +68,7 @@ public class GameTree<X> implements IGameTree<X> {
             for (Tile tile : tiles) {
                 Action action = new MovePenguin(player, penguin, tile);
                 IGameTree subtree = new GameTree(action.apply(startState.clone()));
-                substates.add(subtree);
+                substates.put(action, subtree);
             }
         }
         return substates;
@@ -79,10 +80,13 @@ public class GameTree<X> implements IGameTree<X> {
     }
 
     @Override
-    public List<IGameTree> getSubstates() {
-        List<IGameTree> nodes = new ArrayList<>();
-        for (IGameTree node : this.substates) {
-            nodes.add(new GameTree(node.getState().clone(), node.getSubstates()));
+    public Map<Action, IGameTree> getSubstates() {
+        Map<Action, IGameTree> nodes = new LinkedHashMap<>();
+        for (Map.Entry<Action, IGameTree> map : this.substates.entrySet()) {
+            Action key = map.getKey();
+            IGameTree value = map.getValue();
+
+            nodes.put(key, new GameTree(value.getState().clone(), value.getSubstates()));
         }
         return nodes;
     }
@@ -94,8 +98,8 @@ public class GameTree<X> implements IGameTree<X> {
             return this;
         }
 
-        for (IGameTree tree : this.substates) {
-            tree.createCompleteTree();
+        for (Map.Entry<Action, IGameTree> map : this.substates.entrySet()) {
+            map.getValue().createCompleteTree();
         }
 
         return this;
@@ -108,7 +112,8 @@ public class GameTree<X> implements IGameTree<X> {
         }
 
         this.substates = this.createSubstates(this.state);
-        for (IGameTree substate : this.substates) {
+        for (Map.Entry<Action, IGameTree> map : this.substates.entrySet()) {
+            IGameTree substate = map.getValue();
             substate.createTreeToDepth(substate.getState(), depth - 1);
         }
 
@@ -127,7 +132,8 @@ public class GameTree<X> implements IGameTree<X> {
     @Override
     public List<X> applyFunction(IGameState state, Function<IGameState, X> func) {
         List<X> result = new ArrayList<>();
-        for (IGameTree substate : this.createSubstates(state)) {
+        for (Map.Entry<Action, IGameTree> map : this.createSubstates(state).entrySet()) {
+            IGameTree substate = map.getValue();
             result.add(func.apply(substate.getState().clone()));
         }
 

@@ -1,6 +1,7 @@
 package model.tree;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import model.state.IGameState;
@@ -20,11 +21,12 @@ public interface IGameTree<X> {
     public IGameState getState();
 
     /**
-     * Returns the currently reachable substates of the current GameTree.
+     * Returns the currently reachable substates of the current GameTree and the Actions taken to
+     * get to those substates.
      *
-     *  @return List of IGameTree
+     *  @return Map of Action to IGameTree
      */
-    public List<IGameTree> getSubstates();
+    public Map<Action, IGameTree> getSubstates();
 
     /**
      * Creates a complete tree for this IGameTree's state to which players will not add any
