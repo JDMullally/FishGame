@@ -2,7 +2,6 @@ package model.games;
 
 import java.util.ArrayList;
 import java.util.List;
-import model.state.IPlayer;
 import model.tree.PlayerInterface;
 
 /**

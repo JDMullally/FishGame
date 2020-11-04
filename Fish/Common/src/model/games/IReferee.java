@@ -2,7 +2,6 @@ package model.games;
 
 import java.util.List;
 
-import model.board.Tile;
 import model.state.IGameState;
 
 /**

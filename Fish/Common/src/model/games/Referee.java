@@ -132,12 +132,23 @@ public class Referee implements IReferee {
                 this.gameState = action.apply(this.gameState);
                 this.ongoingActions.add(new GameAction(action));
             } catch (Exception e) {
-                this.gameState.removePlayer(curPlayer);
-                this.players.remove(curPlayer.getColor());
-                this.cheaters.put(curPlayer.getColor(), curPlayerInterface);
-                this.ongoingActions.add(new GameAction(new PlayerCheated(curPlayer)));
+                this.playerCheated(curPlayer, curPlayerInterface);
             }
         }
+    }
+
+    /**
+     * When a player cheats, they are removed from the game.
+     *
+     * @param curPlayer IPlayer
+     * @param curPlayerInterface IPLayerInterface
+     */
+    private void playerCheated(IPlayer curPlayer, PlayerInterface curPlayerInterface) {
+        Action action = new PlayerCheated(curPlayer);
+        this.gameState = action.apply(this.gameState);
+        this.players.remove(curPlayer.getColor());
+        this.cheaters.put(curPlayer.getColor(), curPlayerInterface);
+        this.ongoingActions.add(new GameAction(action));
     }
 
     /**
@@ -170,10 +181,7 @@ public class Referee implements IReferee {
                 this.gameState = action.apply(this.gameState);
                 this.ongoingActions.add(new GameAction(action));
             } catch (Exception e) {
-                this.gameState.removePlayer(curPlayer);
-                this.players.remove(curPlayer.getColor());
-                this.cheaters.put(curPlayer.getColor(), curPlayerInterface);
-                this.ongoingActions.add(new GameAction(new PlayerCheated(curPlayer)));
+                this.playerCheated(curPlayer, curPlayerInterface);
             }
         }
 

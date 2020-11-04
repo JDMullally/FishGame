@@ -6,12 +6,15 @@ import java.util.List;
 import model.board.GameBoard;
 import model.board.IGameBoard;
 import model.games.GameAction;
+import model.games.IGameResult;
 import model.games.IReferee;
 import model.games.PlayerAI;
 import model.games.Referee;
 import model.strategy.Strategy;
 import model.tree.PlayerInterface;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class RefereeTest {
 
@@ -39,12 +42,15 @@ public class RefereeTest {
 
         IReferee ref = new Referee(players2);
 
-        ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
 
         List<GameAction> actions = ref.getOngoingActions();
         for (GameAction action: actions) {
             System.out.println(action);
         }
+
+        assertEquals(2, result.getPlayerPlacements().size());
+        assertEquals(0, result.getCheaters().size());
     }
 
     @Test

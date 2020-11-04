@@ -43,11 +43,22 @@ public class Strategy implements IStrategy {
         IPlayer player = state.playerTurn();
 
         List<Tile> availableTiles = state.getPenguinPlacementTiles();
+
         if (availableTiles.isEmpty()) {
             throw new IllegalArgumentException("No available Tiles to place a penguin on");
         }
 
-        return new PlacePenguin(player, availableTiles.get(0).getPosition());
+        // gets the position of the next tile to place
+        Point point = availableTiles.get(0).getPosition();
+        for (Tile tile : availableTiles) {
+            Point point2 = tile.getPosition();
+
+            if (point2.y < point.y || (point2.y == point.y && point2.x < point.x)) {
+                point = point2;
+            }
+        }
+
+        return new PlacePenguin(player, point);
     }
 
     /**

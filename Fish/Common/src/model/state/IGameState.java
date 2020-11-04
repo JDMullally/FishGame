@@ -45,7 +45,7 @@ public interface IGameState extends IGameBoard {
     /**
      * Returns a List of Tiles that do not have holes or penguins currently on them.  The List is
      * organized following a zig zag pattern that starts at the top left corner. The list
-     * goes from left to right in each row and moves down to the next row when one is filled up
+     * goes from top to down in each column and moves right when a column is filled.
      *
      * @return List of Tile
      */

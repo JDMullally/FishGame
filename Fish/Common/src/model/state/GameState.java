@@ -70,6 +70,28 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     /**
+     * Allows the creation of a GameState with a 2D Array of Tiles that keeps track
+     * of the holes and values of the fish.
+     * @param rows
+     * @param columns
+     * @param board
+     * @param players
+     * @param cheaters
+     */
+    public GameState(int rows, int columns, Tile[][] board, List<IPlayer> players, int cheaters) {
+        super(rows, columns, board);
+
+        if (players == null) {
+            throw new IllegalArgumentException("Players cannot be null");
+        }
+
+        this.players = new ArrayList<>(players);
+        this.cheaters = cheaters;
+
+        this.validateInitialPlayers();
+    }
+
+    /**
      * Constructor initializes GameState with rows, columns, and a well formatted JsonArray.
      *
      * @param rows number of rows on the board
@@ -254,23 +276,6 @@ public class GameState extends GameBoard implements IGameState {
         return false;
     }
 
-    /**
-     * Inverts a Game Board representation.
-     *
-     * @param board the game board
-     * @return inverted game board
-     */
-    private Tile[][] invertBoard(Tile[][] board) {
-        Tile[][] newBoard = new Tile[board[0].length][board.length];
-
-        for (Tile[] col : board) {
-            for (Tile tile: col) {
-                newBoard[tile.getPosition().y][tile.getPosition().x] = tile.clone();
-            }
-        }
-        return newBoard;
-    }
-
     @Override
     public List<IPlayer> getPlayers() {
         return new ArrayList<>(this.players);
@@ -305,8 +310,7 @@ public class GameState extends GameBoard implements IGameState {
     @Override
     public List<Tile> getPenguinPlacementTiles() {
         List<Tile> tiles = new ArrayList<>();
-        Tile[][] invertedBoard = this.invertBoard(this.getGameBoard());
-        for (Tile[] rows : invertedBoard) {
+        for (Tile[] rows : this.getGameBoard()) {
             for (Tile tile : rows) {
                 if (!tile.isEmpty() && !this.pointContainsPenguin(tile.getPosition())) {
                     tiles.add(tile);
@@ -476,6 +480,7 @@ public class GameState extends GameBoard implements IGameState {
                 }
             }
         }
+
         return true;
     }
 
@@ -498,7 +503,7 @@ public class GameState extends GameBoard implements IGameState {
         for (IPlayer player : players) {
             newPlayers.add(player.clone());
         }
-        return new GameState(this.getRows(), this.getColumns(), this.getGameBoard(), newPlayers);
+        return new GameState(this.getRows(), this.getColumns(), this.getGameBoard(), newPlayers, this.cheaters);
     }
 
 }

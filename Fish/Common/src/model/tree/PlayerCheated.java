@@ -27,7 +27,8 @@ public class PlayerCheated implements Action {
 
     @Override
     public IGameState apply(IGameState state) {
-        return state; // TODO: Allow referee to remove the player from the game
+        state.removePlayer(this.player);
+        return state;
     }
 
     @Override

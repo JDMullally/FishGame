@@ -1,7 +1,6 @@
 package model.tree;
 
 import model.state.IGameState;
-import model.state.IPlayer;
 
 /**
  * This interface represents a Player's interface for interacting with the game.
