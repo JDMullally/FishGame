@@ -53,6 +53,22 @@ public class Player implements IPlayer {
     }
 
     /**
+     * Constructs this Player from an IPlayer
+     *
+     * @param player IPlayer
+     */
+    public Player(IPlayer player) {
+        if (player == null) {
+            throw new IllegalArgumentException("IPlayer cannot be null");
+        }
+
+        this.color = player.getColor();
+        this.age = player.getAge();
+        this.penguins = player.getPenguins();
+        this.score = player.getScore();
+    }
+
+    /**
      * Returns a valid list of penguins or throws an exception if the List of IPenguins is invalid.
      * A List of IPenguins is invalid if the Player's color isn't the same as all of the Penguin's
      * colors.

@@ -1,6 +1,7 @@
 package model.tree;
 
 import model.state.IGameState;
+import model.state.IPlayer;
 
 /**
  * This interface represents a Player's interface for interacting with the game.
@@ -26,4 +27,11 @@ public interface PlayerInterface {
      * @return Action
      */
     Action movePenguin(IGameState state);
+
+    /**
+     * Returns the IPlayer.
+     *
+     * @return IPlayer
+     */
+    IPlayer getPlayer();
 }

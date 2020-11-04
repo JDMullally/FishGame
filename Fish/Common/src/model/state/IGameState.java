@@ -3,7 +3,6 @@ package model.state;
 import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import model.board.IGameBoard;
 import model.board.Tile;
@@ -100,6 +99,14 @@ public interface IGameState extends IGameBoard {
      */
     IGameState move(IPlayer player, IPenguin penguin, Point newPoint, boolean pass) throws IllegalArgumentException;
 
+    /**
+     * Removes an IPlayer from the game. This is called as a result of an IPlayer cheats or performs
+     * some kind of misbehavior.
+     *
+     * @param player IPLayer being removed
+     * @return the IPLayer being removed
+     */
+    IPlayer removePlayer(IPlayer player);
 
     /**
      * Returns true if the current player cannot make a move with any of their penguins.
@@ -107,6 +114,13 @@ public interface IGameState extends IGameBoard {
      * @return boolean
      */
     boolean isCurrentPlayerStuck();
+
+    /**
+     * Returns true if the game is ready to played (penguin placement phase is over).
+     *
+     * @return boolean
+     */
+    boolean isGameReady();
 
     /**
      * Returns true if no players can make a move and false otherwise.

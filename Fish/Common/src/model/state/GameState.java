@@ -6,13 +6,10 @@ import com.google.gson.JsonObject;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import java.util.Map;
 import model.board.GameBoard;
-import model.board.IGameBoard;
 import model.board.Tile;
 import util.ColorUtil;
 
@@ -26,6 +23,7 @@ import util.ColorUtil;
 public class GameState extends GameBoard implements IGameState {
 
     private List<IPlayer> players; // the players of the game
+    private int cheaters; // the number of cheating players, who have been removed from the game
 
     /**
      * Constructor that allows the addition of a full list of players.
@@ -42,12 +40,9 @@ public class GameState extends GameBoard implements IGameState {
         if (players == null) {
             throw new IllegalArgumentException("Players cannot be null");
         }
-        this.players = new ArrayList<>(players);
 
-        if (this.newPlayers()) {
-            this.sortPlayers();
-        }
-        this.validateInitialPlayers();
+        this.players = new ArrayList<>(players);
+        this.cheaters = 0;
     }
 
     /**
@@ -66,11 +61,7 @@ public class GameState extends GameBoard implements IGameState {
         }
 
         this.players = new ArrayList<>(players);
-
-        if (this.newPlayers()) {
-            this.sortPlayers();
-        }
-        this.validateInitialPlayers();
+        this.cheaters = 0;
     }
 
     /**
@@ -85,12 +76,7 @@ public class GameState extends GameBoard implements IGameState {
         super(rows, columns, board);
 
         this.players = this.jsonToPlayers(players);
-
-        if (this.newPlayers()) {
-            this.sortPlayers();
-        }
-        //this.sortPlayers();
-        this.validateInitialPlayers();
+        this.cheaters = 0;
     }
 
     /**
@@ -124,107 +110,44 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     /**
-     * Sorts players by age.
-     */
-    private void sortPlayers() {
-        this.players.sort(Comparator.comparingInt(IPlayer::getAge));
-    }
-
-    /**
-     * A checker so that players are only sorted by age once when they are initialized with no
-     * penguins.
-     * @return
-     */
-    private boolean newPlayers() {
-        validateInitialPlayers();
-        for (IPlayer player : this.players) {
-          if(!player.getPenguins().isEmpty()) {
-              return false;
-          }
-        }
-        return true;
-    }
-
-    /**
-     * Initial check for players.
-     */
-    private void validateInitialPlayers() {
-        if (this.players.isEmpty() || this.players.size() <= 1) {
-            throw new IllegalArgumentException("Cannot have a game with zero or one players");
-        } else if (this.players.size() > 4) {
-            throw new IllegalArgumentException("Cannot have a game with more than 4 players");
-        } else {
-            for (int i = 0; i < this.players.size(); i++) {
-                IPlayer player = this.players.get(i);
-
-                if (!player.getPenguins().isEmpty()) {
-                    if (player.getPenguins().size() > (6 - this.players.size())) {
-                        throw new IllegalArgumentException("Cannot have a player with more than 6 - N Penguins");
-                    }
-                    checkPlayerPenguins(player);
-                }
-
-                checkDuplicatePlayerColor(i, player);
-            }
-        }
-    }
-
-    /**
-     * Abstracted method that checks if any Players have the same colors.  It throws an error if the Player
-     * @param i int
-     * @param player IPlayer.
-     */
-    private void checkDuplicatePlayerColor(int i, IPlayer player) {
-        for (int j = 0; j < this.players.size(); j++) {
-            IPlayer player2 = this.players.get(j);
-            if (i != j && player.getColor().getRGB() == player2.getColor().getRGB()) {
-                throw new IllegalArgumentException("2 players have the same color: " + player.getColor().toString());
-            }
-        }
-    }
-
-    /**
-     * Checks if a Player's Penguins are owned by that player (have the same color)
-     * and not placed on an empty tile.
-     *
-     * @param player IPlayer
-     */
-    private void checkPlayerPenguins(IPlayer player) {
-        for (IPenguin penguin : player.getPenguins()) {
-            if (player.getColor().getRGB() != penguin.getColor().getRGB()) {
-                throw new IllegalArgumentException("Player has invalid Penguin colors");
-            }
-
-            Point penguinPoint = penguin.getPosition();
-            if (this.getGameBoard()[penguinPoint.x][penguinPoint.y].isEmpty()) {
-                throw new IllegalArgumentException("Player's penguin is placed on an empty tile");
-            }
-        }
-    }
-
-    /**
      * Validates that all players are initialized correctly on the basis of unique color, having a
-     * valid number of players (1-4), and each player having exactly (6 - players.size()) penguins.
+     * valid number of players (1-4), and each player having exactly (6 - 'size') penguins where
+     * size is: this.players.size() + cheaters.
      */
     private void validatePlayers() {
-        if (this.players.isEmpty() || this.players.size() <= 1) {
+        int size = this.players.size() + cheaters;
+        if (this.players.isEmpty() || size <= 1) {
             throw new IllegalArgumentException("Cannot have a game with zero or one players");
-        } else if (this.players.size() > 4) {
+        } else if (size > 4) {
             throw new IllegalArgumentException("Cannot have a game with more than 4 players");
         } else {
             for (int i = 0; i < this.players.size(); i++) {
                 IPlayer player = this.players.get(i);
 
                 // checks that penguin size is valid
-                if (player.getPenguins().size() != (6 - this.players.size())) {
+                if (player.getPenguins().size() != (6 - size)) {
                     throw new IllegalArgumentException("Player '" + player.getColor().toString() + "' has the wrong number of penguins");
                 }
 
-                // checks that penguin colors are correct and that there are no duplicate player colors
-                checkPlayerPenguins(player);
+                // checks that penguin colors are correct and that penguins are not placed on an empty tile
+                for (IPenguin penguin : player.getPenguins()) {
+                    if (player.getColor().getRGB() != penguin.getColor().getRGB()) {
+                        throw new IllegalArgumentException("Player has invalid Penguin colors");
+                    }
+
+                    Point penguinPoint = penguin.getPosition();
+                    if (this.getGameBoard()[penguinPoint.x][penguinPoint.y].isEmpty()) {
+                        throw new IllegalArgumentException("Player's penguin is placed on an empty tile");
+                    }
+                }
 
                 // checks that there are no duplicate player colors
-                checkDuplicatePlayerColor(i, player);
+                for (int j = 0; j < this.players.size(); j++) {
+                    IPlayer player2 = this.players.get(j);
+                    if (i != j && player.getColor().getRGB() == player2.getColor().getRGB()) {
+                        throw new IllegalArgumentException("2 players have the same color: " + player.getColor().toString());
+                    }
+                }
             }
         }
     }
@@ -449,15 +372,44 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     @Override
-    public boolean isCurrentPlayerStuck() {
-        boolean isStuck = true;
-        for (Map.Entry<IPenguin, List<Tile>> moves : this.getPossibleMoves(this.playerTurn()).entrySet()) {
-            IPenguin penguin = moves.getKey().clone();
-            List<Tile> tiles = moves.getValue();
-
-                isStuck = isStuck && tiles.isEmpty();
+    public IPlayer removePlayer(IPlayer player) {
+        if (player == null) {
+            throw new IllegalArgumentException("Player cannot be null");
         }
-        return isStuck;
+
+        // checks if the player is in the game
+        IPlayer playerToRemove = null;
+        int playerIndex = -1;
+        for (int i =0; i < this.players.size(); i++) {
+            IPlayer playerTemp = this.players.get(i);
+            if (player.equals(playerTemp)) {
+                playerToRemove = playerTemp;
+                playerIndex = i;
+                break;
+            }
+        }
+
+        if (playerToRemove == null) {
+            throw new IllegalArgumentException("Player isn't in the game");
+        }
+
+        this.cheaters++;
+        return this.players.remove(playerIndex);
+    }
+
+    @Override
+    public boolean isCurrentPlayerStuck() {
+        return this.getPossibleMoves(this.playerTurn()).isEmpty();
+    }
+
+    @Override
+    public boolean isGameReady() {
+        try {
+            this.validatePlayers();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override

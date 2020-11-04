@@ -132,7 +132,17 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     }
 
     @Override
+    public IPlayer removePlayer(IPlayer player) {
+        throw new UnsupportedOperationException("GameState is immutable.");
+    }
+
+    @Override
     public boolean isCurrentPlayerStuck() {
         return this.gameState.isCurrentPlayerStuck();
+    }
+
+    @Override
+    public boolean isGameReady() {
+        return this.gameState.isGameReady();
     }
 }
