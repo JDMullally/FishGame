@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import model.board.GameBoard;
 import model.board.Tile;
@@ -43,6 +44,8 @@ public class GameState extends GameBoard implements IGameState {
 
         this.players = new ArrayList<>(players);
         this.cheaters = 0;
+
+        this.validateInitialPlayers();
     }
 
     /**
@@ -62,6 +65,8 @@ public class GameState extends GameBoard implements IGameState {
 
         this.players = new ArrayList<>(players);
         this.cheaters = 0;
+
+        this.validateInitialPlayers();
     }
 
     /**
@@ -77,6 +82,8 @@ public class GameState extends GameBoard implements IGameState {
 
         this.players = this.jsonToPlayers(players);
         this.cheaters = 0;
+
+        this.validateInitialPlayers();
     }
 
     /**
@@ -110,12 +117,30 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     /**
+     * Initial check for players, validates that there are the correct amount.
+     */
+    private void validateInitialPlayers() {
+        int size = this.players.size() + this.cheaters;
+        if (size <= 1) {
+            throw new IllegalArgumentException("Cannot have a game with zero or one players");
+        } else if (size > 4) {
+            throw new IllegalArgumentException("Cannot have a game with more than 4 players");
+        }
+
+        // checks that there are no duplicate player colors
+        for (int i = 0; i < this.players.size(); i++) {
+            IPlayer player = this.players.get(i);
+            this.validatePlayerColors(i, player);
+        }
+    }
+
+    /**
      * Validates that all players are initialized correctly on the basis of unique color, having a
      * valid number of players (1-4), and each player having exactly (6 - 'size') penguins where
      * size is: this.players.size() + cheaters.
      */
     private void validatePlayers() {
-        int size = this.players.size() + cheaters;
+        int size = this.players.size() + this.cheaters;
         if (this.players.isEmpty() || size <= 1) {
             throw new IllegalArgumentException("Cannot have a game with zero or one players");
         } else if (size > 4) {
@@ -142,12 +167,22 @@ public class GameState extends GameBoard implements IGameState {
                 }
 
                 // checks that there are no duplicate player colors
-                for (int j = 0; j < this.players.size(); j++) {
-                    IPlayer player2 = this.players.get(j);
-                    if (i != j && player.getColor().getRGB() == player2.getColor().getRGB()) {
-                        throw new IllegalArgumentException("2 players have the same color: " + player.getColor().toString());
-                    }
-                }
+                this.validatePlayerColors(i, player);
+            }
+        }
+    }
+
+    /**
+     * Validates that players don't have the same colors.
+     *
+     * @param i index of player in question
+     * @param player IPlayer in question
+     */
+    private void validatePlayerColors(int i, IPlayer player) {
+        for (int j = 0; j < this.players.size(); j++) {
+            IPlayer player2 = this.players.get(j);
+            if (i != j && player.getColor().getRGB() == player2.getColor().getRGB()) {
+                throw new IllegalArgumentException("2 players have the same color: " + player.getColor().toString());
             }
         }
     }
@@ -295,6 +330,14 @@ public class GameState extends GameBoard implements IGameState {
             throw new IllegalArgumentException("Can't place a Penguin on another Penguin.");
         }
 
+        try {
+            if(this.getGameBoard()[point.x][point.y].isEmpty()) {
+                throw new IllegalArgumentException("Point given is an empty Tile");
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Point given is not on the GameBoard");
+        }
+
         IPenguin penguin = new Penguin(player.getColor(), point);
 
         // checks if the player is in the game and it's their turn
@@ -399,7 +442,13 @@ public class GameState extends GameBoard implements IGameState {
 
     @Override
     public boolean isCurrentPlayerStuck() {
-        return this.getPossibleMoves(this.playerTurn()).isEmpty();
+        boolean isStuck = true;
+        for (Map.Entry<IPenguin, List<Tile>> moves : this.getPossibleMoves(this.playerTurn()).entrySet()) {
+            List<Tile> tiles = moves.getValue();
+
+            isStuck = isStuck && tiles.isEmpty();
+        }
+        return isStuck;
     }
 
     @Override
@@ -414,6 +463,10 @@ public class GameState extends GameBoard implements IGameState {
 
     @Override
     public boolean isGameOver() {
+        if (this.players.isEmpty()) {
+            return true;
+        }
+
         for (IPlayer player : this.players) {
             for (IPenguin penguin : player.getPenguins()) {
                 for (Tile tile : this.getViableTiles(penguin.getPosition())) {

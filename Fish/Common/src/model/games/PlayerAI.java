@@ -1,7 +1,6 @@
 package model.games;
 
 import model.state.IGameState;
-import model.state.IPlayer;
 import model.strategy.IStrategy;
 import model.tree.Action;
 import model.tree.PlayerInterface;
@@ -13,20 +12,18 @@ import model.tree.PlayerInterface;
  */
 public class PlayerAI implements PlayerInterface {
 
-    private IPlayer player;
     private IStrategy strategy;
 
     /**
-     * Constructor takes in an IPlayer and their IStrategy
-     * @param player IPlayer
+     * Constructor takes in a player's IStrategy
+     *
      * @param strategy IStrategy
      */
-    public PlayerAI(IPlayer player, IStrategy strategy) {
-        if (player == null || strategy == null) {
-            throw new IllegalArgumentException("IPlayer and IStrategy cannot be null");
+    public PlayerAI(IStrategy strategy) {
+        if (strategy == null) {
+            throw new IllegalArgumentException("IStrategy cannot be null");
         }
 
-        this.player = player;
         this.strategy = strategy;
     }
 
@@ -38,10 +35,5 @@ public class PlayerAI implements PlayerInterface {
     @Override
     public Action movePenguin(IGameState state) {
         return this.strategy.chooseMoveAction(state, 2);
-    }
-
-    @Override
-    public IPlayer getPlayer() {
-        return this.player;
     }
 }

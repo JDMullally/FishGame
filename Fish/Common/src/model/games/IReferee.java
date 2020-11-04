@@ -62,8 +62,7 @@ public interface IReferee {
      *
      * @param rows The number of rows on the GameBoard
      * @param columns the number of columns on the GameBoard
-     * @param board the GameBoard
      * @return IGameResult
      */
-    IGameResult runGame(int rows, int columns, Tile[][] board);
+    IGameResult runGame(int rows, int columns);
 }

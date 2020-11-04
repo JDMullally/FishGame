@@ -1,7 +1,7 @@
 package model.games;
 
 import java.util.List;
-import model.state.IPlayer;
+import model.tree.PlayerInterface;
 
 /**
  * An IGameResult represents the interface for the results of a single Fish game which should
@@ -11,17 +11,17 @@ import model.state.IPlayer;
 public interface IGameResult {
 
     /**
-     * Gets the placements of all players as an ordered (descending) list of IPlayers where the
-     * IPlayer at index 0 placed first.
+     * Gets the placements of all players as an ordered (descending) list of PlayerInterface where
+     * the PlayerInterface at index 0 placed first.
      *
-     * @return List of IPlayer
+     * @return List of PlayerInterface
      */
-    List<IPlayer> getPlayerPlacements();
+    List<PlayerInterface> getPlayerPlacements();
 
     /**
      * Gets a list of IPlayers that cheated during the game.
      *
-     * @return List of IPlayer
+     * @return List of PlayerInterface
      */
-    List<IPlayer> getCheaters();
+    List<PlayerInterface> getCheaters();
 }

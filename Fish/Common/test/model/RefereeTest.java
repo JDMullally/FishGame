@@ -1,7 +1,5 @@
 package model;
 
-
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,14 +9,9 @@ import model.games.GameAction;
 import model.games.IReferee;
 import model.games.PlayerAI;
 import model.games.Referee;
-import model.state.IPlayer;
-import model.state.Player;
 import model.strategy.Strategy;
 import model.tree.PlayerInterface;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 
 public class RefereeTest {
 
@@ -29,25 +22,14 @@ public class RefereeTest {
         this.newBoard = new GameBoard(5,5,
             new ArrayList<>());
 
-        PlayerInterface p1 = new PlayerAI(
-            new Player(Color.BLACK, 4, new ArrayList<>()),
-            new Strategy());
+        PlayerInterface p1 = new PlayerAI(new Strategy());
+        PlayerInterface p2 = new PlayerAI(new Strategy());
+        PlayerInterface p3 = new PlayerAI(new Strategy());
+        PlayerInterface p4 = new PlayerAI(new Strategy());
 
-        PlayerInterface p2 = new PlayerAI(
-            new Player(Color.RED, 5, new ArrayList<>()),
-            new Strategy());
-
-        PlayerInterface p3 = new PlayerAI(
-            new Player(Color.WHITE, 5, new ArrayList<>()),
-            new Strategy());
-
-        PlayerInterface p4 = new PlayerAI(new Player(
-            new Color(210, 105, 30), 6, new ArrayList<>()),
-            new Strategy());
-
-        this.players2 = Arrays.asList(p1, p2);
-        this.players3 = Arrays.asList(p1, p2, p3);
-        this.players4 = Arrays.asList(p1, p2, p3, p4);
+        this.players2 = new ArrayList<>(Arrays.asList(p1, p2));
+        this.players3 = new ArrayList<>(Arrays.asList(p1, p2, p3));
+        this.players4 = new ArrayList<>(Arrays.asList(p1, p2, p3, p4));
     }
 
 
@@ -57,8 +39,7 @@ public class RefereeTest {
 
         IReferee ref = new Referee(players2);
 
-        ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns(),
-            this.newBoard.getGameBoard());
+        ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
 
         List<GameAction> actions = ref.getOngoingActions();
         for (GameAction action: actions) {

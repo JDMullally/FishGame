@@ -50,6 +50,23 @@ public class Strategy implements IStrategy {
         return new PlacePenguin(player, availableTiles.get(0).getPosition());
     }
 
+    /**
+     * Inverts a Game Board representation.
+     *
+     * @param board the game board
+     * @return inverted game board
+     */
+    private Tile[][] invertBoard(Tile[][] board) {
+        Tile[][] newBoard = new Tile[board[0].length][board.length];
+
+        for (Tile[] col : board) {
+            for (Tile tile: col) {
+                newBoard[tile.getPosition().y][tile.getPosition().x] = tile.clone();
+            }
+        }
+        return newBoard;
+    }
+
     @Override
     public Action chooseMoveAction(IGameState state, int turns) {
         if (state == null) {

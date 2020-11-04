@@ -27,11 +27,4 @@ public interface PlayerInterface {
      * @return Action
      */
     Action movePenguin(IGameState state);
-
-    /**
-     * Returns the IPlayer.
-     *
-     * @return IPlayer
-     */
-    IPlayer getPlayer();
 }
