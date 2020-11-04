@@ -15,6 +15,7 @@ import model.state.IGameState;
 import model.state.IPlayer;
 import model.state.Player;
 import model.tree.Action;
+import model.tree.PassPenguin;
 import model.tree.PlayerCheated;
 import model.tree.PlayerInterface;
 
@@ -176,6 +177,15 @@ public class Referee implements IReferee {
         while (!this.gameState.isGameOver()) {
             IPlayer curPlayer = this.gameState.playerTurn();
             PlayerInterface curPlayerInterface = this.players.get(curPlayer.getColor());
+
+            // if the player can't move, pass for them
+            if (this.gameState.isCurrentPlayerStuck()) {
+                Action action = new PassPenguin(curPlayer);
+                this.gameState = action.apply(this.gameState);
+                this.ongoingActions.add(new GameAction(action));
+            }
+
+            // allow the player to move based on their strategy
             try {
                 Action action = curPlayerInterface.movePenguin(this.gameState);
                 this.gameState = action.apply(this.gameState);
