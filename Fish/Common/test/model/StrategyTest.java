@@ -239,7 +239,7 @@ public class StrategyTest {
 
         Action action;
 
-        Action test = new MovePenguin(currentPlayer, penguinAt01, new Point(0,2));
+        Action test = new MovePenguin(currentPlayer, penguinAt01, new Point(1,2));
 
         action = strategy.chooseMoveAction(this.gameStateMinimax2, 3);
 

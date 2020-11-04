@@ -97,18 +97,6 @@ public class Strategy implements IStrategy {
             actions.put(action, new AbstractMap.SimpleEntry<>(resultingState, this.evaluationFunction(resultingState, player)));
         }
 
-        // TODO: Remove
-        for (Map.Entry<Action, Map.Entry<IGameState, Integer>> map : actions.entrySet()) {
-            Action action = map.getKey();
-            IGameState state = map.getValue().getKey();
-            Integer score = map.getValue().getValue();
-            Point from1t = action.getFromPosition();
-            Point to1t = action.getToPosition();
-            Point from1swapped = new Point(from1t.y, from1t.x);
-            Point to1swapped = new Point(to1t.y, to1t.x);
-            System.out.println("Score: " + score + ", " + from1swapped + " --> " + to1swapped);
-        }
-
         Map.Entry<Action, IGameState> bestAction = this.bestAction(actions, true);
         return bestAction.getKey();
     }
