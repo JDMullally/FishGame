@@ -2,6 +2,21 @@
 
 Fish is a board game for two to four players.
 
+###File Structure
+`/Admin` : Contains references to the interface for the tournament manager, 
+and implementation of the Referee.
+
+`/Planning` : Contains all self evaluations along with all memos to Dot Game CEOs for our design 
+plans regarding the interface and protocol of the game, referee, players, tournament manager, 
+project milestones and system requirements.
+
+`/Player` : Contains references to the implementation of our strategy and In-house player AI.
+
+`/Common` : Contains the implementations of our milestones.  All references in other files point to 
+files in `/src` within this folder.  This folder also contains all JUnit tests used by our xtest 
+script within `/test` and our Makefile for building our project.  Here you can also find references 
+to our implementation of a game-tree, player-interface, and state. 
+
 ### Example
 Go to the `Fish` directory and run the following command for information on how to properly run the
 executable:
