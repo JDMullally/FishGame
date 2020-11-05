@@ -13,6 +13,7 @@ import model.games.Referee;
 import model.state.IGameState;
 import model.strategy.testStrategies.MoveAnotherPlayerPenguin;
 import model.strategy.testStrategies.MoveOutsideBoard;
+import model.strategy.testStrategies.PassOwnTurnMakeAnotherPlayerCheat;
 import model.strategy.testStrategies.PlaceAnotherPlayerPenguin;
 import model.strategy.testStrategies.PlaceOutsideBoard;
 import model.strategy.testStrategies.PlacePenguinOnAnotherPlayerPenguin;
@@ -33,7 +34,8 @@ public class RefereeTest {
         oneMoveOutsideBoard,
         onePlacesPenguinOnAnotherPlayerPenguin,
         oneMoveAnotherPenguin,
-        onePlaceOutsideBoard;
+        onePlaceOutsideBoard,
+        onePassOwnTurnMakeAnotherPlayerCheat;
 
     void init() {
         this.newBoard = new GameBoard(5,5,
@@ -61,6 +63,9 @@ public class RefereeTest {
         PlayerInterface placeOutsideBoard =
             new PlayerAI(new PlaceOutsideBoard());
 
+        PlayerInterface passOwnTurnMakeAnotherPlayerCheat =
+            new PlayerAI(new PassOwnTurnMakeAnotherPlayerCheat());
+
         this.players2 = new ArrayList<>(Arrays.asList(p1, p2));
         this.players3 = new ArrayList<>(Arrays.asList(p1, p2, p3));
         this.players4 = new ArrayList<>(Arrays.asList(p1, p2, p3, p4));
@@ -83,6 +88,9 @@ public class RefereeTest {
         this.oneMoveAnotherPenguin = new ArrayList<>(Arrays.asList(p1, p2, moveAnotherPenguin));
 
         this.onePlaceOutsideBoard = new ArrayList<>(Arrays.asList(p1, p2, placeOutsideBoard));
+
+        this.onePassOwnTurnMakeAnotherPlayerCheat =
+            new ArrayList<>(Arrays.asList(p1, p2, passOwnTurnMakeAnotherPlayerCheat));
     }
 
     /**
@@ -125,10 +133,6 @@ public class RefereeTest {
         IReferee ref = new Referee(players4);
 
         IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
-
-        List<GameAction> actions = ref.getOngoingActions();
-
-        actions.forEach(System.out::println);
 
         assertEquals(4, result.getPlayerPlacements().size());
         assertEquals(0, result.getCheaters().size());
@@ -216,15 +220,27 @@ public class RefereeTest {
     }
 
     @Test
-    public void runGameThreePlayersMoveAnotherPenguin() {
+    public void runGameThreePlayersOnePassAnotherPlayerTurn() {
         this.init();
 
         IReferee ref = new Referee(this.oneMoveAnotherPenguin);
 
         IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
 
+        assertTrue(ref.getGameState().isGameOver());
+        assertEquals(2, result.getPlayerPlacements().size());
+        assertEquals(1, result.getCheaters().size());
+    }
+
+    @Test
+    public void runGameThreePlayersOnePassAndMoveAnotherPenguin() {
+        this.init();
+
+        IReferee ref = new Referee(this.onePassOwnTurnMakeAnotherPlayerCheat);
+
+        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+
         List<GameAction> actions = ref.getOngoingActions();
-        actions.forEach(System.out::println);
 
         assertTrue(ref.getGameState().isGameOver());
         assertEquals(2, result.getPlayerPlacements().size());
@@ -232,7 +248,7 @@ public class RefereeTest {
     }
 
     /**
-     * If both players cheat, the game will be declared over and the two players will be returned as
+     * If all players cheat, the game will be declared over and the two players will be returned as
      * cheaters.
      */
 

@@ -25,7 +25,7 @@ import model.tree.PlacePenguin;
  */
 public class PlacesPenguinsMovesWrong implements IStrategy {
 
-    IStrategy strategy;
+    private IStrategy strategy;
 
     /**
      * Constructor initializes this strategy with a copy of the In-House Strategy that would allow
