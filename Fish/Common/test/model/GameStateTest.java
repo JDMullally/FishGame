@@ -403,6 +403,29 @@ public class GameStateTest {
         assertNotEquals(player, this.gameState.playerTurn());
     }
 
+    /**
+     * Tests for removing a Player
+     */
+
+    @Test
+    public void removePlayer1() {
+        init2();
+        IPlayer player = this.gameState.playerTurn();
+        IPlayer removed = this.gameState.removePlayer(this.gameState.playerTurn());
+
+        assertEquals(player, removed);
+    }
+
+    @Test
+    public void removePlayer2() {
+        init2();
+
+        IPlayer removed = this.gameState.removePlayer(this.gameState.playerTurn());
+
+        assertEquals(1, this.gameState.getPlayers().size());
+    }
+
+
 
     /**
      * Game Over tests
