@@ -425,6 +425,24 @@ public class GameStateTest {
         assertEquals(1, this.gameState.getPlayers().size());
     }
 
+    @Test (expected = IllegalArgumentException.class)
+    public void removeNullPlayer() {
+        init2();
+
+        IPlayer dummyPlayer = null;
+
+        IPlayer removed = this.gameState.removePlayer(dummyPlayer);
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void removePlayerNotThere() {
+        init2();
+
+        IPlayer dummyPlayer = new Player(Color.BLACK, 4, new ArrayList<>());
+
+        IPlayer removed = this.gameState.removePlayer(dummyPlayer);
+    }
+
 
 
     /**
