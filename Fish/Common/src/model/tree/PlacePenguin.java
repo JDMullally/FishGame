@@ -4,6 +4,7 @@ import java.awt.Point;
 import model.board.Tile;
 import model.state.IGameState;
 import model.state.IPlayer;
+import util.ColorUtil;
 
 /**
  * An Action that places a Penguin into a given toPosition.
@@ -49,7 +50,7 @@ public class PlacePenguin implements Action {
 
     @Override
     public String toString() {
-        return this.player.getColor() + " --> " + this.toPosition;
+        return ColorUtil.toColorString(this.player.getColor()) + " --> " + this.toPosition;
     }
 
     @Override

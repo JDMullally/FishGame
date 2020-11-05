@@ -4,6 +4,7 @@ import java.awt.*;
 
 import model.state.IGameState;
 import model.state.IPlayer;
+import util.ColorUtil;
 
 /**
  * A Player Cheated action represents a specific action that represents a cheating player.
@@ -43,7 +44,7 @@ public class PlayerCheated implements Action {
 
     @Override
     public String toString() {
-        return this.player.getColor() + ": cheated!";
+        return ColorUtil.toColorString(this.player.getColor()) + ": cheated!";
     }
 
     @Override

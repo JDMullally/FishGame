@@ -239,4 +239,9 @@ public class Strategy implements IStrategy {
 
         return new AbstractMap.SimpleEntry<>(bestAction, bestState);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Strategy;
+    }
 }

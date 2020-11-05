@@ -36,4 +36,14 @@ public class GameResult implements IGameResult {
     public List<PlayerInterface> getCheaters() {
         return new ArrayList<>(this.cheaters);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof GameResult) {
+            GameResult other = (GameResult) o;
+            return this.placements.equals(other.placements)
+                && this.cheaters.equals(other.cheaters);
+        }
+        return false;
+    }
 }

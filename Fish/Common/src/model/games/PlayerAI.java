@@ -36,4 +36,13 @@ public class PlayerAI implements PlayerInterface {
     public Action movePenguin(IGameState state) {
         return this.strategy.chooseMoveAction(state, 2);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof PlayerAI) {
+            PlayerAI other = (PlayerAI) o;
+            return this.strategy.equals(other.strategy);
+        }
+        return false;
+    }
 }

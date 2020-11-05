@@ -5,6 +5,7 @@ import java.awt.*;
 import model.state.IGameState;
 import model.state.IPenguin;
 import model.state.IPlayer;
+import util.ColorUtil;
 
 /**
  * A Pass Penguin represents a specific action that passes a player's turn.
@@ -49,7 +50,7 @@ public class PassPenguin implements Action {
 
     @Override
     public String toString() {
-        return this.player.getColor() + ": passed their turn!";
+        return ColorUtil.toColorString(this.player.getColor())  + ": passed their turn!";
     }
 
     @Override

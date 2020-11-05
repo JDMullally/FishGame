@@ -6,6 +6,7 @@ import model.state.IGameState;
 import model.state.IPenguin;
 import model.state.IPlayer;
 import model.board.Tile;
+import util.ColorUtil;
 
 /**
  * A Move Penguin represents a specific action that attempts to move a penguin on a game board.
@@ -59,7 +60,8 @@ public class MovePenguin implements Action {
 
     @Override
     public String toString() {
-        return this.player.getColor() + ": " + this.fromPosition + " --> " + this.toPosition;
+        return ColorUtil.toColorString(this.player.getColor())
+            + ": " + this.fromPosition + " --> " + this.toPosition;
     }
 
     @Override

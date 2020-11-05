@@ -15,6 +15,7 @@ import model.state.IGameState;
 import model.state.IPlayer;
 import model.state.Player;
 import model.tree.Action;
+import model.tree.GameEnded;
 import model.tree.PassPenguin;
 import model.tree.PlayerCheated;
 import model.tree.PlayerInterface;
@@ -183,6 +184,7 @@ public class Referee implements IReferee {
                 Action action = new PassPenguin(curPlayer);
                 this.gameState = action.apply(this.gameState);
                 this.ongoingActions.add(new GameAction(action));
+                continue;
             }
 
             // allow the player to move based on their strategy
@@ -195,6 +197,8 @@ public class Referee implements IReferee {
             }
         }
 
+        Action endGame = new GameEnded(this.gameState);
+        this.ongoingActions.add(new GameAction(endGame));
         this.gameResult = this.retrieveGameResult();
         return this.gameResult;
     }

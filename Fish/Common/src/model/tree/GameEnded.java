@@ -5,6 +5,7 @@ import java.util.List;
 
 import model.state.IGameState;
 import model.state.IPlayer;
+import util.ColorUtil;
 
 /**
  * A Player Cheated action represents a specific action that represents a cheating player.
@@ -50,9 +51,9 @@ public class GameEnded implements Action {
         for (int i = 0; i < players.size(); i++) {
             IPlayer player = players.get(i);
             if (i == players.size() - 1) {
-                sb.append(player.getColor());
+                sb.append(ColorUtil.toColorString(player.getColor()));
             } else {
-                sb.append(player.getColor()).append(", ");
+                sb.append(ColorUtil.toColorString(player.getColor())).append(", ");
             }
         }
         sb.append(" Ended.");
