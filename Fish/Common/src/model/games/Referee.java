@@ -94,6 +94,11 @@ public class Referee implements IReferee {
         return mappedPlayers;
     }
 
+    /**
+     * Initializes players with ages and colors based on the order in which they were provided.
+     *
+     * @return List of IPlayer
+     */
     private List<IPlayer> initializePlayers() {
         return this.players.keySet().stream().map(color -> {
             switch (color.toString()) {
