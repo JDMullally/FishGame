@@ -13,6 +13,7 @@ import model.games.PlayerAI;
 import model.games.Referee;
 import model.state.IGameState;
 import model.strategy.BadStrategy;
+import model.strategy.SneakyCheater;
 import model.strategy.Strategy;
 import model.tree.PlayerInterface;
 import org.junit.Test;
@@ -22,7 +23,7 @@ import static org.junit.Assert.*;
 public class RefereeTest {
 
     private IGameBoard newBoard;
-    private List<PlayerInterface> players2, players3, players4, oneCheater;
+    private List<PlayerInterface> players2, players3, players4, oneCheater, oneSneaky, oneCheatsOneSneaky;
 
     void init() {
         this.newBoard = new GameBoard(5,5,
@@ -33,8 +34,13 @@ public class RefereeTest {
         PlayerInterface p3 = new PlayerAI(new Strategy());
         PlayerInterface p4 = new PlayerAI(new Strategy());
         PlayerInterface cheater = new PlayerAI(new BadStrategy());
+        PlayerInterface sneaky = new PlayerAI(new SneakyCheater());
 
         this.oneCheater = new ArrayList<>(Arrays.asList(p1, p2, cheater));
+
+        this.oneSneaky = new ArrayList<>(Arrays.asList(p1, p2, p3, sneaky));
+
+        this.oneCheatsOneSneaky = new ArrayList<>(Arrays.asList(sneaky, cheater));
 
         this.players2 = new ArrayList<>(Arrays.asList(p1, p2));
         this.players3 = new ArrayList<>(Arrays.asList(p1, p2, p3));
@@ -105,6 +111,42 @@ public class RefereeTest {
 
         assertEquals(2, result.getPlayerPlacements().size());
         assertEquals(1, result.getCheaters().size());
+    }
+
+    /**
+     * When a player cheats after the placement round, they will have their penguins removed.  This
+     * test is designed to check if the game breaks if a player's penguins are removed from the game.
+     */
+    @Test
+    public void runGameFourPlayersOneCheatsAfterPlacement() {
+        this.init();
+
+        IReferee ref = new Referee(oneSneaky);
+
+        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+
+        assertTrue(ref.getGameState().isGameOver());
+        assertEquals(3, result.getPlayerPlacements().size());
+        assertEquals(1, result.getCheaters().size());
+    }
+
+    /**
+     * If both players cheat, the game will be declared over and the two players will be returned as
+     * cheaters.
+     */
+
+    @Test
+    public void allCheatersGameEnds() {
+        this.init();
+
+        IReferee ref = new Referee(oneCheatsOneSneaky);
+
+        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+
+        assertTrue(ref.getGameState().isGameOver());
+        assertEquals(0, result.getPlayerPlacements().size());
+        assertEquals(2, result.getCheaters().size());
+
     }
 
 
