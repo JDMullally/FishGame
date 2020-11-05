@@ -1,6 +1,5 @@
 package model;
 
-import com.google.gson.internal.bind.util.ISO8601Utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,8 +11,12 @@ import model.games.IReferee;
 import model.games.PlayerAI;
 import model.games.Referee;
 import model.state.IGameState;
-import model.strategy.BadStrategy;
-import model.strategy.SneakyCheater;
+import model.strategy.MoveAnotherPlayerPenguin;
+import model.strategy.MoveOutsideBoard;
+import model.strategy.PlaceAnotherPlayerPenguin;
+import model.strategy.PlaceOutsideBoard;
+import model.strategy.PlacePenguinOnAnotherPlayerPenguin;
+import model.strategy.PlacesPenguinsMovesWrong;
 import model.strategy.Strategy;
 import model.tree.PlayerInterface;
 import org.junit.Test;
@@ -23,7 +26,14 @@ import static org.junit.Assert.*;
 public class RefereeTest {
 
     private IGameBoard newBoard;
-    private List<PlayerInterface> players2, players3, players4, oneCheater, oneSneaky, oneCheatsOneSneaky;
+    private List<PlayerInterface> players2, players3, players4,
+        oneCheater,
+        oneBadMove,
+        oneCheatsOneBadMove,
+        oneMoveOutsideBoard,
+        onePlacesPenguinOnAnotherPlayerPenguin,
+        oneMoveAnotherPenguin,
+        onePlaceOutsideBoard;
 
     void init() {
         this.newBoard = new GameBoard(5,5,
@@ -33,18 +43,46 @@ public class RefereeTest {
         PlayerInterface p2 = new PlayerAI(new Strategy());
         PlayerInterface p3 = new PlayerAI(new Strategy());
         PlayerInterface p4 = new PlayerAI(new Strategy());
-        PlayerInterface cheater = new PlayerAI(new BadStrategy());
-        PlayerInterface sneaky = new PlayerAI(new SneakyCheater());
+        PlayerInterface placeAnotherPlayerPenguin =
+            new PlayerAI(new PlaceAnotherPlayerPenguin());
 
-        this.oneCheater = new ArrayList<>(Arrays.asList(p1, p2, cheater));
+        PlayerInterface placesPenguinsMovesWrong =
+            new PlayerAI(new PlacesPenguinsMovesWrong());
 
-        this.oneSneaky = new ArrayList<>(Arrays.asList(p1, p2, p3, sneaky));
+        PlayerInterface moveOutsideBoard =
+            new PlayerAI(new MoveOutsideBoard());
 
-        this.oneCheatsOneSneaky = new ArrayList<>(Arrays.asList(sneaky, cheater));
+        PlayerInterface placesPenguinOneAnotherPlayerPenguin =
+            new PlayerAI(new PlacePenguinOnAnotherPlayerPenguin());
+
+        PlayerInterface moveAnotherPenguin =
+            new PlayerAI(new MoveAnotherPlayerPenguin());
+
+        PlayerInterface placeOutsideBoard =
+            new PlayerAI(new PlaceOutsideBoard());
 
         this.players2 = new ArrayList<>(Arrays.asList(p1, p2));
         this.players3 = new ArrayList<>(Arrays.asList(p1, p2, p3));
         this.players4 = new ArrayList<>(Arrays.asList(p1, p2, p3, p4));
+
+        this.oneCheater =
+            new ArrayList<>(Arrays.asList(p1, p2, placeAnotherPlayerPenguin));
+
+        this.oneBadMove =
+            new ArrayList<>(Arrays.asList(p1, p2, p3, placesPenguinsMovesWrong));
+
+        this.oneCheatsOneBadMove =
+            new ArrayList<>(Arrays.asList(placesPenguinsMovesWrong, placeAnotherPlayerPenguin));
+
+        this.oneMoveOutsideBoard =
+            new ArrayList<>(Arrays.asList(p1, p2, moveOutsideBoard));
+
+        this.onePlacesPenguinOnAnotherPlayerPenguin =
+            new ArrayList<>(Arrays.asList(p1, p2, placesPenguinOneAnotherPlayerPenguin));
+
+        this.oneMoveAnotherPenguin = new ArrayList<>(Arrays.asList(p1, p2, moveAnotherPenguin));
+
+        this.onePlaceOutsideBoard = new ArrayList<>(Arrays.asList(p1, p2, placeOutsideBoard));
     }
 
     /**
@@ -97,6 +135,8 @@ public class RefereeTest {
     }
 
     /**
+     * The following tests for runGame have the Player incorrectly place a Penguin.
+     *
      * When a player cheats, they will be removed from the game.  We have one player that has chosen
      * a strategy that asserts that they will cheat.  They should be removed from the game as soon
      * as the Referee calls on them.
@@ -109,24 +149,85 @@ public class RefereeTest {
 
         IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
 
+        assertTrue(ref.getGameState().isGameOver());
         assertEquals(2, result.getPlayerPlacements().size());
         assertEquals(1, result.getCheaters().size());
     }
 
+    @Test
+    public void runGameThreePlayersOnePlacesPenguinOutsideBoard() {
+        this.init();
+
+        IReferee ref = new Referee(onePlaceOutsideBoard);
+
+        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+
+        assertTrue(ref.getGameState().isGameOver());
+        assertEquals(2, result.getPlayerPlacements().size());
+        assertEquals(1, result.getCheaters().size());
+    }
+
+    @Test
+    public void runGameThreePlayersOnePlacesPenguinOnAnotherPlayerPenguin() {
+        this.init();
+
+        IReferee ref = new Referee(onePlacesPenguinOnAnotherPlayerPenguin);
+
+        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+
+        assertTrue(ref.getGameState().isGameOver());
+        assertEquals(2, result.getPlayerPlacements().size());
+        assertEquals(1, result.getCheaters().size());
+    }
+
+
+
     /**
+     * The following tests for runGame have the Player place Penguins correctly, but does not move a penguin
+     * in a valid manner.
+     *
      * When a player cheats after the placement round, they will have their penguins removed.  This
      * test is designed to check if the game breaks if a player's penguins are removed from the game.
      */
     @Test
-    public void runGameFourPlayersOneCheatsAfterPlacement() {
+    public void runGameFourPlayersOneCheatsAfterPlacementPenguinsMovesWrong() {
         this.init();
 
-        IReferee ref = new Referee(oneSneaky);
+        IReferee ref = new Referee(oneBadMove);
 
         IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
 
         assertTrue(ref.getGameState().isGameOver());
         assertEquals(3, result.getPlayerPlacements().size());
+        assertEquals(1, result.getCheaters().size());
+    }
+
+    @Test
+    public void runGameThreePlayersMoveOutsideBoard() {
+        this.init();
+
+        IReferee ref = new Referee(this.oneMoveOutsideBoard);
+
+        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+
+        assertTrue(ref.getGameState().isGameOver());
+        assertEquals(2, result.getPlayerPlacements().size());
+        assertEquals(1, result.getCheaters().size());
+    }
+
+    @Test
+    public void runGameThreePlayersMoveAnotherPenguin() {
+        this.init();
+
+        IReferee ref = new Referee(this.oneMoveAnotherPenguin);
+
+        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+
+        List<GameAction> actions = ref.getOngoingActions();
+        actions.forEach(System.out::println);
+
+        assertTrue(ref.getGameState().isGameOver());
+        assertEquals(2, result.getPlayerPlacements().size());
         assertEquals(1, result.getCheaters().size());
     }
 
@@ -139,7 +240,7 @@ public class RefereeTest {
     public void allCheatersGameEnds() {
         this.init();
 
-        IReferee ref = new Referee(oneCheatsOneSneaky);
+        IReferee ref = new Referee(oneCheatsOneBadMove);
 
         IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
 
