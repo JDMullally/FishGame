@@ -1,7 +1,9 @@
-package model.strategy;
+package model.strategy.testStrategies;
 
 import java.awt.Point;
 import model.state.IGameState;
+import model.strategy.IStrategy;
+import model.strategy.Strategy;
 import model.tree.Action;
 import model.tree.PlacePenguin;
 
@@ -21,7 +23,7 @@ import model.tree.PlacePenguin;
  * This Strategy is strictly for testing.  An In-House AI will never use this Strategy in a
  * Standard Game of Fish.
  */
-public class PlacesPenguinsMovesWrong implements IStrategy{
+public class PlacesPenguinsMovesWrong implements IStrategy {
 
     IStrategy strategy;
 

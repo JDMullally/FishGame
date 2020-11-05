@@ -1,10 +1,10 @@
-package model.strategy;
+package model.strategy.testStrategies;
 
 import java.awt.Point;
 import model.state.IGameState;
-import model.state.IPlayer;
+import model.strategy.IStrategy;
+import model.strategy.Strategy;
 import model.tree.Action;
-import model.tree.MovePenguin;
 
 /**
  * Represents a Strategy that will always try to make an Invalid move.
@@ -12,7 +12,9 @@ import model.tree.MovePenguin;
  * It places a penguin in the next available free spot following a zig zag pattern that starts at
  * the top left corner for the Placement phase of Fish.
  *
- * When asked to make a move, the strategy will attempt to move their first penguin outside the board.
+ * When asked to make a move, the strategy will create a state where it is another player's turn.
+ * It will then attempt to move another players penguin based on the In-House AI strategy.  This AI
+ * attempts to abuse the fact that a state has public methods and can be manipulated.
  *
  * This strategy is designed to break rules about player movement and should be removed from the
  * game for cheating.
@@ -20,11 +22,11 @@ import model.tree.MovePenguin;
  * This Strategy is strictly for testing.  An In-House AI will never use this Strategy in a
  * Standard Game of Fish.
  */
-public class MoveOutsideBoard implements IStrategy {
+public class MoveAnotherPlayerPenguin implements IStrategy {
 
     private IStrategy strategy;
 
-    public MoveOutsideBoard() {
+    public MoveAnotherPlayerPenguin() {
         this.strategy = new Strategy();
     }
 
@@ -35,11 +37,12 @@ public class MoveOutsideBoard implements IStrategy {
 
     @Override
     public Action chooseMoveAction(IGameState state, int turns) {
-        Point point = new Point(2 * state.getRows() * state.getColumns(),
-            2 * state.getColumns() * state.getRows());
-        IPlayer player = state.playerTurn();
+        state = state.move(
+            state.playerTurn(),
+            state.playerTurn().getPenguins().get(0),
+            new Point(1,1),
+            true);
 
-        return new MovePenguin(player, player.getPenguins().get(0), point);
+        return this.strategy.chooseMoveAction(state, turns);
     }
-
 }

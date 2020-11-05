@@ -1,8 +1,10 @@
-package model.strategy;
+package model.strategy.testStrategies;
 
 import java.awt.Point;
 import model.state.IGameState;
 import model.state.IPlayer;
+import model.strategy.IStrategy;
+import model.strategy.Strategy;
 import model.tree.Action;
 import model.tree.PlacePenguin;
 
