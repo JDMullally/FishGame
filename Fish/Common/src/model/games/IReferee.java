@@ -21,6 +21,11 @@ import model.state.IGameState;
  * - Trying to move a penguin to a location that is empty (a hole)
  * - Trying to move a penguin to a location already occupied by another penguin
  * - Trying to move a penguin to a location which it cannot reach
+ *
+ * An Abnormal condition (cheating) that the referee must take care of of resulting in the removal
+ * of a player specifically for remote communication include:
+ * - Taking too long to make a move (timeout)
+ * - Malformed Input
  */
 public interface IReferee {
 
