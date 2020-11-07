@@ -59,6 +59,9 @@ functions or methods:
 
 - a unit test for the "one-turn" function with an failing player 
 
+We were planning to "leave for the phase that adds in remote communication.", so we don't have a 
+test with a player that fails to return a move.
+
 **<>**
 
 - for documenting which abnormal conditions the referee addresses 
