@@ -155,12 +155,13 @@ public class Referee implements IReferee {
      * @param curPlayer IPlayer
      * @param curPlayerInterface IPLayerInterface
      */
-    private void playerCheated(IPlayer curPlayer, PlayerInterface curPlayerInterface) {
+    private IGameState playerCheated(IPlayer curPlayer, PlayerInterface curPlayerInterface) {
         Action action = new PlayerCheated(curPlayer);
-        this.gameState = action.apply(this.gameState);
+        IGameState newGameState = action.apply(this.gameState);
         this.players.remove(curPlayer.getColor());
         this.cheaters.put(curPlayer.getColor(), curPlayerInterface);
         this.ongoingActions.add(new GameAction(action));
+        return newGameState;
     }
 
     /**
@@ -186,31 +187,37 @@ public class Referee implements IReferee {
 
         // allows players to move penguins until the game is over
         while (!this.gameState.isGameOver()) {
-            IPlayer curPlayer = this.gameState.playerTurn();
-            PlayerInterface curPlayerInterface = this.players.get(curPlayer.getColor());
-
-            // if the player can't move, pass for them
-            if (this.gameState.isCurrentPlayerStuck()) {
-                Action action = new PassPenguin(curPlayer);
-                this.gameState = action.apply(this.gameState);
-                this.ongoingActions.add(new GameAction(action));
-                continue;
-            }
-
-            // allow the player to move based on their strategy
-            try {
-                Action action = curPlayerInterface.movePenguin(this.gameState);
-                this.gameState = action.apply(this.gameState);
-                this.ongoingActions.add(new GameAction(action));
-            } catch (Exception e) {
-                this.playerCheated(curPlayer, curPlayerInterface);
-            }
+            this.gameState = this.runTurn();
         }
 
         Action endGame = new GameEnded(this.gameState);
         this.ongoingActions.add(new GameAction(endGame));
         this.gameResult = this.retrieveGameResult();
         return this.gameResult;
+    }
+
+    public IGameState runTurn() {
+        IGameState newGameState;
+        IPlayer curPlayer = this.gameState.playerTurn();
+        PlayerInterface curPlayerInterface = this.players.get(curPlayer.getColor());
+
+        // if the player can't move, pass for them
+        if (this.gameState.isCurrentPlayerStuck()) {
+            Action action = new PassPenguin(curPlayer);
+            newGameState = action.apply(this.gameState);
+            this.ongoingActions.add(new GameAction(action));
+            return newGameState;
+        }
+
+        // allow the player to move based on their strategy
+        try {
+            Action action = curPlayerInterface.movePenguin(this.gameState);
+            newGameState = action.apply(this.gameState);
+            this.ongoingActions.add(new GameAction(action));
+        } catch (Exception e) {
+            newGameState = this.playerCheated(curPlayer, curPlayerInterface);
+        }
+        return newGameState;
     }
 
     @Override
