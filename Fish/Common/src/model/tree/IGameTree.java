@@ -1,6 +1,5 @@
 package model.tree;
 
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -11,14 +10,14 @@ import model.state.IGameState;
  * state it connects to all legal successor states. Each transition corresponds to a legal action of
  * the player whose turn it is in this state.
  */
-public interface IGameTree<X> {
+public interface IGameTree {
 
     /**
      * Returns the topmost IGameState of the GameTree.
      *
      * @return IGameState
      */
-    public IGameState getState();
+    IGameState getState();
 
     /**
      * Returns the currently reachable substates of the current GameTree and the Actions taken to
@@ -26,7 +25,7 @@ public interface IGameTree<X> {
      *
      *  @return Map of Action to IGameTree
      */
-    public Map<Action, IGameTree> getSubstates();
+    Map<Action, IGameTree> getSubstates();
 
     /**
      * Creates a complete tree for this IGameTree's state to which players will not add any
@@ -40,7 +39,7 @@ public interface IGameTree<X> {
      *
      * @return IGameTree
      */
-    public IGameTree createCompleteTree();
+    IGameTree createCompleteTree();
 
     /**
      * Creates a tree up to a given depth with a given starting state.
@@ -50,7 +49,7 @@ public interface IGameTree<X> {
      * @param depth int
      * @return IGameTree
      */
-    public IGameTree createTreeToDepth(IGameState state, int depth);
+    IGameTree createTreeToDepth(IGameState state, int depth);
 
     /**
      * For a given state and action either signals that the action is illegal or returns the state
@@ -62,7 +61,7 @@ public interface IGameTree<X> {
      *
      * @throws IllegalArgumentException if the action is illegal
      */
-    public IGameState queryAction(IGameState state, Action action) throws IllegalArgumentException;
+    IGameState queryAction(IGameState state, Action action) throws IllegalArgumentException;
 
     /**
      * Applies a specified function onto all states directly reachable from the given state.
@@ -71,5 +70,5 @@ public interface IGameTree<X> {
      * @param func Function<IGameState, X>
      * @return the resulting substates after applying the function to them
      */
-    public List<X> applyFunction(IGameState state, Function<IGameState, X> func);
+    <X> Map<Action, X> applyFunction(IGameState state, Function<IGameState, X> func);
 }

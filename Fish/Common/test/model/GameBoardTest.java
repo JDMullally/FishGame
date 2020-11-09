@@ -346,4 +346,9 @@ public class GameBoardTest {
 
         assertEquals(tileCopy, removedMissingTile);
     }
+
+    @Test
+    public void testToString() {
+
+    }
 }

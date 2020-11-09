@@ -1,6 +1,5 @@
 package model.tree;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,7 @@ import model.state.IPlayer;
  * legal successor states. Each transition corresponds to a legal action of the player whose turn it
  * is in this state.
  */
-public class GameTree<X> implements IGameTree<X> {
+public class GameTree implements IGameTree {
 
     // current state of the tree
     private IGameState state;
@@ -130,11 +129,12 @@ public class GameTree<X> implements IGameTree<X> {
     }
 
     @Override
-    public List<X> applyFunction(IGameState state, Function<IGameState, X> func) {
-        List<X> result = new ArrayList<>();
-        for (Map.Entry<Action, IGameTree> map : this.createSubstates(state).entrySet()) {
-            IGameTree substate = map.getValue();
-            result.add(func.apply(substate.getState().clone()));
+    public <X> Map<Action, X> applyFunction(IGameState state, Function<IGameState, X> func) {
+        Map<Action, X> result = new LinkedHashMap<>();
+        for (Map.Entry<Action, IGameTree> entry : this.createSubstates(state).entrySet()) {
+            Action action = entry.getKey();
+            IGameTree substate = entry.getValue();
+            result.put(action, func.apply(substate.getState().clone()));
         }
 
         return result;

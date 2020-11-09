@@ -87,7 +87,7 @@ public class Strategy implements IStrategy {
         }
 
         int depth = state.getPlayers().size() * (turns - 1) + 1;
-        IGameTree<?> gameTree = new GameTree(state).createCompleteTree();
+        IGameTree gameTree = new GameTree(state).createCompleteTree();
         return this.minimax(gameTree, depth);
     }
 
@@ -98,7 +98,7 @@ public class Strategy implements IStrategy {
      * @param tree IGameTree<?>
      * @return Action
      */
-    private Action minimax(IGameTree<?> tree, int depth) {
+    private Action minimax(IGameTree tree, int depth) {
         IGameState startState = tree.getState();
         Map<Action, IGameTree> substates = tree.getSubstates();
         IPlayer player = startState.playerTurn();
@@ -138,7 +138,7 @@ public class Strategy implements IStrategy {
      * @param depth int
      * @return int
      */
-    private IGameState minimaxHelper(IGameTree<?> tree, IPlayer player, int depth) {
+    private IGameState minimaxHelper(IGameTree tree, IPlayer player, int depth) {
         IGameState state = tree.getState();
         Map<Action, IGameTree> substates = tree.getSubstates();
 

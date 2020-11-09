@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -32,7 +31,7 @@ public class GameTreeTest {
     private Penguin peng1, peng2, peng3, peng4, peng5, peng6, peng7, peng8;
     private List<IPlayer> players;
     private Player p1, p2;
-    private IGameTree<IGameTree> gameTree, smallGameTree;
+    private IGameTree gameTree, smallGameTree;
     private Action moveDown, pass;
     private Function<IGameState, IGameTree> func, func2, func3, failfunc;
     //private Function<IGameState, IGameState> func3;
@@ -62,9 +61,9 @@ public class GameTreeTest {
 
         this.smallerGameState = new GameState(8,2, new ArrayList<>(), 0, 2, this.players);
 
-        this.gameTree = new GameTree<>(this.gameState);
+        this.gameTree = new GameTree(this.gameState);
 
-        this.smallGameTree = new GameTree<>(this.smallerGameState);
+        this.smallGameTree = new GameTree(this.smallerGameState);
 
         this.func = new Function<IGameState, IGameTree>() {
             @Override
@@ -102,7 +101,7 @@ public class GameTreeTest {
         Point newPos = new Point(firstPenguinInList.getPosition().x, firstPenguinInList.getPosition().y + 2);
         this.pass = new PassPenguin(current);
 
-        this.gameTree = new GameTree<>(this.gameState.clone());
+        this.gameTree = new GameTree(this.gameState.clone());
 
         this.func2 = new Function<IGameState, IGameTree>() {
             @Override
@@ -279,11 +278,11 @@ public class GameTreeTest {
     public void applyFunctionToTurnGameStatesIntoGameTree() {
         init();
 
-        List<IGameTree> listOfGameTree =
+        Map<Action, IGameTree> mapOfGameTree =
                 this.gameTree.applyFunction(this.gameTree.getState(), this.func);
 
         boolean createsGameTrees = true;
-        for (IGameTree gameTree: listOfGameTree) {
+        for (IGameTree gameTree: mapOfGameTree.values()) {
             createsGameTrees = createsGameTrees && gameTree instanceof GameTree;
         }
         assertTrue(createsGameTrees);
@@ -298,12 +297,12 @@ public class GameTreeTest {
         init2();
 
         IGameState prevState = this.gameTree.getState();
-        List<IGameTree> listOfGameTreeMoveDown =
+        Map<Action, IGameTree> mapOfGameTreeMoveDown =
             this.gameTree.applyFunction(this.gameTree.getState(), this.func2);
 
         boolean backToFirstPlayer = true;
 
-        for (IGameTree treeNode :  listOfGameTreeMoveDown) {
+        for (IGameTree treeNode :  mapOfGameTreeMoveDown.values()) {
             backToFirstPlayer = backToFirstPlayer && treeNode.getState().playerTurn().equals(prevState.playerTurn());
         }
 
@@ -323,12 +322,12 @@ public class GameTreeTest {
 
         int currentScore = state1.playerTurn().getScore();
 
-        List<IGameTree> listOfGameTreeFirstMove =
+        Map<Action, IGameTree> mapOfGameTreeFirstMove =
             this.gameTree.applyFunction(this.gameTree.getState(), this.func3);
 
         boolean otherPlayersScore = true;
 
-        for (IGameTree treeNode :  listOfGameTreeFirstMove) {
+        for (IGameTree treeNode :  mapOfGameTreeFirstMove.values()) {
             otherPlayersScore = otherPlayersScore && (treeNode.getState().playerTurn().getScore() != currentScore
                 && treeNode.getState().getPlayers().get(1).getScore() != currentScore);
         }
@@ -344,14 +343,15 @@ public class GameTreeTest {
     public void applyFunctionBadFunction() {
         init2();
 
-        List<IGameTree> listOfGameTree =
+        Map<Action, IGameTree> mapOfGameTree =
             this.gameTree.applyFunction(this.gameTree.getState(), this.failfunc);
 
-        for (IGameTree tree: listOfGameTree
-        ) {
+        for (IGameTree tree: mapOfGameTree.values()) {
             tree.applyFunction(tree.getState(), this.failfunc);
         }
     }
+
+    // TODO add more apply tests
 
     /**
      * Test for getSubstates
