@@ -15,12 +15,12 @@ import static constants.Constants.HEX_SIZE;
  */
 public class FishTile implements Tile {
 
-    private Point position; // position of the tile relative to the board coordinates
-    private int fish; // number of fish on the tile
+    private final Point position; // position of the tile relative to the board coordinates
+    private final int fish; // number of fish on the tile
 
-    private Point center; // the center of the tile relative to it's visual representation
-    private Polygon visualHexagon; // a visual representation of the tile
-    private List<GeneralPath> visualFish; // a visual representation of the fish on the tile
+    private final Point center; // the center of the tile relative to it's visual representation
+    private final Polygon visualHexagon; // a visual representation of the tile
+    private final List<GeneralPath> visualFish; // a visual representation of the fish on the tile
 
     /**
      * Constructor that takes in the position of the Tile and the number of fish it has.
