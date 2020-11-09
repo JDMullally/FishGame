@@ -419,7 +419,7 @@ public class GameState extends GameBoard implements IGameState {
     }
 
     @Override
-    public IPlayer removePlayer(IPlayer player) {
+    public IGameState removePlayer(IPlayer player) {
         if (player == null) {
             throw new IllegalArgumentException("Player cannot be null");
         }
@@ -441,7 +441,8 @@ public class GameState extends GameBoard implements IGameState {
         }
 
         this.cheaters++;
-        return this.players.remove(playerIndex);
+        this.players.remove(playerIndex);
+        return this.clone();
     }
 
     @Override

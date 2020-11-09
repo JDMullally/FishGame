@@ -106,7 +106,7 @@ public interface IGameState extends IGameBoard {
      * @param player IPLayer being removed
      * @return the IPLayer being removed
      */
-    IPlayer removePlayer(IPlayer player);
+    IGameState removePlayer(IPlayer player);
 
     /**
      * Returns true if the current player cannot make a move with any of their penguins.

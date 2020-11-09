@@ -127,7 +127,7 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     }
 
     @Override
-    public IPlayer removePlayer(IPlayer player) {
+    public IGameState removePlayer(IPlayer player) {
         throw new UnsupportedOperationException("GameState is immutable.");
     }
 

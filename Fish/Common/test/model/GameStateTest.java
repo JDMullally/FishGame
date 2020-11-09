@@ -411,8 +411,9 @@ public class GameStateTest {
     public void removePlayer1() {
         init2();
         IPlayer player = this.gameState.playerTurn();
-        IPlayer removed = this.gameState.removePlayer(this.gameState.playerTurn());
+        IGameState removed = this.gameState.removePlayer(this.gameState.playerTurn());
 
+        // TODO check that the gamestate has player removed
         assertEquals(player, removed);
     }
 
@@ -420,8 +421,8 @@ public class GameStateTest {
     public void removePlayer2() {
         init2();
 
-        IPlayer removed = this.gameState.removePlayer(this.gameState.playerTurn());
-
+        IGameState removed = this.gameState.removePlayer(this.gameState.playerTurn());
+        // TODO check that the gamestate has player removed
         assertEquals(1, this.gameState.getPlayers().size());
     }
 
@@ -430,8 +431,8 @@ public class GameStateTest {
         init2();
 
         IPlayer dummyPlayer = null;
-
-        IPlayer removed = this.gameState.removePlayer(dummyPlayer);
+        // TODO check that the gamestate has player removed
+        IGameState removed = this.gameState.removePlayer(dummyPlayer);
     }
 
     @Test (expected = IllegalArgumentException.class)
@@ -439,8 +440,8 @@ public class GameStateTest {
         init2();
 
         IPlayer dummyPlayer = new Player(Color.BLACK, 4, new ArrayList<>());
-
-        IPlayer removed = this.gameState.removePlayer(dummyPlayer);
+        // TODO check that the gamestate has player removed
+        IGameState removed = this.gameState.removePlayer(dummyPlayer);
     }
 
 
