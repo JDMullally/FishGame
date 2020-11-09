@@ -67,11 +67,6 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     }
 
     @Override
-    public Tile replaceTile(Tile tile) {
-        throw new UnsupportedOperationException("GameState is immutable.");
-    }
-
-    @Override
     public Tile replaceTile(Point point) {
         throw new UnsupportedOperationException("GameState is immutable.");
     }
