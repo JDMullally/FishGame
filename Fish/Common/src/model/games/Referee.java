@@ -125,7 +125,7 @@ public class Referee implements IReferee {
      * Creates an initial game state by asking players to place penguins until all of their penguins
      * have been placed
      */
-    private void createIntitialGame(int rows, int columns) {
+    public void createIntitialGame(int rows, int columns) {
         // creates game board
         IGameBoard gameBoard = new GameBoard(rows, columns);
 
