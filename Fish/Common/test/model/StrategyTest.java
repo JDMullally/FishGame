@@ -20,7 +20,6 @@ import model.tree.MovePenguin;
 import model.tree.PassPenguin;
 import model.tree.PlacePenguin;
 import org.junit.Test;
-import sun.print.PSPrinterJob.EPSPrinter;
 
 import static org.junit.Assert.*;
 
