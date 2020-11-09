@@ -183,7 +183,7 @@ public class GameState extends GameBoard implements IGameState {
                     }
 
                     Point penguinPoint = penguin.getPosition();
-                    if (this.getGameBoard()[penguinPoint.x][penguinPoint.y].isEmpty()) {
+                    if (this.getGameBoard()[penguinPoint.y][penguinPoint.x].isEmpty()) {
                         throw new IllegalArgumentException("Player's penguin is placed on an empty tile");
                     }
                 }
@@ -335,7 +335,7 @@ public class GameState extends GameBoard implements IGameState {
         }
 
         try {
-            if(this.getGameBoard()[point.x][point.y].isEmpty()) {
+            if(this.getGameBoard()[point.y][point.x].isEmpty()) {
                 throw new IllegalArgumentException("Point given is an empty Tile");
             }
         } catch (Exception e) {

@@ -75,7 +75,7 @@ public class GameStateUtil {
 
         // creates gameboard object
         JsonArray jsonBoard = new JsonArray();
-        Tile[][] board = this.invert(gameState.getGameBoard().clone());
+        Tile[][] board = gameState.getGameBoard().clone();
         for (Tile[] row : board) {
             JsonArray jsonRow = new JsonArray();
             for (Tile tile: row) {
@@ -97,6 +97,7 @@ public class GameStateUtil {
      */
     public IGameState JsonToGameState(JsonArray board, JsonArray players) {
         int rows = board.size();
+        // TODO find the max column size
         int columns = board.get(0).getAsJsonArray().size();
 
         return new GameState(rows, columns, board, players);

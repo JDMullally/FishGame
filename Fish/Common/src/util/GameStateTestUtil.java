@@ -64,24 +64,26 @@ public class GameStateTestUtil {
             try {
                 state = util.JsonToGameState(board, players);
             } catch (Exception e) {
-                System.out.println("False");
+                System.out.println("Error in JsonToGameState");
                 return;
             }
+
+            System.out.println(state);
 
             IPlayer player = state.playerTurn();
             IPenguin penguin = player.getPenguins().get(0);
 
-            List<Tile> tilesToMove = state.getPossibleMoves(player).entrySet().iterator().next().getValue();
+            List<Tile> tilesToMove = state.getPossibleMoves(player).get(penguin);
 
             if (tilesToMove.size() == 0) {
-                System.out.println("False");
+                System.out.println("no possible moves");
             } else {
 
                 IGameState endState;
                 try {
                     endState = state.move(player, penguin, tilesToMove.get(0), false);
                 } catch (Exception e) {
-                    System.out.println("False");
+                    System.out.println("Error in move");
                     return;
                 }
 

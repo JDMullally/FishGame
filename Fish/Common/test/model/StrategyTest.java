@@ -51,20 +51,20 @@ public class StrategyTest {
     private Tile[][] craftedBoard() {
         Tile[][] board = new Tile[4][4];
 
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                board[i][j] = new FishTile(i, j, j + 1);
+        for (int y = 0; y < board.length; y++) {
+            for (int x = 0; x < board[y].length; x++) {
+                board[y][x] = new FishTile(x, y, y + 1);
             }
         }
         return board;
     }
 
     private Tile[][] minimaxBoard() {
-        Tile[][] board = new Tile[4][3];
+        Tile[][] board = new Tile[3][4];
 
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                board[i][j] = new FishTile(i, j, j + 1);
+        for (int y = 0; y < board.length; y++) {
+            for (int x = 0; x < board[y].length; x++) {
+                board[y][x] = new FishTile(x, y, y + 1);
             }
         }
         return board;
@@ -73,11 +73,11 @@ public class StrategyTest {
     private Tile[][] noMoreMovesBoard() {
         Tile[][] board = new Tile[4][4];
 
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                board[i][j] = new FishTile(i, j, j + 1);
-                if (j > 1) {
-                    board[i][j] = new EmptyTile(i,j);
+        for (int y = 0; y < board.length; y++) {
+            for (int x = 0; x < board[y].length; x++) {
+                board[y][x] = new FishTile(x, y, y + 1);
+                if (y > 1) {
+                    board[y][x] = new EmptyTile(x,y);
                 }
             }
         }
@@ -85,13 +85,12 @@ public class StrategyTest {
     }
 
     private Tile[][] onlyBlackCanMove() {
-        Tile[][] board = new Tile[4][3];
-
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                board[i][j] = new FishTile(i, j, j + 1);
-                if (j > 1 && i > 0) {
-                    board[i][j] = new EmptyTile(i,j);
+        Tile[][] board = new Tile[3][4];
+        for (int y = 0; y < board.length; y++) {
+            for (int x = 0; x < board[y].length; x++) {
+                board[y][x] = new FishTile(x, y, y + 1);
+                if (y > 1 && x > 0) {
+                    board[y][x] = new EmptyTile(x,y);
                 }
             }
         }

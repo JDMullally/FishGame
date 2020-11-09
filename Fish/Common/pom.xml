@@ -57,7 +57,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>util.GameStrategyTestUtil</mainClass>
+                            <mainClass>util.GameStateTestUtil</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

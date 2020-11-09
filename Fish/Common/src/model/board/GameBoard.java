@@ -29,7 +29,7 @@ public class GameBoard implements IGameBoard {
 
     private final int rows; // rows of the board
     private final int columns; // columns of the board
-    private final Tile[][] board; // the game board
+    private final Tile[][] board; // the game board (row major)
     private final Canvas canvas; // the game board canvas
 
     /**
@@ -133,17 +133,17 @@ public class GameBoard implements IGameBoard {
         Random rand = new Random();
 
         // generate random board with holes
-        Tile[][] board = new Tile[columns][rows];
-        for (int x = 0; x < columns; x++) {
-            for (int y = 0; y < rows; y++) {
+        Tile[][] board = new Tile[rows][columns];
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < columns; x++) {
                 if (!holes.isEmpty() && holes.contains(new Point(x, y))) {
-                    board[x][y] = new EmptyTile(x, y);
+                    board[y][x] = new EmptyTile(x, y);
                 } else {
                     int fish = sameFish == 0 ? rand.nextInt(5) + 1 : sameFish;
                     if (fish == 1) {
                         minOneFishTiles--;
                     }
-                    board[x][y] = new FishTile(x, y, fish);
+                    board[y][x] = new FishTile(x, y, fish);
                 }
             }
         }
@@ -152,9 +152,9 @@ public class GameBoard implements IGameBoard {
         while (sameFish == 0 && minOneFishTiles > 0) {
             int x = rand.nextInt(columns);
             int y = rand.nextInt(rows);
-            int fish = board[x][y].getFish();
+            int fish = board[y][x].getFish();
             if (fish > 1) {
-                board[x][y] = new FishTile(x, y, 1);
+                board[y][x] = new FishTile(x, y, 1);
                 minOneFishTiles--;
             }
         }
@@ -176,13 +176,13 @@ public class GameBoard implements IGameBoard {
         }
 
         Tile[][] board = new Tile[columns][rows];
-        for (int i = 0; i < columns; i++) {
-            for (int j = 0; j < rows; j++) {
-                int fish = jsonArray.get(j).getAsJsonArray().get(i).getAsInt();
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < columns; x++) {
+                int fish = jsonArray.get(y).getAsJsonArray().get(x).getAsInt();
                 if (fish == 0) {
-                    board[i][j] = new EmptyTile(i, j);
+                    board[y][x] = new EmptyTile(x, y);
                 } else {
-                    board[i][j] = new FishTile(i, j, fish);
+                    board[y][x] = new FishTile(x, y, fish);
                 }
             }
         }
@@ -212,7 +212,7 @@ public class GameBoard implements IGameBoard {
                 && point.x < columns
                 && point.y >= 0
                 && point.y < rows
-                && !board[point.x][point.y].isEmpty();
+                && !board[point.y][point.x].isEmpty();
     }
 
     @Override
@@ -237,7 +237,7 @@ public class GameBoard implements IGameBoard {
 
     @Override
     public Tile getTile(Point point) {
-        return this.board[point.x][point.y].clone();
+        return this.board[point.y][point.x].clone();
     }
 
     @Override
@@ -258,7 +258,7 @@ public class GameBoard implements IGameBoard {
 
             // while we can continue on a current path
             buildPath: while (true) {
-                path.add(this.board[curPosition.x][curPosition.y]);
+                path.add(this.board[curPosition.y][curPosition.x]);
 
                 Point newPosition;
                 // for a given direction
@@ -370,8 +370,8 @@ public class GameBoard implements IGameBoard {
 
     @Override
     public Tile replaceTile(Point point) {
-        Tile oldTile = this.board[point.x][point.y];
-        this.board[point.x][point.y] = new EmptyTile(new Point(point));
+        Tile oldTile = this.board[point.y][point.x];
+        this.board[point.y][point.x] = new EmptyTile(new Point(point));
         return oldTile.clone();
     }
 
