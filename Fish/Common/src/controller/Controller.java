@@ -53,7 +53,7 @@ public class Controller implements IController {
                     }
                     // right click removes the tile
                     if (e.getButton() == 3) {
-                        this.model.replaceTile(new EmptyTile(tile.getPosition()));
+                        this.model.replaceTile(tile.getPosition());
                         this.view.update(new ImmutableGameState(this.model), new ArrayList<>());
                     }
 

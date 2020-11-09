@@ -70,13 +70,6 @@ public interface IGameBoard {
     List<Tile> getViableTiles(Point point);
 
     /**
-     * Replaces a Tile with an EmptyTile and returns the old Tile.
-     * @param tile
-     * @return Tile
-     */
-    Tile replaceTile(Tile tile);
-
-    /**
      * Replaces a Tile at the given Point with an EmptyTile and returns the old Tile.
      * @param point
      * @return Tile

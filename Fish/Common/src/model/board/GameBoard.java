@@ -27,10 +27,10 @@ import static constants.Constants.HEX_SIZE;
  */
 public class GameBoard implements IGameBoard {
 
-    private int rows; // rows of the board
-    private int columns; // columns of the board
-    private Tile[][] board; // the game board
-    private Canvas canvas; // the game board canvas
+    private final int rows; // rows of the board
+    private final int columns; // columns of the board
+    private final Tile[][] board; // the game board
+    private final Canvas canvas; // the game board canvas
 
     /**
      * Constructor that only takes in a rows and columns of the board.
@@ -134,16 +134,16 @@ public class GameBoard implements IGameBoard {
 
         // generate random board with holes
         Tile[][] board = new Tile[columns][rows];
-        for (int i = 0; i < columns; i++) {
-            for (int j = 0; j < rows; j++) {
-                if (!holes.isEmpty() && holes.contains(new Point(i, j))) {
-                    board[i][j] = new EmptyTile(i, j);
+        for (int x = 0; x < columns; x++) {
+            for (int y = 0; y < rows; y++) {
+                if (!holes.isEmpty() && holes.contains(new Point(x, y))) {
+                    board[x][y] = new EmptyTile(x, y);
                 } else {
                     int fish = sameFish == 0 ? rand.nextInt(5) + 1 : sameFish;
                     if (fish == 1) {
                         minOneFishTiles--;
                     }
-                    board[i][j] = new FishTile(i, j, fish);
+                    board[x][y] = new FishTile(x, y, fish);
                 }
             }
         }
@@ -366,11 +366,6 @@ public class GameBoard implements IGameBoard {
         tiles.removeIf(tile -> tile.getPosition().x == point.x && tile.getPosition().y == point.y);
 
         return tiles;
-    }
-
-    @Override
-    public Tile replaceTile(Tile tile) {
-        return this.replaceTile(tile.getPosition());
     }
 
     @Override
