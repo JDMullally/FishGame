@@ -1,5 +1,6 @@
 package model.tree;
 
+import java.util.concurrent.TimeoutException;
 import model.state.IGameState;
 
 /**
@@ -16,7 +17,7 @@ public interface PlayerInterface {
      * @param state IGameState
      * @return Action
      */
-    Action placePenguin(IGameState state);
+    Action placePenguin(IGameState state) throws TimeoutException;
 
     /**
      * A Player takes in an IGameState from a Referee. The player then returns an Action to make a
@@ -25,5 +26,5 @@ public interface PlayerInterface {
      * @param state IGameState
      * @return Action
      */
-    Action movePenguin(IGameState state);
+    Action movePenguin(IGameState state) throws TimeoutException;
 }

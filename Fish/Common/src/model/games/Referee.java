@@ -1,6 +1,14 @@
 package model.games;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.awt.*;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -45,6 +53,7 @@ import model.tree.PlayerInterface;
  */
 public class Referee implements IReferee {
 
+    private final int timeout;
     private Map<Color, PlayerInterface> players;
     private Map<Color, PlayerInterface> cheaters;
     private List<GameAction> ongoingActions;
@@ -64,6 +73,7 @@ public class Referee implements IReferee {
             throw new IllegalArgumentException("There must be between 2 and 4 players inclusive in the game");
         }
 
+        this.timeout = 30;
         this.players = this.initializePlayerInterfaces(players);
         this.cheaters = new HashMap<>();
         this.ongoingActions = new ArrayList<>();
@@ -196,6 +206,15 @@ public class Referee implements IReferee {
         return this.gameResult;
     }
 
+    /**
+     * Returns the state of the Game after a running single turn of Fish.
+     *
+     * A Turn of Fish means that the current player enters a valid move to move
+     * one of their penguins in designated time.
+     *
+     * @return IGameState
+     */
+
     public IGameState runTurn() {
         IGameState newGameState;
         IPlayer curPlayer = this.gameState.playerTurn();
@@ -209,16 +228,47 @@ public class Referee implements IReferee {
             return newGameState;
         }
 
+        ExecutorService executor = Executors.newCachedThreadPool();
+        Callable<Action> task = new Callable<Action>() {
+            public Action call() throws TimeoutException {
+                return curPlayerInterface.movePenguin(gameState);
+            }
+        };
+        Future<Action> future = executor.submit(task);
+
         // allow the player to move based on their strategy
         try {
-            Action action = curPlayerInterface.movePenguin(this.gameState);
+            Action action = future.get(this.timeout, TimeUnit.SECONDS);
+            //Action action = curPlayerInterface.movePenguin(this.gameState);
             newGameState = action.apply(this.gameState);
             this.ongoingActions.add(new GameAction(action));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | InterruptedException
+            | ExecutionException | TimeoutException e) {
             newGameState = this.playerCheated(curPlayer, curPlayerInterface);
         }
         return newGameState;
     }
+
+    /**
+     * Returns the state of the game after running a Round of Fish.
+     *
+     * A Round of Fish means all non-cheating players play their turn, and if the game doesn't end
+     * the current Player's turn of the returned GameState should return the first player who
+     * played that round.
+     *
+     * @return IGameState
+     */
+    public IGameState runRound() {
+        IGameState roundGameState = this.gameState;
+        for (int i = 0; i < players.values().size(); i++) {
+            if(roundGameState.isGameOver()) {
+                break;
+            }
+            roundGameState = runTurn();
+        }
+        return roundGameState;
+    }
+
 
     @Override
     public IGameResult getGameResult() throws IllegalStateException {
