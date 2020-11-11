@@ -1,5 +1,6 @@
 package model.games;
 
+import java.util.LinkedHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -27,6 +28,7 @@ import model.tree.GameEnded;
 import model.tree.PassPenguin;
 import model.tree.PlayerCheated;
 import model.tree.PlayerInterface;
+import sun.awt.image.ImageWatched.Link;
 
 /**
  * Implementation of a referee component, which can run a complete Fish game for a sequence of players.
@@ -73,9 +75,9 @@ public class Referee implements IReferee {
             throw new IllegalArgumentException("There must be between 2 and 4 players inclusive in the game");
         }
 
-        this.timeout = 30;
+        this.timeout = 5;
         this.players = this.initializePlayerInterfaces(players);
-        this.cheaters = new HashMap<>();
+        this.cheaters = new LinkedHashMap<>();
         this.ongoingActions = new ArrayList<>();
     }
 
@@ -86,7 +88,7 @@ public class Referee implements IReferee {
      * @return Map of Color to PlayerInterface
      */
     private Map<Color, PlayerInterface> initializePlayerInterfaces(List<PlayerInterface> players) {
-        Map<Color, PlayerInterface> mappedPlayers = new HashMap<>();
+        Map<Color, PlayerInterface> mappedPlayers = new LinkedHashMap<>();
         for (int i = 0; i < players.size(); i++) {
             switch (i) {
                 case 0:
@@ -122,7 +124,7 @@ public class Referee implements IReferee {
                 case "java.awt.Color[r=255,g=255,b=255]":
                     return new Player(color, 2, new ArrayList<>());
                 case "java.awt.Color[r=210,g=105,b=30]":
-                    return new Player(color, 3, new ArrayList<>());
+                    return new Player(color, 3, new ArrayList<>( ));
                 case "java.awt.Color[r=0,g=0,b=0]":
                     return new Player(color, 4, new ArrayList<>());
                 default:
@@ -135,7 +137,7 @@ public class Referee implements IReferee {
      * Creates an initial game state by asking players to place penguins until all of their penguins
      * have been placed
      */
-    public void createIntitialGame(int rows, int columns) {
+    public void createInitialGame(int rows, int columns) {
         // creates game board
         IGameBoard gameBoard = new GameBoard(rows, columns);
 
@@ -169,7 +171,8 @@ public class Referee implements IReferee {
             }
         };
 
-        return this.gameState = placeOrMove(task, curPlayer, curPlayerInterface);
+        this.gameState = placeOrMove(task, curPlayer, curPlayerInterface);
+        return this.gameState.clone();
     }
 
     /**
@@ -206,7 +209,7 @@ public class Referee implements IReferee {
 
     @Override
     public IGameResult runGame(int rows, int columns) {
-        this.createIntitialGame(rows, columns);
+        this.createInitialGame(rows, columns);
 
         // allows players to move penguins until the game is over
         while (!this.gameState.isGameOver()) {
@@ -251,7 +254,13 @@ public class Referee implements IReferee {
         return placeOrMove(task, curPlayer, curPlayerInterface);
     }
 
-
+    /**
+     * Returns the GameState after either a Place or Move Action was made.
+     * @param task
+     * @param curPlayer
+     * @param curPlayerInterface
+     * @return
+     */
     private IGameState placeOrMove(Callable<Action> task, IPlayer curPlayer,
         PlayerInterface curPlayerInterface) {
         IGameState newGameState;
