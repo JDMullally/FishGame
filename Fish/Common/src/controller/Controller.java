@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
-import model.board.EmptyTile;
 import model.state.GameState;
 import model.state.ImmutableGameState;
 import model.board.Tile;
@@ -53,7 +52,7 @@ public class Controller implements IController {
                     }
                     // right click removes the tile
                     if (e.getButton() == 3) {
-                        this.model.replaceTile(tile.getPosition());
+                        this.model.removeTile(tile.getPosition());
                         this.view.update(new ImmutableGameState(this.model), new ArrayList<>());
                     }
 
