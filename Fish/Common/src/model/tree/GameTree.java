@@ -59,6 +59,15 @@ public class GameTree implements IGameTree {
         IPlayer player = startState.playerTurn();
 
         Map<Action, IGameTree> substates = new LinkedHashMap<>();
+
+        // Deal with stuck players
+        if (startState.isCurrentPlayerStuck()) {
+            Action pass = new PassPenguin(player);
+            IGameTree subtree = new GameTree(pass.apply(startState.clone()));
+            substates.put(pass, subtree);
+            return substates;
+        }
+
         for (Map.Entry<IPenguin, List<Tile>> moves : startState.getPossibleMoves(player).entrySet()) {
             IPenguin penguin = moves.getKey().clone();
             List<Tile> tiles = moves.getValue();
