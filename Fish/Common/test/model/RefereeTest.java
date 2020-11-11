@@ -249,6 +249,8 @@ public class RefereeTest {
 
         List<GameAction> actions = ref.getOngoingActions();
 
+        //actions.stream().forEach(action -> System.out.println(action));
+
         assertTrue(ref.getGameState().isGameOver());
         assertEquals(2, result.getPlayerPlacements().size());
         assertEquals(1, result.getCheaters().size());
@@ -282,11 +284,11 @@ public class RefereeTest {
 
         Referee ref = new Referee(timeoutPlayer);
 
-        ref.createIntitialGame(5,5);
+        ref.createInitialGame(5,5);
 
         List<GameAction> actions = ref.getOngoingActions();
 
-        System.out.println(actions);
+        actions.stream().forEach(action -> System.out.println(action));
     }
 
 
