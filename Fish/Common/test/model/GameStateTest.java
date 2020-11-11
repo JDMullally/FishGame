@@ -413,8 +413,7 @@ public class GameStateTest {
         IPlayer player = this.gameState.playerTurn();
         IGameState removed = this.gameState.removePlayer(this.gameState.playerTurn());
 
-        // TODO check that the gamestate has player removed
-        assertEquals(player, removed);
+        assertFalse(removed.getPlayers().contains(player));
     }
 
     @Test
@@ -422,7 +421,7 @@ public class GameStateTest {
         init2();
 
         IGameState removed = this.gameState.removePlayer(this.gameState.playerTurn());
-        // TODO check that the gamestate has player removed
+
         assertEquals(1, this.gameState.getPlayers().size());
     }
 
@@ -431,7 +430,7 @@ public class GameStateTest {
         init2();
 
         IPlayer dummyPlayer = null;
-        // TODO check that the gamestate has player removed
+
         IGameState removed = this.gameState.removePlayer(dummyPlayer);
     }
 
@@ -440,7 +439,7 @@ public class GameStateTest {
         init2();
 
         IPlayer dummyPlayer = new Player(Color.BLACK, 4, new ArrayList<>());
-        // TODO check that the gamestate has player removed
+        
         IGameState removed = this.gameState.removePlayer(dummyPlayer);
     }
 
