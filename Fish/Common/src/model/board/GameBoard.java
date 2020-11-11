@@ -30,6 +30,7 @@ import static constants.Constants.HEX_SIZE;
  */
 public class GameBoard implements IGameBoard {
 
+    private final static int MAX_FISH = 5;
     private final int rows; // rows of the board
     private final int columns; // columns of the board
     private final Tile[][] board; // the game board (row major)
@@ -129,8 +130,8 @@ public class GameBoard implements IGameBoard {
                     + " number of tiles on the board minus the number of holes: "
                     + (rows * columns - holes.size()));
         }
-        if (sameFish < 0 || sameFish > 5) {
-            throw new IllegalArgumentException("The number of sameFish must be between 1 and 5 inclusive");
+        if (sameFish < 0 || sameFish > MAX_FISH) {
+            throw new IllegalArgumentException("The number of sameFish must be between 1 and MAX_FISH inclusive");
         }
 
         Random rand = new Random();
@@ -142,7 +143,7 @@ public class GameBoard implements IGameBoard {
                 if (!holes.isEmpty() && holes.contains(new Point(x, y))) {
                     board[y][x] = new EmptyTile(x, y);
                 } else {
-                    int fish = sameFish == 0 ? rand.nextInt(5) + 1 : sameFish;
+                    int fish = sameFish == 0 ? rand.nextInt(MAX_FISH) + 1 : sameFish;
                     if (fish == 1) {
                         minOneFishTiles--;
                     }
