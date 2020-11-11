@@ -15,6 +15,9 @@ public interface IStrategy {
      * The search goes from left to right in each row and moves down to the next row when
      * one is filled up.
      *
+     * This method returns an Action that contains the new Point where their penguin will be placed.
+     * See {@link model.tree.PlacePenguin}
+     *
      * @param state IGameState
      * @return Action
      */
@@ -24,6 +27,9 @@ public interface IStrategy {
      * Takes in the current GameState and returns a Move Action for moving a Penguin to the
      * preferred spot. It picks the action that realizes the minimal maximum gain after looking
      * ahead N > 0 turns for this player in the game tree for the current state.
+     *
+     * This method returns an Action that contains the new Point where their penguin will be placed.
+     * See {@link model.tree.MovePenguin}
      *
      * @param state IGameState
      * @param turns int
