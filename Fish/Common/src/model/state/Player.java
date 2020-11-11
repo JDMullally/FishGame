@@ -13,7 +13,7 @@ public class Player implements IPlayer {
 
     private final Color color; // The Player's color [unique]
     private final int age; // the age of the player
-    private List<IPenguin> penguins; // the Player's List of Penguins
+    private final List<IPenguin> penguins; // the Player's List of Penguins
     private int score; // the score the penguin currently has
 
     /**
