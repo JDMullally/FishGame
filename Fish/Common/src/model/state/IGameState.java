@@ -8,7 +8,7 @@ import model.board.IGameBoard;
 import model.board.Tile;
 
 /**
- * A GameState is a GameBoard that has a List of Players playing the game.
+ * An IGameState is a IGameBoard that has a List of Players playing the game.
  * It needs to manage more information which continuing to utilize IGameBoard methods.
  *
  * Represents the GameState for Fish. A GameState should be able to change the GameBoard,
