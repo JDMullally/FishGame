@@ -147,16 +147,29 @@ public class Referee implements IReferee {
 
         // allows players to place penguins until the game is ready to begin
         while (!this.gameState.isGameReady()) {
-            IPlayer curPlayer = this.gameState.playerTurn();
-            PlayerInterface curPlayerInterface = this.players.get(curPlayer.getColor());
-            try {
-                Action action = curPlayerInterface.placePenguin(this.gameState);
-                this.gameState = action.apply(this.gameState);
-                this.ongoingActions.add(new GameAction(action));
-            } catch (Exception e) {
-                this.playerCheated(curPlayer, curPlayerInterface);
-            }
+            this.placementTurn();
         }
+    }
+
+    /**
+     * Runs a single Placement Turn and returns the new state after the move is made.
+     *
+     * A Placement Turn of Fish means that the current player enters a valid placement of
+     * one of their penguins in designated time.
+     *
+     * @return IGameState
+     */
+    public IGameState placementTurn() {
+        IPlayer curPlayer = this.gameState.playerTurn();
+        PlayerInterface curPlayerInterface = this.players.get(curPlayer.getColor());
+
+        Callable<Action> task = new Callable<Action>() {
+            public Action call() throws TimeoutException {
+                return curPlayerInterface.placePenguin(gameState);
+            }
+        };
+
+        return this.gameState = placeOrMove(task, curPlayer, curPlayerInterface);
     }
 
     /**
@@ -228,12 +241,21 @@ public class Referee implements IReferee {
             return newGameState;
         }
 
-        ExecutorService executor = Executors.newCachedThreadPool();
+
         Callable<Action> task = new Callable<Action>() {
             public Action call() throws TimeoutException {
                 return curPlayerInterface.movePenguin(gameState);
             }
         };
+
+        return placeOrMove(task, curPlayer, curPlayerInterface);
+    }
+
+
+    private IGameState placeOrMove(Callable<Action> task, IPlayer curPlayer,
+        PlayerInterface curPlayerInterface) {
+        IGameState newGameState;
+        ExecutorService executor = Executors.newCachedThreadPool();
         Future<Action> future = executor.submit(task);
 
         // allow the player to move based on their strategy
