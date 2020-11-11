@@ -18,7 +18,7 @@ import model.state.IPlayer;
 public class GameTree implements IGameTree {
 
     // current state of the tree
-    private IGameState state;
+    private final IGameState state;
 
     // substates of the tree
     private Map<Action, IGameTree> substates;
