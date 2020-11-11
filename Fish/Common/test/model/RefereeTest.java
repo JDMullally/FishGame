@@ -19,6 +19,7 @@ import model.strategy.testStrategies.PlaceOutsideBoard;
 import model.strategy.testStrategies.PlacePenguinOnAnotherPlayerPenguin;
 import model.strategy.testStrategies.PlacesPenguinsMovesWrong;
 import model.strategy.Strategy;
+import model.strategy.testStrategies.TimeoutStrategy;
 import model.tree.PlayerInterface;
 import org.junit.Test;
 
@@ -35,7 +36,8 @@ public class RefereeTest {
         onePlacesPenguinOnAnotherPlayerPenguin,
         oneMoveAnotherPenguin,
         onePlaceOutsideBoard,
-        onePassOwnTurnMakeAnotherPlayerCheat;
+        onePassOwnTurnMakeAnotherPlayerCheat,
+        timeoutPlayer;
 
     void init() {
         this.newBoard = new GameBoard(5,5,
@@ -66,6 +68,8 @@ public class RefereeTest {
         PlayerInterface passOwnTurnMakeAnotherPlayerCheat =
             new PlayerAI(new PassOwnTurnMakeAnotherPlayerCheat());
 
+        PlayerInterface timeout = new PlayerAI(new TimeoutStrategy());
+
         this.players2 = new ArrayList<>(Arrays.asList(p1, p2));
         this.players3 = new ArrayList<>(Arrays.asList(p1, p2, p3));
         this.players4 = new ArrayList<>(Arrays.asList(p1, p2, p3, p4));
@@ -91,6 +95,9 @@ public class RefereeTest {
 
         this.onePassOwnTurnMakeAnotherPlayerCheat =
             new ArrayList<>(Arrays.asList(p1, p2, passOwnTurnMakeAnotherPlayerCheat));
+
+        this.timeoutPlayer = new ArrayList<>(Arrays.asList(p1, p2,
+            timeout));
     }
 
     /**
@@ -265,6 +272,23 @@ public class RefereeTest {
         assertEquals(2, result.getCheaters().size());
 
     }
+
+    /**
+     * Test for a player timing out during their placement.
+     */
+    @Test
+    public void timeoutTest()  {
+        this.init();
+
+        Referee ref = new Referee(timeoutPlayer);
+
+        ref.createIntitialGame(5,5);
+
+        List<GameAction> actions = ref.getOngoingActions();
+
+        System.out.println(actions);
+    }
+
 
 
     /**********************************************************************************************
