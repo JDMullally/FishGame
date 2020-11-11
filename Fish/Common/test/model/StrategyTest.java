@@ -28,8 +28,9 @@ public class StrategyTest {
 
     private IPlayer player1, player2;
     private List<IPlayer> players;
-    private IGameState gameState, gameStateMinimax,
-        gameStateMinimax2, gameStateMinimax3, gameStateMinimax4;
+    private IGameState gameState, gameStateMiniMax,
+        gameStateMiniMax2, gameStateMiniMax3, gameStateMiniMax4,
+        gameStateHoles;
 
     private void init() {
         this.player1 = new Player(Color.BLACK, 14, new ArrayList<>());
@@ -39,13 +40,15 @@ public class StrategyTest {
 
         this.gameState = new GameState(7,7, new ArrayList<>(), 0, 2, this.players);
 
-        this.gameStateMinimax = new GameState(4, 4, this.craftedBoard(), this.players);
+        this.gameStateMiniMax = new GameState(4, 4, this.craftedBoard(), this.players);
 
-        this.gameStateMinimax2 = new GameState(3,4, this.minimaxBoard(), this.players);
+        this.gameStateMiniMax2 = new GameState(3,4, this.MiniMaxBoard(), this.players);
 
-        this.gameStateMinimax3 = new GameState(4,4, this.noMoreMovesBoard(), this.players);
+        this.gameStateMiniMax3 = new GameState(4,4, this.noMoreMovesBoard(), this.players);
 
-        this.gameStateMinimax4 = new GameState(3,4, this.onlyBlackCanMove(), this.players);
+        this.gameStateMiniMax4 = new GameState(3,4, this.onlyBlackCanMove(), this.players);
+        
+        this.gameStateHoles = new GameState(4,4, this.boardOfHoles(), this.players);
     }
 
     private Tile[][] craftedBoard() {
@@ -59,7 +62,18 @@ public class StrategyTest {
         return board;
     }
 
-    private Tile[][] minimaxBoard() {
+    private Tile[][] boardOfHoles() {
+        Tile[][] board = new Tile[4][4];
+
+        for (int y = 0; y < board.length; y++) {
+            for (int x = 0; x < board[y].length; x++) {
+                board[y][x] = new EmptyTile(x, y);
+            }
+        }
+        return board;
+    }
+
+    private Tile[][] MiniMaxBoard() {
         Tile[][] board = new Tile[3][4];
 
         for (int y = 0; y < board.length; y++) {
@@ -142,6 +156,19 @@ public class StrategyTest {
     }
 
     /**
+     * Tests that place penguin will throw an error if it fails
+     */
+
+    @Test (expected = IllegalArgumentException.class)
+    public void choosePlacePenguinFail()  {
+        init();
+
+        IStrategy strategy = new Strategy();
+
+        Action action = strategy.choosePlacePenguinAction(this.gameStateHoles);
+    }
+
+    /**
      * Tests that the player will choose the next possible space in that row.
      */
     @Test
@@ -173,10 +200,10 @@ public class StrategyTest {
     }
 
     /**
-     * Tests for chooseMoveAction that tests if a Player uses minimax to move their penguins
+     * Tests for chooseMoveAction that tests if a Player uses MiniMax to move their penguins
      * to the correct place.
      *
-     * Here is an example of the minimax game we have set up for the test.
+     * Here is an example of the MiniMax game we have set up for the test.
      *
      * Each Tile has a number of fish equal to y + 1
      *
@@ -196,16 +223,16 @@ public class StrategyTest {
         init();
         IStrategy strategy = new Strategy();
 
-        this.gameStateMinimax = this.placeAllPenguinsState(strategy, this.gameStateMinimax);
+        this.gameStateMiniMax = this.placeAllPenguinsState(strategy, this.gameStateMiniMax);
         Action action;
         for (int i = 0; i < 5; i++) {
-            action = strategy.chooseMoveAction(this.gameStateMinimax, 3);
+            action = strategy.chooseMoveAction(this.gameStateMiniMax, 3);
 
-            this.gameStateMinimax = action.apply(this.gameStateMinimax);
+            this.gameStateMiniMax = action.apply(this.gameStateMiniMax);
         }
 
-        boolean blackScoresHigherThanWhite = this.gameStateMinimax.getPlayers().get(1).getScore() -
-            this.gameStateMinimax.playerTurn().getScore() > 0;
+        boolean blackScoresHigherThanWhite = this.gameStateMiniMax.getPlayers().get(1).getScore() -
+            this.gameStateMiniMax.playerTurn().getScore() > 0;
 
         assertTrue(blackScoresHigherThanWhite);
     }
@@ -230,16 +257,16 @@ public class StrategyTest {
         init();
         IStrategy strategy = new Strategy();
 
-        this.gameStateMinimax2 = this.placeAllPenguinsState(strategy, this.gameStateMinimax2);
+        this.gameStateMiniMax2 = this.placeAllPenguinsState(strategy, this.gameStateMiniMax2);
 
-        IPlayer currentPlayer = this.gameStateMinimax2.playerTurn();
-        IPenguin penguinAt01 = this.gameStateMinimax2.playerTurn().getPenguins().get(2);
+        IPlayer currentPlayer = this.gameStateMiniMax2.playerTurn();
+        IPenguin penguinAt01 = this.gameStateMiniMax2.playerTurn().getPenguins().get(2);
 
         Action action;
 
         Action test = new MovePenguin(currentPlayer, penguinAt01, new Point(1,2));
 
-        action = strategy.chooseMoveAction(this.gameStateMinimax2, 3);
+        action = strategy.chooseMoveAction(this.gameStateMiniMax2, 3);
 
         assertEquals(test, action);
     }
@@ -253,13 +280,13 @@ public class StrategyTest {
         init();
         IStrategy strategy = new Strategy();
 
-        this.gameStateMinimax3 = this.placeAllPenguinsState(strategy, this.gameStateMinimax3);
+        this.gameStateMiniMax3 = this.placeAllPenguinsState(strategy, this.gameStateMiniMax3);
 
         Action action;
 
-        action = strategy.chooseMoveAction(this.gameStateMinimax3, 5);
+        action = strategy.chooseMoveAction(this.gameStateMiniMax3, 5);
 
-        Action dummyPass = new PassPenguin(this.gameStateMinimax3.playerTurn());
+        Action dummyPass = new PassPenguin(this.gameStateMiniMax3.playerTurn());
 
         assertEquals(dummyPass,action);
 
@@ -275,17 +302,17 @@ public class StrategyTest {
         init();
         IStrategy strategy = new Strategy();
 
-        this.gameStateMinimax4 = this.placeAllPenguinsState(strategy, this.gameStateMinimax4);
+        this.gameStateMiniMax4 = this.placeAllPenguinsState(strategy, this.gameStateMiniMax4);
 
-        Action lastAction = strategy.chooseMoveAction(this.gameStateMinimax4, 5);
+        Action lastAction = strategy.chooseMoveAction(this.gameStateMiniMax4, 5);
 
-        IPenguin penguin = this.gameStateMinimax4.playerTurn().getPenguins().get(2);
+        IPenguin penguin = this.gameStateMiniMax4.playerTurn().getPenguins().get(2);
 
-       this.gameStateMinimax4 = lastAction.apply(this.gameStateMinimax4);
+       this.gameStateMiniMax4 = lastAction.apply(this.gameStateMiniMax4);
 
-       assertTrue(this.gameStateMinimax4.isGameOver());
+       assertTrue(this.gameStateMiniMax4.isGameOver());
 
-       IPlayer playerWhoMoved = this.gameStateMinimax4.getPlayers().get(1);
+       IPlayer playerWhoMoved = this.gameStateMiniMax4.getPlayers().get(1);
 
        Action expectedMove = new MovePenguin(playerWhoMoved, penguin, new Point(0,2));
 
@@ -301,10 +328,10 @@ public class StrategyTest {
         init();
         IStrategy strategy = new Strategy();
 
-        this.gameStateMinimax4 = this.placeAllPenguinsState(strategy, this.gameStateMinimax4);
+        this.gameStateMiniMax4 = this.placeAllPenguinsState(strategy, this.gameStateMiniMax4);
 
-        this.gameStateMinimax4 = this.gameStateMinimax4.move(this.gameStateMinimax4.getPlayers().get(1),
-            this.gameStateMinimax4.getPlayers().get(1).getPenguins().get(0),
+        this.gameStateMiniMax4 = this.gameStateMiniMax4.move(this.gameStateMiniMax4.getPlayers().get(1),
+            this.gameStateMiniMax4.getPlayers().get(1).getPenguins().get(0),
             new Point(100,100), true);
     }
 
