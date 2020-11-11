@@ -104,7 +104,7 @@ public class Strategy implements IStrategy {
         IPlayer player = startState.playerTurn();
 
         // if the player can't move
-        if (substates == null || substates.isEmpty()) {
+        if (substates == null || startState.isCurrentPlayerStuck()) {
             throw new IllegalStateException("The current player can't move");
         }
 
