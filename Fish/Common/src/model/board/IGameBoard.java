@@ -74,5 +74,5 @@ public interface IGameBoard {
      * @param point
      * @return Tile
      */
-    Tile replaceTile(Point point);
+    Tile removeTile(Point point);
 }

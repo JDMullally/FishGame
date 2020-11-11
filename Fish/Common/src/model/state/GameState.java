@@ -294,7 +294,7 @@ public class GameState extends GameBoard implements IGameState {
         IGameState gameState = this.clone();
         for (IPlayer iPlayer : gameState.getPlayers()) {
             for (IPenguin iPenguin : iPlayer.getPenguins()) {
-                gameState.replaceTile(iPenguin.getPosition());
+                gameState.removeTile(iPenguin.getPosition());
             }
         }
 
@@ -395,7 +395,7 @@ public class GameState extends GameBoard implements IGameState {
         if (this.isMoveLegal(penguin, player, newPoint)) {
 
             // removes tile
-            Tile removed = this.replaceTile(penguin.getPosition());
+            Tile removed = this.removeTile(penguin.getPosition());
 
             // updates player
             IPlayer movedPlayer = this.players.remove(0);
