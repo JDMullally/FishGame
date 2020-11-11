@@ -16,14 +16,17 @@ import static constants.Constants.HEX_SIZE;
  * Class represents the entire GameBoard.
  * A GameBoard knows it's dimensions and has access to all of it's piece which are represented by Tiles.
  * A GameBoard can generate a board of Tiles, Find viable paths from a given point, and remove Tiles.
+ * A GameBoard's Tiles are hexagonal and slide between each other as they move along the y axis.
  *
- * The GameBoard's row and column locations are inverted. An example 4x3 GameBoard with positions
- * can be seen below:
+ * Our array keeps track of Points with the following conversion.
+ * Board[y][x] = Point(x,y)
  *
- *  (0,0)    (1, 0)   (2, 0)
- *      (0, 1)    (1, 1)    (2, 1)
- *  (0, 2)   (1, 2)   (2, 2)
- *      (0, 3)    (1, 3)    (2, 3)
+ * An example 4x3 GameBoard represented graphically with x,y positions can be seen below:
+ *
+ * (0, 0)      (1, 0)      (2, 0)
+ *       (0, 1)      (1, 1)      (2, 1)
+ * (0, 2)      (1, 2)      (2, 2)
+ *       (0, 3)      (1, 3)      (2, 3)
  */
 public class GameBoard implements IGameBoard {
 
@@ -248,107 +251,31 @@ public class GameBoard implements IGameBoard {
     @Override
     public List<List<Tile>> getViablePaths(Point point) {
         List<List<Tile>> paths = new ArrayList<>();
-
-        Direction direction = Direction.UP;
-
-        // for each direction
-        while (direction != null) {
-            Point curPosition = new Point(point);
-            List<Tile> path = new ArrayList<>();
-
-            // while we can continue on a current path
-            buildPath: while (true) {
-                path.add(this.board[curPosition.y][curPosition.x]);
-
-                Point newPosition;
-                // for a given direction
-                switch (direction) {
-                    case UP:
-                        newPosition = new Point(curPosition.x, curPosition.y - 2);
-                        if (validTile(newPosition)) {
-                            curPosition = newPosition;
-                            break;
-                        } else {
-                            direction = Direction.DIAGONAL_UP_RIGHT;
-                            break buildPath;
-                        }
-                    case DIAGONAL_UP_RIGHT:
-                        if (curPosition.y % 2 == 0) {
-                            newPosition = new Point(curPosition.x, curPosition.y - 1);
-                        } else {
-                            newPosition = new Point(curPosition.x + 1, curPosition.y - 1);
-                        }
-
-                        if (validTile(newPosition)) {
-                            curPosition = newPosition;
-                            break;
-                        } else {
-                            direction = Direction.DIAGONAL_DOWN_RIGHT;
-                            break buildPath;
-                        }
-                    case DIAGONAL_DOWN_RIGHT:
-                        if (curPosition.y % 2 == 0) {
-                            newPosition = new Point(curPosition.x, curPosition.y + 1);
-                        } else {
-                            newPosition = new Point(curPosition.x + 1, curPosition.y + 1);
-                        }
-
-                        if (validTile(newPosition)) {
-                            curPosition = newPosition;
-                            break;
-                        } else {
-                            direction = Direction.DOWN;
-                            break buildPath;
-                        }
-                    case DOWN:
-                        newPosition = new Point(curPosition.x, curPosition.y + 2);
-                        if (validTile(newPosition)) {
-                            curPosition = newPosition;
-                            break;
-                        } else {
-                            direction = Direction.DIAGONAL_DOWN_LEFT;
-                            break buildPath;
-                        }
-                    case DIAGONAL_DOWN_LEFT:
-                        if (curPosition.y % 2 == 0) {
-                            newPosition = new Point(curPosition.x - 1, curPosition.y + 1);
-                        } else {
-                            newPosition = new Point(curPosition.x, curPosition.y + 1);
-                        }
-
-                        if (validTile(newPosition)) {
-                            curPosition = newPosition;
-                            break;
-                        } else {
-                            direction = Direction.DIAGONAL_UP_LEFT;
-                            break buildPath;
-                        }
-                    case DIAGONAL_UP_LEFT:
-                        if (curPosition.y % 2 == 0) {
-                            newPosition = new Point(curPosition.x - 1, curPosition.y - 1);
-                        } else {
-                            newPosition = new Point(curPosition.x, curPosition.y - 1);
-                        }
-
-                        if (validTile(newPosition)) {
-                            curPosition = newPosition;
-                            break;
-                        } else {
-                            direction = null;
-                            break buildPath;
-                        }
-                    default:
-                        throw new IllegalArgumentException("Invalid direction");
-                }
-            }
-
-            // add the path if it has at least two positions
+        List<Tile> path;
+        for (Direction dir: Direction.values()) {
+            path = this.getPath(dir, point);
             if (path.size() > 1) {
                 paths.add(path);
             }
         }
-
         return paths;
+    }
+
+    /**
+     * Returns a List of Tiles reachable from the given point in the current direction.
+     *
+     * @param dir Direction
+     * @param point Point
+     * @return List of Tile
+     */
+    private List<Tile> getPath(Direction dir, Point point) {
+        List<Tile> path = new ArrayList<>();
+        Point current = point;
+        do {
+            path.add(this.board[current.y][current.x]);
+            current = dir.apply(current);
+        } while (validTile(current));
+        return path;
     }
 
     @Override
@@ -369,7 +296,7 @@ public class GameBoard implements IGameBoard {
     }
 
     @Override
-    public Tile replaceTile(Point point) {
+    public Tile removeTile(Point point) {
         Tile oldTile = this.board[point.y][point.x];
         this.board[point.y][point.x] = new EmptyTile(new Point(point));
         return oldTile.clone();
