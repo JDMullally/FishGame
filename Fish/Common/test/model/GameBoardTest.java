@@ -277,7 +277,7 @@ public class GameBoardTest {
         expected.add(downLeft);
         expected.add(upLeft);
 
-        assertEquals(actual, expected);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -332,7 +332,7 @@ public class GameBoardTest {
         init();
 
         Tile tileCopy = this.modelDefault.getTile(new Point(1, 1)).clone();
-        Tile removedTile = this.modelDefault.replaceTile(new Point(1, 1));
+        Tile removedTile = this.modelDefault.removeTile(new Point(1, 1));
 
         assertEquals(tileCopy, removedTile);
     }
@@ -342,7 +342,7 @@ public class GameBoardTest {
         init();
         System.out.println(this.modelDefault);
         Tile tileCopy = this.modelHoles.getTile(new Point(2, 1)).clone();
-        Tile removedMissingTile = this.modelHoles.replaceTile(new Point(2, 1));
+        Tile removedMissingTile = this.modelHoles.removeTile(new Point(2, 1));
 
         assertEquals(tileCopy, removedMissingTile);
     }
