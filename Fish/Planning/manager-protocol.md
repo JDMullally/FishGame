@@ -39,6 +39,7 @@ will continue until the tournament is over.
 a specified time frame.
 - The tournament manager should have a way to keep track of every player that has signed 
 up in this time frame.
+- After the signup period ends, the tournament automatically starts.
 
 `reportGameResult()`
 - Referee calls this method on Tournament Manager
