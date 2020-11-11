@@ -30,6 +30,24 @@ import model.state.IGameState;
 public interface IReferee {
 
     /**
+     * Runs a Game for this Referee's players and returns the result of the game as an IGameResult.
+     * While the game runs, each action will be recorded in the Referee's List of actions and each
+     * IGameState will be recorded in the referee's current GameState.
+     *
+     * The referee will ask each player to provide a valid action and apply it to the
+     * IGameState
+     *
+     * If a player is caught cheating, they will be added to a list of cheating players.
+     * The referee will then remove them from the game and their personal list of players
+     * and continue to run the game.
+     *
+     * @param rows The number of rows on the GameBoard
+     * @param columns the number of columns on the GameBoard
+     * @return IGameResult
+     */
+    IGameResult runGame(int rows, int columns);
+
+    /**
      * Returns the current GameState of the game the referee is supervising.
      *
      * @return IGameState
@@ -51,22 +69,4 @@ public interface IReferee {
      * @throws IllegalStateException If the game has not yet concluded
      */
     IGameResult getGameResult() throws IllegalStateException;
-
-    /**
-     * Runs a Game for this Referee's players and returns the result of the game as an IGameResult.
-     * While the game runs, each action will be recorded in the Referee's List of actions and each
-     * IGameState will be recorded in the referee's current GameState.
-     *
-     * The referee will ask each player to provide a valid action and apply it to the
-     * IGameState
-     *
-     * If a player is caught cheating, they will be added to a list of cheating players.
-     * The referee will then remove them from the game and their personal list of players
-     * and continue to run the game.
-     *
-     * @param rows The number of rows on the GameBoard
-     * @param columns the number of columns on the GameBoard
-     * @return IGameResult
-     */
-    IGameResult runGame(int rows, int columns);
 }

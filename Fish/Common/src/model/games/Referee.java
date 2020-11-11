@@ -53,9 +53,9 @@ import model.tree.PlayerInterface;
 public class Referee implements IReferee {
 
     private final int timeout;
-    private Map<Color, PlayerInterface> players;
-    private Map<Color, PlayerInterface> cheaters;
-    private List<GameAction> ongoingActions;
+    private final Map<Color, PlayerInterface> players;
+    private final Map<Color, PlayerInterface> cheaters;
+    private final List<GameAction> ongoingActions;
     private IGameState gameState;
     private IGameResult gameResult;
 
@@ -130,9 +130,28 @@ public class Referee implements IReferee {
         }).collect(Collectors.toList());
     }
 
+    @Override
+    public IGameResult runGame(int rows, int columns) {
+        this.createInitialGame(rows, columns);
+
+        // allows players to place penguins until the game is ready to begin
+        while (!this.gameState.isGameReady()) {
+            this.placementTurn();
+        }
+
+        // allows players to move penguins until the game is over
+        while (!this.gameState.isGameOver()) {
+            this.gameState = this.runTurn();
+        }
+
+        Action endGame = new GameEnded(this.gameState);
+        this.ongoingActions.add(new GameAction(endGame));
+        this.gameResult = this.retrieveGameResult();
+        return this.gameResult;
+    }
+
     /**
-     * Creates an initial game state by asking players to place penguins until all of their penguins
-     * have been placed
+     * Creates an initial game state with a board, players and no penguins placed yet
      */
     public void createInitialGame(int rows, int columns) {
         // creates game board
@@ -143,13 +162,9 @@ public class Referee implements IReferee {
 
         // creates game state
         this.gameState = new GameState(rows, columns, gameBoard.getGameBoard(), gamePlayers);
-
-        // allows players to place penguins until the game is ready to begin
-        while (!this.gameState.isGameReady()) {
-            this.placementTurn();
-        }
     }
 
+    // TODO make methods consistent on whether they directly mutate gamestate or return it
     /**
      * Runs a single Placement Turn and returns the new state after the move is made.
      *
@@ -173,50 +188,23 @@ public class Referee implements IReferee {
     }
 
     /**
-     * When a player cheats, they are removed from the game.
+     * Returns the state of the game after running a Round of Fish.
      *
-     * @param curPlayer IPlayer
-     * @param curPlayerInterface IPLayerInterface
-     */
-    private IGameState playerCheated(IPlayer curPlayer, PlayerInterface curPlayerInterface) {
-        Action action = new PlayerCheated(curPlayer);
-        IGameState newGameState = action.apply(this.gameState);
-        this.players.remove(curPlayer.getColor());
-        this.cheaters.put(curPlayer.getColor(), curPlayerInterface);
-        this.ongoingActions.add(new GameAction(action));
-        return newGameState;
-    }
-
-    /**
-     * Creates the game result based on the scores of the remaining players and cheaters.
+     * A Round of Fish means all non-cheating players play their turn, and if the game doesn't end
+     * the current Player's turn of the returned GameState should return the first player who
+     * played that round.
      *
-     * @return IGameResult
+     * @return IGameState
      */
-    private IGameResult retrieveGameResult() {
-        // gets players from GameState by score in descending order
-        List<PlayerInterface> playersI = this.gameState.getPlayers()
-                .stream()
-                .sorted(Comparator.comparingInt(IPlayer::getScore).reversed())
-                .map(player -> this.players.get(player.getColor()))
-                .collect(Collectors.toList());
-        List<PlayerInterface> cheatersI = new ArrayList<>(this.cheaters.values());
-
-        return new GameResult(playersI, cheatersI);
-    }
-
-    @Override
-    public IGameResult runGame(int rows, int columns) {
-        this.createInitialGame(rows, columns);
-
-        // allows players to move penguins until the game is over
-        while (!this.gameState.isGameOver()) {
-            this.gameState = this.runTurn();
+    public IGameState runRound() {
+        IGameState roundGameState = this.gameState;
+        for (int i = 0; i < players.values().size(); i++) {
+            if(roundGameState.isGameOver()) {
+                break;
+            }
+            roundGameState = runTurn();
         }
-
-        Action endGame = new GameEnded(this.gameState);
-        this.ongoingActions.add(new GameAction(endGame));
-        this.gameResult = this.retrieveGameResult();
-        return this.gameResult;
+        return roundGameState;
     }
 
     /**
@@ -227,7 +215,6 @@ public class Referee implements IReferee {
      *
      * @return IGameState
      */
-
     public IGameState runTurn() {
         IGameState newGameState;
         IPlayer curPlayer = this.gameState.playerTurn();
@@ -278,33 +265,18 @@ public class Referee implements IReferee {
     }
 
     /**
-     * Returns the state of the game after running a Round of Fish.
+     * When a player cheats, they are removed from the game.
      *
-     * A Round of Fish means all non-cheating players play their turn, and if the game doesn't end
-     * the current Player's turn of the returned GameState should return the first player who
-     * played that round.
-     *
-     * @return IGameState
+     * @param curPlayer IPlayer
+     * @param curPlayerInterface IPLayerInterface
      */
-    public IGameState runRound() {
-        IGameState roundGameState = this.gameState;
-        for (int i = 0; i < players.values().size(); i++) {
-            if(roundGameState.isGameOver()) {
-                break;
-            }
-            roundGameState = runTurn();
-        }
-        return roundGameState;
-    }
-
-
-    @Override
-    public IGameResult getGameResult() throws IllegalStateException {
-        if (this.gameResult == null) {
-            throw new IllegalStateException("The game has not concluded");
-        }
-
-        return this.gameResult;
+    private IGameState playerCheated(IPlayer curPlayer, PlayerInterface curPlayerInterface) {
+        Action action = new PlayerCheated(curPlayer);
+        IGameState newGameState = action.apply(this.gameState);
+        this.players.remove(curPlayer.getColor());
+        this.cheaters.put(curPlayer.getColor(), curPlayerInterface);
+        this.ongoingActions.add(new GameAction(action));
+        return newGameState;
     }
 
     @Override
@@ -319,5 +291,31 @@ public class Referee implements IReferee {
     @Override
     public List<GameAction> getOngoingActions() {
         return new ArrayList<>(this.ongoingActions);
+    }
+
+    @Override
+    public IGameResult getGameResult() throws IllegalStateException {
+        if (this.gameResult == null) {
+            throw new IllegalStateException("The game has not concluded");
+        }
+
+        return this.gameResult;
+    }
+
+    /**
+     * Creates the game result based on the scores of the remaining players and cheaters.
+     *
+     * @return IGameResult
+     */
+    private IGameResult retrieveGameResult() {
+        // gets players from GameState by score in descending order
+        List<PlayerInterface> playersI = this.gameState.getPlayers()
+            .stream()
+            .sorted(Comparator.comparingInt(IPlayer::getScore).reversed())
+            .map(player -> this.players.get(player.getColor()))
+            .collect(Collectors.toList());
+        List<PlayerInterface> cheatersI = new ArrayList<>(this.cheaters.values());
+
+        return new GameResult(playersI, cheatersI);
     }
 }
