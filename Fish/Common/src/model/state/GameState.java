@@ -78,7 +78,7 @@ public class GameState extends GameBoard implements IGameState {
      * @param players
      * @param cheaters
      */
-    public GameState(int rows, int columns, Tile[][] board, List<IPlayer> players, int cheaters) {
+    private GameState(int rows, int columns, Tile[][] board, List<IPlayer> players, int cheaters) {
         super(rows, columns, board);
 
         if (players == null) {
