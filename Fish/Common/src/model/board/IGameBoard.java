@@ -41,6 +41,7 @@ public interface IGameBoard {
      * @return Tile
      */
     Tile getTile(Point point);
+
     /**
      * Returns all viable paths from the current Tile.
      * @param tile
