@@ -25,6 +25,10 @@ method functionality to make integration tests work without use of invertBoard m
 [X] need a clear representation of isPlayerStuck in our GameTree for creating sub states for our 
 tree.
 
+### `Referee`
+
+[ ] need to change Referee to use GameTrees rather than GameStates.
+
 ## Functionality per Data Representation
 
 ###`GameBoard`
@@ -43,15 +47,18 @@ that refers to the output X of the function.
 
 ###`Strategy`
 
-[X] change the purpose statement to specify side effects (For placing a penguin you return an 
-Action. the Position of the tile where the player wants to move the penguin is not clear with 
-current statement).
+[X] change the purpose statement to clarify an Action in the context of placing a Penguin. The
+Position of the tile where the player wants to move the penguin is not clear with current 
+statement).
 
 [X] change the choosing turn action purpose statement to specify what happens when the current 
 player does not have valid moves.
 
+> *Note: the above two are completed in a single rework labelled "change the purpose statement to 
+clarify an Action in placing and moving penguins" in reworked.md*
+
 [X] need a unit test for a failed placement for our placement strategy.
-  
+ 
 ###`Referee`
 
 [X] need to include a public method for running a single movement turn in the Referee class.
@@ -59,6 +66,16 @@ player does not have valid moves.
 [X] need to include a public method for running a single movement round in the Referee class.
 
 [X] need to include a public method for running a single placement turn in the Referee class.
+
+> *Note: the above three are completed in a single rework labelled "need to include a public method 
+for running a single movement turn in the Referee class." in reworked.md*
+
+[ ] need unit tests for public method for running a single movement turn in the Referee class.
+
+[ ] need unit tests for public method for running a single movement turn in the Referee class.
+
+[ ] need unit tests for public method for running a single movement turn in the Referee class.
+
 
 ## Integration Tests
 
