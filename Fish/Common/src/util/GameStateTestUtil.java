@@ -75,6 +75,8 @@ public class GameStateTestUtil {
 
             List<Tile> tilesToMove = state.getPossibleMoves(player).get(penguin);
 
+            System.out.println(state.getPossibleMoves(player));
+
             if (tilesToMove.size() == 0) {
                 System.out.println("no possible moves");
             } else {
