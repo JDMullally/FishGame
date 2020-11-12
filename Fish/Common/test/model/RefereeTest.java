@@ -1,5 +1,6 @@
 package model;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +12,7 @@ import model.games.IReferee;
 import model.games.PlayerAI;
 import model.games.Referee;
 import model.state.IGameState;
+import model.state.IPlayer;
 import model.strategy.testStrategies.MoveAnotherPlayerPenguin;
 import model.strategy.testStrategies.MoveOutsideBoard;
 import model.strategy.testStrategies.PassOwnTurnMakeAnotherPlayerCheat;
@@ -22,6 +24,7 @@ import model.strategy.Strategy;
 import model.strategy.testStrategies.TimeoutStrategy;
 import model.tree.PlayerInterface;
 import org.junit.Test;
+import util.ColorUtil;
 
 import static org.junit.Assert.*;
 
@@ -107,10 +110,79 @@ public class RefereeTest {
      */
 
     /**
+     * Referee shouldn't be able to create a game that's not playable (without enough tiles)
+     */
+    @Test (expected = IllegalArgumentException.class)
+    public void createInitialGameFourPlayers2x3NotEnoughTiles() {
+        this.init();
+
+        Referee ref = new Referee(players4);
+
+        ref.createInitialGame(2, 3);
+    }
+
+    @Test
+    public void createInitialGameFourPlayers4x3GameReadyGameOver() {
+        this.init();
+
+        Referee ref = new Referee(players4);
+
+        ref.createInitialGame(4, 3);
+
+        IGameState initialGameState = ref.getGameState();
+
+        System.out.println(initialGameState);
+
+        assertFalse(initialGameState.isGameReady());
+        assertFalse(initialGameState.isGameOver());
+    }
+
+    @Test
+    public void createInitialGameFourPlayers4x3ConfirmDimensions() {
+        this.init();
+
+        Referee ref = new Referee(players4);
+
+        ref.createInitialGame(4, 3);
+
+        IGameState initialGameState = ref.getGameState();
+
+        System.out.println(initialGameState);
+
+        assertEquals(4, initialGameState.getRows());
+        assertEquals(3, initialGameState.getColumns());
+    }
+
+    @Test
+    public void createInitialGameFourPlayers4x3ConfirmPlayerColorsOrder() {
+        this.init();
+
+        Color red = ColorUtil.toColor("red");
+        Color white = ColorUtil.toColor("white");
+        Color brown = ColorUtil.toColor("brown");
+        Color black = ColorUtil.toColor("black");
+
+        Referee ref = new Referee(players4);
+
+        ref.createInitialGame(4, 3);
+
+        IGameState initialGameState = ref.getGameState();
+
+        List<IPlayer> players = initialGameState.getPlayers();
+
+        assertEquals(red, players.get(0).getColor());
+        assertEquals(white, players.get(1).getColor());
+        assertEquals(brown, players.get(2).getColor());
+        assertEquals(black, players.get(3).getColor());
+    }
+
+    /**
      *********************************************************************************************
      * Tests for runPlacementTurn
      *********************************************************************************************
      */
+
+    // TODO finish these tests
 
     /**
      *********************************************************************************************

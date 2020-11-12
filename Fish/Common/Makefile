@@ -1,7 +1,10 @@
 all:
 	@echo "Creating JAR file"
-	@eval $$( \
-	mvn install -Dmaven.test.failure.ignore=true \
-	&& cd target \
-	&& cp Fish-1.0-SNAPSHOT.jar ../xfish.jar \
-	&& cp Fish-1.0-SNAPSHOT-jar-with-dependencies.jar ../xstate.jar)
+	mvn install -DskipTests -Dmaven.test.failure.ignore=true
+	cp target/xboard-jar-with-dependencies.jar xboard.jar
+	cp target/xstate-jar-with-dependencies.jar xstate.jar
+	cp target/xtree-jar-with-dependencies.jar xtree.jar
+	cp target/xstrategy-jar-with-dependencies.jar xstrategy.jar
+
+clean:
+	rm *.jar

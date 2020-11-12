@@ -123,7 +123,7 @@ public interface IGameState extends IGameBoard {
     boolean isGameReady();
 
     /**
-     * Returns true if no players can make a move and false otherwise.
+     * Returns true if no players can perform an action (placements or moves) and false otherwise.
      *
      * @return boolean
      */

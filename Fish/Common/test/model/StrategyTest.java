@@ -47,8 +47,6 @@ public class StrategyTest {
         this.gameStateMiniMax3 = new GameState(4,4, this.noMoreMovesBoard(), this.players);
 
         this.gameStateMiniMax4 = new GameState(3,4, this.onlyBlackCanMove(), this.players);
-        
-        this.gameStateHoles = new GameState(4,4, this.boardOfHoles(), this.players);
     }
 
     private Tile[][] craftedBoard() {
@@ -161,7 +159,7 @@ public class StrategyTest {
 
     @Test (expected = IllegalArgumentException.class)
     public void choosePlacePenguinFail()  {
-        init();
+        this.gameStateHoles = new GameState(4,4, this.boardOfHoles(), this.players);
 
         IStrategy strategy = new Strategy();
 
