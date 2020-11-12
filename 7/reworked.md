@@ -61,4 +61,32 @@ changed our `removePlayer` method to return a new GameState after this occurs.
 <https://github.ccs.neu.edu/CS4500-F20/italy/commit/6921b688576dccaa64da3b9fa08b6ca1469d0600>
 
 #### need to rework applyFunction to make it usable.
-We had to change our apply
+We had to change our GameTree class to not have a built in Generic and added this generic to the
+`applyFunction` method. We then fixed all instances of a GameTree to no longer be constructed with 
+a Generic type `GameTree<?> -> GameTree`.
+
+<https://github.ccs.neu.edu/CS4500-F20/italy/commit/eb1ce9e3933b7ece5073226f37487db7b90a17db>
+
+#### change the purpose statement to clarify an Action in placing and moving penguins
+We added a sentence in the purpose statement that defines an Action and how to get positions from 
+a given action. We added this in both `choosePlacePenguinAction` and `chooseMoveAction` the 
+IStrategy Interface.
+
+<https://github.ccs.neu.edu/CS4500-F20/italy/commit/8518fac9469bc2770757dedbd1ec1368967f804b>
+
+#### need a unit test for a failed placement for our placement strategy
+We added a unit test that would check what would happen if a Player attempted to place a Penguin on
+a board entirely filled with holes to assure that would throw an Illegal Argument Exception.
+
+<https://github.ccs.neu.edu/CS4500-F20/italy/commit/dd7ac9cf1dc3172a66c4b2fd4d17a5a5d470df68>
+
+#### need to include a public method for running a single movement turn in the Referee class.
+We decided to split our `runGame` method into separate methods:
+- `createInitialGame` which creates an initial GameState which we recently made public 
+<https://github.ccs.neu.edu/CS4500-F20/italy/commit/740e7f7dfbff633b2134cd0f347bb18c5713e4e2>
+- `placementTurn`
+<https://github.ccs.neu.edu/CS4500-F20/italy/commit/ebef750e4ee91aa5fa865835553af528fafde9a0>
+- `runTurn` which runs a movement turn
+<https://github.ccs.neu.edu/CS4500-F20/italy/commit/5e966ea0cd4263793d14bf013371713efa5532c2>
+- `runRound` which runs a movement round.
+<https://github.ccs.neu.edu/CS4500-F20/italy/commit/0ff31d2779b4caea9daa9354d0e185bd6d579d06>
