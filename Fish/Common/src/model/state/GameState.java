@@ -468,8 +468,9 @@ public class GameState extends GameBoard implements IGameState {
 
     @Override
     public boolean isGameOver() {
-        if (this.players.isEmpty()) {
-            return true;
+
+        if (!isGameReady()) {
+            return false;
         }
 
         for (IPlayer player : this.players) {
