@@ -30,3 +30,23 @@ we maintain the order we add them in our for loop.
 #### we needed our referee to accounted for timeouts or a player could stall the entire game.
 We utilized executors and the Callable class to wait for a move for a given period of time.
 <https://github.ccs.neu.edu/CS4500-F20/italy/commit/0ff31d2779b4caea9daa9354d0e185bd6d579d06>
+
+#### we needed our isGameOver method to check if the game is ready before it returns true or false
+Our original implementation of `isGameOver` did not check if the the placement rounds were over, so
+it returned true when no Penguins have been placed.  We added a check at the top the would determine
+if the game was ready to assure that `isGameOver` only returned false in a valid game where all 
+penguins have already been placed.
+
+> #### we needed our isGameOver method to check if all the players cheated before we return false if the players cheated
+> We had another bug resulting from this change that had multiple tests failing because `isGameReady` 
+> makes its decision based on the number of players, but if all players were caught cheating their
+> penguins would be missing and send true which would result in the Game not being over even if it 
+> was. We fixed this by adding a check to determine if the game had no more players.
+>
+
+#### we need GameState to validate that the potential game is playable
+We needed to check if a generated GameBoard is too small for the number of players given, so we 
+added a condition in validateInitialPlayers that checks if the GameBoard is too small for the given
+number of players that is only checked if this is the first time the method is called 
+(or if no penguins are place on the board).
+

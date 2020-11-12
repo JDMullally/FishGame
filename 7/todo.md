@@ -40,6 +40,11 @@ tree.
 [X] need to change our GameState to not ever mutate the current GameState and only return a new 
 GameState after a method call.
 
+[X] we needed our isGameOver method to check if the game is ready before it returns true or false
+
+[X] we need GameState to validate that the potential game is playable (a board with 8 non-empty 
+tiles can't run a game for three players)
+
 ###`GameTree`
 
 [X] need to fix applyFunction method to make it work without creating a new instance of a GameTree 
