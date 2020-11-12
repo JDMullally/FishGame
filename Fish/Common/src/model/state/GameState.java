@@ -23,7 +23,7 @@ import util.ColorUtil;
  */
 public class GameState extends GameBoard implements IGameState {
 
-    private List<IPlayer> players; // the players of the game
+    private final List<IPlayer> players; // the players of the game
     private int cheaters; // the number of cheating players, who have been removed from the game
 
     /**
@@ -154,6 +154,49 @@ public class GameState extends GameBoard implements IGameState {
             IPlayer player = this.players.get(i);
             this.validatePlayerColors(i, player);
         }
+
+        // check if there are enough tiles for all player penguins
+        int neededTiles = players.size() * (6 - (players.size() + cheaters) );
+        if (allPlayersHaveNoPlacements() && countTilesOnBoard() < neededTiles) {
+            throw new IllegalArgumentException("Board does not have enough non-empty tiles for the "
+                + "current number of players");
+        }
+    }
+
+    /**
+     * Check if there are no penguins placed on the board (starting state)
+     *
+     * @return true if players do not have any penguins, otherwise false
+     */
+    private boolean allPlayersHaveNoPlacements() {
+        for (IPlayer p : this.players) {
+            if (!p.getPenguins().isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Finds the total number of non-empty tiles in the board.
+     *
+     * @return the number of tiles
+     */
+    private int countTilesOnBoard() {
+        int numTiles = 0;
+
+        Tile[][] board = this.getGameBoard();
+
+        for (Tile[] row : board) {
+            for (Tile tile : row) {
+                if (!tile.isEmpty()) {
+                    numTiles++;
+                }
+            }
+        }
+
+        return numTiles;
     }
 
     /**
