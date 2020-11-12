@@ -28,6 +28,7 @@ public class GameStateTest {
     Penguin peng1, peng2, peng3, peng4, peng5, peng6, peng7, peng8;
     List<IPlayer> players;
     Player p1, p2;
+    List<Point> holes;
 
     private void init() {
         this.peng1 = new Penguin(Color.WHITE, new Point(1, 1));
@@ -131,7 +132,7 @@ public class GameStateTest {
 
         this.players = Arrays.asList(this.p1, this.p2);
 
-        List<Point> holes = Arrays.asList(new Point(2,0), new Point(2,1),
+        this.holes = Arrays.asList(new Point(2,0), new Point(2,1),
                 new Point(2,2), new Point(2,3), new Point(2, 4),
                 new Point(2, 5), new Point(0, 0), new Point(1, 0));
 
@@ -222,6 +223,19 @@ public class GameStateTest {
 
         this.gameState = new GameState(5,5,
                 new ArrayList<>(), 2,2, players);
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void gameStateConstructorTooSmallBoard() {
+
+        IPlayer player1 = new Player(Color.WHITE, 4, new ArrayList<>());
+        IPlayer player2 = new Player(Color.WHITE, 4, new ArrayList<>());
+
+        List<IPlayer> players = Arrays.asList(player1, player2);
+
+        List<Point> holes = Arrays.asList(new Point(0, 0));
+
+        this.gameState = new GameState(2,4, holes, 0, 0, players);
     }
 
     @Test
