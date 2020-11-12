@@ -229,7 +229,7 @@ public class GameStateTest {
     public void gameStateConstructorTooSmallBoard() {
 
         IPlayer player1 = new Player(Color.WHITE, 4, new ArrayList<>());
-        IPlayer player2 = new Player(Color.WHITE, 4, new ArrayList<>());
+        IPlayer player2 = new Player(Color.RED, 4, new ArrayList<>());
 
         List<IPlayer> players = Arrays.asList(player1, player2);
 
@@ -462,6 +462,21 @@ public class GameStateTest {
     /**
      * Game Over tests
      */
+
+    @Test
+    public void isGameOverNoPlacements() {
+        IPlayer player1 = new Player(Color.WHITE, 4, new ArrayList<>());
+        IPlayer player2 = new Player(Color.RED, 4, new ArrayList<>());
+
+        List<IPlayer> players = Arrays.asList(player1, player2);
+
+        List<Point> holes = Arrays.asList(new Point(0, 0));
+
+        this.gameState = new GameState(4,4, holes, 0, 0, players);
+
+        assertFalse(this.gameState.isGameOver());
+    }
+
     @Test
     public void isGameOverNormalBoard() {
         init2();
