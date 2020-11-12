@@ -179,7 +179,7 @@ public class GameBoard implements IGameBoard {
             throw new IllegalArgumentException("Width and Height must be greater than zero");
         }
 
-        Tile[][] board = new Tile[columns][rows];
+        Tile[][] board = new Tile[rows][columns];
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
                 int fish = jsonArray.get(y).getAsJsonArray().get(x).getAsInt();
