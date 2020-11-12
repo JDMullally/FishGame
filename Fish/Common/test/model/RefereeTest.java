@@ -109,6 +109,18 @@ public class RefereeTest {
      *********************************************************************************************
      */
 
+    /**
+     * Referee shouldn't be able to create a game that's not playable (without enough tiles)
+     */
+    @Test (expected = IllegalArgumentException.class)
+    public void createInitialGameFourPlayers2x3NotEnoughTiles() {
+        this.init();
+
+        Referee ref = new Referee(players4);
+
+        ref.createInitialGame(2, 3);
+    }
+
     @Test
     public void createInitialGameFourPlayers4x3GameReadyGameOver() {
         this.init();
@@ -137,7 +149,6 @@ public class RefereeTest {
 
         System.out.println(initialGameState);
 
-        assertFalse(initialGameState.isGameReady());
         assertEquals(4, initialGameState.getRows());
         assertEquals(3, initialGameState.getColumns());
     }
