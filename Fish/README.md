@@ -28,6 +28,12 @@ $  ./xfish -h
 The arguments `-r` and `-c` are required arguments representing the number of rows and columns of
 the game board. All other arguments are optional.
 
+### Refactoring
+To see all changes made in milestone 7, go to the `../7` and see:
+* `todo.md`
+* `bugs.md`
+* `reworked.md`
+
 ### Testing
 To run unit tests, go to the `Fish` directory (this directory) and run
 
