@@ -131,8 +131,6 @@ public class RefereeTest {
 
         IGameState initialGameState = ref.getGameState();
 
-        System.out.println(initialGameState);
-
         assertFalse(initialGameState.isGameReady());
         assertFalse(initialGameState.isGameOver());
     }
@@ -146,8 +144,6 @@ public class RefereeTest {
         ref.createInitialGame(4, 3);
 
         IGameState initialGameState = ref.getGameState();
-
-        System.out.println(initialGameState);
 
         assertEquals(4, initialGameState.getRows());
         assertEquals(3, initialGameState.getColumns());
@@ -345,7 +341,7 @@ public class RefereeTest {
 
         List<GameAction> actions = ref.getOngoingActions();
 
-        //actions.stream().forEach(action -> System.out.println(action));
+        //actions.stream().forEach(action -> 1.println(action));
 
         assertTrue(ref.getGameState().isGameOver());
         assertEquals(2, result.getPlayerPlacements().size());
@@ -383,8 +379,6 @@ public class RefereeTest {
         ref.createInitialGame(5,5);
 
         List<GameAction> actions = ref.getOngoingActions();
-
-        actions.stream().forEach(action -> System.out.println(action));
     }
 
 

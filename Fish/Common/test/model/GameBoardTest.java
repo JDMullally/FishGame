@@ -340,7 +340,6 @@ public class GameBoardTest {
     @Test
     public void testReplaceTile2() {
         init();
-        System.out.println(this.modelDefault);
         Tile tileCopy = this.modelHoles.getTile(new Point(2, 1)).clone();
         Tile removedMissingTile = this.modelHoles.removeTile(new Point(2, 1));
 
