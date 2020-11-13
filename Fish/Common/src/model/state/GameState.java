@@ -127,7 +127,7 @@ public class GameState extends GameBoard implements IGameState {
             List<IPenguin> penguins = new ArrayList<>();
             for (int j = 0; j < jsonPenguins.size(); j++) {
                 JsonArray jsonPoint = jsonPenguins.get(j).getAsJsonArray();
-                Point point = new Point(jsonPoint.get(0).getAsInt(), jsonPoint.get(1).getAsInt());
+                Point point = new Point(jsonPoint.get(1).getAsInt(), jsonPoint.get(0).getAsInt());
 
                 penguins.add(new Penguin(color, point));
             }
