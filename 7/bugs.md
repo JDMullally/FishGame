@@ -50,3 +50,18 @@ added a condition in validateInitialPlayers that checks if the GameBoard is too 
 number of players that is only checked if this is the first time the method is called 
 (or if no penguins are place on the board).
 
+#### fixed integration test files
+We had to check over all our test files from past integration tests to determine if they were 
+properly formed and valid. We fixed various mistakes such as flipped coordinates, penguins outside
+the board, and penguins placed on holes. We also fixed the expected output of some tests to follow
+the proper tie-breaking rules.
+
+<https://github.ccs.neu.edu/CS4500-F20/italy/commit/6641ec62c4d951576d4fdc32e007356955d30617>
+
+#### fixed xtree integration test to check neighboring tiles in the right order
+The past implementation of xtree calculated neighboring tiles with all directions reversed (south
+instead of north, northeast instead of southwest). We fixed this by reversing the order in which
+we compare the two points in `neighborDirection`. We also refactored this function to use the
+new functionality of Direction as a function object.
+
+<https://github.ccs.neu.edu/CS4500-F20/italy/commit/317a9b56257fd1fda5549003b03cd0e6abb9188e>

@@ -90,3 +90,10 @@ We decided to split our `runGame` method into separate methods:
 <https://github.ccs.neu.edu/CS4500-F20/italy/commit/5e966ea0cd4263793d14bf013371713efa5532c2>
 - `runRound` which runs a movement round.
 <https://github.ccs.neu.edu/CS4500-F20/italy/commit/0ff31d2779b4caea9daa9354d0e185bd6d579d06>
+
+#### need to compile all integration test jars with makefile
+Previously, we had to manually change our maven pom file each time to compile a single
+integration test jar. We editied our maven pom.xml to include building all integration test jars
+at once, and edited our makefile to move the jars to the correct location. 
+
+<https://github.ccs.neu.edu/CS4500-F20/italy/commit/80a04d9d59fbddc8cbb1e39268af74f7842031da>

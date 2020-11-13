@@ -84,10 +84,12 @@ for running a single movement turn in the Referee class." in reworked.md*
 
 ## Integration Tests
 
-[ ] Check Integration Tests for Milestone 3
+[X] Check Integration Tests/Test Files for Milestone 3
 
-[ ] Check Integration Tests for Milestone 4
+[X] Check Integration Tests/Test Files for Milestone 4
 
-[ ] Check Integration Tests for Milestone 5
+[X] Check Integration Tests/Test Files for Milestone 5
 
-[ ] Check Integration Tests for Milestone 6
+[X] Check Integration Tests/Test Files for Milestone 6
+
+[X] Update maven configuration and makefile to compile all integration tests
