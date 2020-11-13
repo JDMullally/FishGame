@@ -39,6 +39,23 @@
         <testSourceDirectory>test</testSourceDirectory>
 
         <plugins>
+
+            <!-- Configuration from Jon Becker Ewing's comment: -->
+            <!--https://piazza.com/class/kevisd7ggfb502?cid=208 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <!-- Unfortunately the newest version of surefire that works on CCIS servers-->
+                <!-- Tested all 3.x.x versions and they fail-->
+                <version>2.22.2</version>
+                <configuration>
+                    <!-- Instruct Surefire to never fork the JVM when running tests -->
+                    <forkCount>0</forkCount>
+                    <!-- Instruct Surefire to run each test class one after another in the same JVM forks (which there are none now, so it's running in the main process.)-->
+                    <reuseForks>true</reuseForks>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
