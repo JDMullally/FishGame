@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import controller.Controller;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +20,10 @@ import model.board.Tile;
 import model.state.IGameState;
 import model.state.IPenguin;
 import model.state.IPlayer;
+import model.state.ImmutableGameState;
+import model.state.ImmutableGameStateModel;
+import view.IView;
+import view.VisualView;
 
 /**
  * Tests the GameTree for the Fish Game.
@@ -82,6 +87,7 @@ public class GameTreeTestUtil {
                 System.out.println("false");
                 return;
             }
+            //System.out.println(gameState);
 
             Point from = new Point(fromPosition.get(1).getAsInt(), fromPosition.get(0).getAsInt());
             Point to = new Point(toPosition.get(1).getAsInt(), toPosition.get(0).getAsInt());
@@ -107,7 +113,7 @@ public class GameTreeTestUtil {
 
             // if no penguin can move
             try {
-                gameState.move(player, penguinToMove, to, false);
+                gameState = gameState.move(player, penguinToMove, to, false);
             } catch (Exception e) {
                 System.out.println("false");
                 return;
@@ -158,21 +164,12 @@ public class GameTreeTestUtil {
      * @return Direction or null if they points aren't neighbors
      */
     private Direction neighborDirection(Point point1, Point point2) {
-        if (point1.x == point2.x && point1.y == point2.y - 2) {
-            return Direction.UP;
-        } else if (point1.y % 2 == 0 ? point1.x == point2.x && point1.y == point2.y - 1 : point1.x == point2.x - 1 && point1.y == point2.y - 1) {
-            return Direction.DIAGONAL_UP_LEFT;
-        } else if (point1.y % 2 == 0 ? point1.x == point2.x && point1.y == point2.y + 1 : point1.x == point2.x - 1 && point1.y == point2.y + 1) {
-            return Direction.DIAGONAL_DOWN_LEFT;
-        } else if (point1.x == point2.x && point1.y == point2.y + 2) {
-            return Direction.DOWN;
-        } else if (point1.y % 2 == 0 ? point1.x == point2.x + 1 && point1.y == point2.y + 1 : point1.x == point2.x && point1.y == point2.y + 1) {
-            return Direction.DIAGONAL_DOWN_RIGHT;
-        } else if (point1.y % 2 == 0 ? point1.x == point2.x + 1 && point1.y == point2.y - 1 : point1.x == point2.x && point1.y == point2.y - 1) {
-            return Direction.DIAGONAL_UP_RIGHT;
-        } else {
-            return null;
+        for (Direction dir: Direction.values()) {
+            if (dir.apply(point2).equals(point1)) {
+                return dir;
+            }
         }
+        return null;
     }
 
     /**
@@ -205,7 +202,6 @@ public class GameTreeTestUtil {
         } else {
             directionActions = actions.get(Direction.DIAGONAL_UP_LEFT);
         }
-
         // does tie break
         Point from = null;
         Point to = null;
