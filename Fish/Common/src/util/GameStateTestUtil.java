@@ -64,38 +64,36 @@ public class GameStateTestUtil {
             try {
                 state = util.JsonToGameState(board, players);
             } catch (Exception e) {
-                System.out.println("Error in JsonToGameState");
+                System.out.println("Can't make gameState");
                 return;
             }
 
-            System.out.println(state);
-
             IPlayer player = state.playerTurn();
+            //System.out.println(player);
             IPenguin penguin = player.getPenguins().get(0);
 
             List<Tile> tilesToMove = state.getPossibleMoves(player).get(penguin);
+            //System.out.println(tilesToMove);
 
-            System.out.println(state.getPossibleMoves(player));
+            //System.out.println(state);
 
             if (tilesToMove.size() == 0) {
-                System.out.println("no possible moves");
+                System.out.println("No tiles to move to");
             } else {
 
                 IGameState endState;
                 try {
                     endState = state.move(player, penguin, tilesToMove.get(0), false);
                 } catch (Exception e) {
-                    System.out.println("Error in move");
+                    e.printStackTrace();
                     return;
                 }
 
                 // shifts player locations
                 List<IPlayer> ps = endState.getPlayers();
-                IPlayer last = ps.remove(ps.size() - 1);
-                ps.add(0, last);
 
                 IGameState printState = new GameState(endState.getRows(), endState.getColumns(), endState.getGameBoard(), ps);
-                System.out.println(new GameStateUtil().GameStateToJson(printState, null).toString());
+                System.out.println(new GameStateUtil().GameStateToJson(printState).toString());
             }
         }
     }
