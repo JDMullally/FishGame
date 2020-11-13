@@ -186,8 +186,6 @@ public class GameBoardTest {
     @Test
     public void getGameBoard2() {
         this.init();
-
-        System.out.println(Arrays.deepToString(this.modelDefault.getGameBoard()));
     }
 
     /**
