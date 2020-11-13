@@ -15,14 +15,14 @@ import model.board.Tile;
  */
 public class ImmutableGameState implements ImmutableGameStateModel {
 
-    private final GameState gameState;
+    private final IGameState gameState;
 
     /**
      * Constructor takes in a mutable GameState and sets it to the private final gameState.
      *
      * @param gameState Mutable GameState
      */
-    public ImmutableGameState(GameState gameState) {
+    public ImmutableGameState(IGameState gameState) {
         this.gameState = gameState;
     }
 
