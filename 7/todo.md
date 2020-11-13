@@ -72,6 +72,10 @@ clarify an Action in placing and moving penguins" in reworked.md*
 
 [X] need to include a public method for running a single placement turn in the Referee class.
 
+[X] timeout when calling player methods in referee so that players cannot stall the game.
+
+[ ] implement timeout functionality without using threads (so it works on the khoury server).
+
 > *Note: the above three are completed in a single rework labelled "need to include a public method 
 for running a single movement turn in the Referee class." in reworked.md*
 
