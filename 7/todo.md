@@ -10,32 +10,32 @@
 
 ## Data Representation
 
-###`Overall`
+### Overall
 
 [X] need to make private fields final in all structures to prevent mutation errors in 
 the future.
 
-###`GameBoard`
+### GameBoard
 
 [X] need to switch row/column of our GameBoard representation for the 2-D Array of Tiles and all 
 method functionality to make integration tests work without use of invertBoard method.
 
-###`GameTree`
+### GameTree
 
 [X] need a clear representation of isPlayerStuck in our GameTree for creating sub states for our 
 tree.
 
-### `Referee`
+### Referee
 
 [ ] need to change Referee to use GameTrees rather than GameStates.
 
 ## Functionality per Data Representation
 
-###`GameBoard`
+### GameBoard
 
 [X] need to rework getViablePaths function to make it more readable.
 
-###`GameState`
+### GameState
 
 [X] need to change our GameState to not ever mutate the current GameState and only return a new 
 GameState after a method call.
@@ -45,12 +45,12 @@ GameState after a method call.
 [X] we need GameState to validate that the potential game is playable (a board with 8 non-empty 
 tiles can't run a game for three players)
 
-###`GameTree`
+### GameTree
 
 [X] need to fix applyFunction method to make it work without creating a new instance of a GameTree 
 that refers to the output X of the function.
 
-###`Strategy`
+### Strategy
 
 [X] change the purpose statement to clarify an Action in the context of placing a Penguin. The
 Position of the tile where the player wants to move the penguin is not clear with current 
@@ -64,7 +64,7 @@ clarify an Action in placing and moving penguins" in reworked.md*
 
 [X] need a unit test for a failed placement for our placement strategy.
  
-###`Referee`
+### Referee
 
 [X] need to include a public method for running a single movement turn in the Referee class.
 
