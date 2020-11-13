@@ -15,7 +15,8 @@ import model.board.Tile;
 public class VisualPanel extends JPanel {
 
     private ImmutableGameStateModel immutableModel; // Immutable GameState
-    private List<List<Tile>> viablePaths; // current viable paths
+    private List<Tile> targets; // current viable paths
+    private Tile origin;
 
     /**
      * Default constructor takes in an immutable model.
@@ -29,7 +30,7 @@ public class VisualPanel extends JPanel {
         }
 
         this.immutableModel = immutableModel;
-        this.viablePaths = new ArrayList<>();
+        this.targets = new ArrayList<>();
 
         this.setBackground(new Color(150,150,150));
         this.setBorder(BorderFactory.createMatteBorder(1,1,1,1, Color.BLACK));
@@ -76,24 +77,24 @@ public class VisualPanel extends JPanel {
         // draws viable paths
         g2d.setColor(Color.RED);
         g2d.setStroke(new BasicStroke(2));
-        for (List<Tile> paths : this.viablePaths) {
-            for (int i = 1; i < paths.size(); i++) {
-                Point tileCenter1 = paths.get(i - 1).getCenter();
-                Point tileCenter2 = paths.get(i).getCenter();
+            for (Tile target: this.targets) {
+                Point tileCenter1 = origin.getCenter();
+                Point tileCenter2 = target.getCenter();
                 g2d.drawLine(tileCenter1.x, tileCenter1.y, tileCenter2.x, tileCenter2.y);
             }
-        }
     }
 
     /**
      * Updates the model and repaints it
      *
-     * @param immutableModel the immutable model
-     * @param viablePaths current viable paths to display
+     * @param immutableModel ImmutableGameStateModel
+     * @param targets potential paths
+     * @param origin origin Tile where all lines are drawn
      */
-    void update(ImmutableGameStateModel immutableModel, List<List<Tile>> viablePaths) {
+    void update(ImmutableGameStateModel immutableModel, List<Tile> targets, Tile origin){
         this.immutableModel = immutableModel;
-        this.viablePaths = viablePaths;
+        this.targets = targets;
+        this.origin = origin;
         this.repaint();
     }
 

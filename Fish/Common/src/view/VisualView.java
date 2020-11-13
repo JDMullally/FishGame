@@ -54,7 +54,7 @@ public class VisualView extends JFrame implements IView {
     }
 
     @Override
-    public void update(ImmutableGameStateModel immutableModel, List<List<Tile>> viablePaths) {
-        this.panel.update(immutableModel, viablePaths);
+    public void update(ImmutableGameStateModel immutableModel, List<Tile> targets, Tile origin) {
+        this.panel.update(immutableModel, targets, origin);
     }
 }

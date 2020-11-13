@@ -36,7 +36,8 @@ public interface IView {
      * Updates the view with the new immutable model and redraws the board
      *
      * @param immutableModel ImmutableGameStateModel
-     * @param viablePaths current viable paths to display
+     * @param targets potential paths
+     * @param origin origin Tile where all lines are drawn
      */
-    void update(ImmutableGameStateModel immutableModel, List<List<Tile>> viablePaths);
+    void update(ImmutableGameStateModel immutableModel, List<Tile> targets, Tile origin);
 }
