@@ -23,33 +23,12 @@ public class GameStateUtil {
      * not null, then iterate through the list setting the order such that the given player is first
      *
      * @param gameState the IGameState to convert to JSON
-     * @param first the First player in the list of players or optionally null
      * @return JsonObject
      */
-    public JsonObject GameStateToJson(IGameState gameState, IPlayer first) {
+    public JsonObject GameStateToJson(IGameState gameState) {
         JsonObject jsonGameState = new JsonObject();
-
         // shifts order of players in list
-        List<IPlayer> players = new ArrayList<>();
-        if (first != null) {
-            boolean foundPlayer = false;
-            int counter = 1;
-            for (IPlayer player : gameState.getPlayers()) {
-                if (player.equals(first)) {
-                    players.add(0, player);
-                    foundPlayer = true;
-                } else if (foundPlayer) {
-                    players.add(counter, player);
-                    counter++;
-                } else {
-                    players.add(player);
-                }
-            }
-
-            if (!foundPlayer) {
-                throw new IllegalArgumentException("Couldn't find first player");
-            }
-        }
+        List<IPlayer> players = gameState.getPlayers();
 
         // creates player object
         JsonArray jsonPlayers = new JsonArray();
@@ -59,6 +38,7 @@ public class GameStateUtil {
             List<IPenguin> penguins = player.getPenguins();
             JsonArray penguinArray = new JsonArray();
             for (IPenguin p : penguins) {
+                //System.out.println("Make it here");
                 JsonArray point = new JsonArray();
                 point.add(p.getPosition().y);
                 point.add(p.getPosition().x);
