@@ -2,7 +2,7 @@ package controller;
 
 import java.awt.event.MouseListener;
 
-import model.state.GameState;
+import model.state.IGameState;
 import view.IView;
 
 /**
@@ -14,9 +14,9 @@ public interface IController extends MouseListener {
     /**
      * Makes the GameState visible and clickable
      *
-     * @param model GameState
+     * @param model IGameState
      * @param view IView
      * @throws IllegalArgumentException if the model or view is null
      */
-    void control(GameState model, IView view) throws IllegalArgumentException;
+    void control(IGameState model, IView view) throws IllegalArgumentException;
 }
