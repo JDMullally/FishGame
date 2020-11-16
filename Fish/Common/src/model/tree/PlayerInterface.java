@@ -27,4 +27,18 @@ public interface PlayerInterface {
      * @return Action
      */
     Action movePenguin(IGameState state) throws TimeoutException;
+
+    /**
+     * Returns an int representing how old the player is in years.
+     *
+     * @return int
+     */
+    int getPlayerAge();
+
+    /**
+     * Returns a String that represents the players unique identifier in a tournament.
+     *
+     * @return String
+     */
+    String getPlayerID();
 }
