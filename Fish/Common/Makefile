@@ -5,6 +5,7 @@ all:
 	cp target/xstate-jar-with-dependencies.jar xstate.jar
 	cp target/xtree-jar-with-dependencies.jar xtree.jar
 	cp target/xstrategy-jar-with-dependencies.jar xstrategy.jar
+	cp target/xref-jar-with-dependencies.jar xref.jar
 
 clean:
 	rm *.jar
