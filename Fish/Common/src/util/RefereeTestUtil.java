@@ -6,10 +6,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 import controller.Controller;
+import java.awt.JobAttributes;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import model.games.GameAction;
@@ -62,7 +64,7 @@ public class RefereeTestUtil {
 
         List<PlayerInterface> playerPlacements = result.getWinners();
 
-        JsonArray winners = new JsonArray();
+        List<String> winners = new ArrayList();
 
         for (PlayerInterface p : playerPlacements) {
             winners.add(interfacePlayers.get(p));
@@ -71,7 +73,15 @@ public class RefereeTestUtil {
 
         actions.forEach(System.out::println);
 
-        System.out.println(winners);
+        Collections.sort(winners);
+
+        JsonArray winnersJson = new JsonArray();
+
+        for (String winner: winners) {
+            winnersJson.add(winner);
+        }
+
+        System.out.println(winnersJson);
     }
 
     private static LinkedHashMap<PlayerInterface, String> jsonPlayersToInterfacePlayers(JsonArray players) {
