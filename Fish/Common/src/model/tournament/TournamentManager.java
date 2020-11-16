@@ -1,22 +1,24 @@
 package model.tournament;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import model.games.GameAction;
 import model.games.IGameResult;
-import model.state.Player;
+import model.games.IReferee;
+import model.games.Referee;
 import model.tree.PlayerInterface;
 
 public class TournamentManager implements ManagerInterface {
 
+  private final static int BOARD_ROWS = 4;
+  private final static int BOARD_COLUMNS = 4;
   private final List<PlayerInterface> tournamentPlayers;
 
-  private List<IGameResult> lastRoundResults;
-  private List<PlayerInterface> winners;
-  private List<PlayerInterface> losers;
+  private List<IGameResult> roundResults;
+  private List<PlayerInterface> previousWinners;
+  private List<PlayerInterface> remainingPlayers;
+  private List<PlayerInterface> losingPlayers;
   private List<PlayerInterface> cheaters;
 
   /**
@@ -26,8 +28,8 @@ public class TournamentManager implements ManagerInterface {
    */
   public TournamentManager(List<PlayerInterface> tournamentPlayers) {
     this.tournamentPlayers = orderByAge(tournamentPlayers);
-    this.winners = new ArrayList<>();
-    this.losers = new ArrayList<>();
+    this.remainingPlayers = this.tournamentPlayers;
+    this.losingPlayers = new ArrayList<>();
     this.cheaters = new ArrayList<>();
   }
 
@@ -44,13 +46,36 @@ public class TournamentManager implements ManagerInterface {
 
   @Override
   public List<PlayerInterface> runTournament() {
-    while (something) {
-      List<IGameResult> roundResults = this.runRound();
+
+    while (!isTournamentOver()) {
+      this.roundResults = this.runRound();
+      this.previousWinners = this.remainingPlayers;
+      this.remainingPlayers = this.getRoundWinners();
     }
 
-    // calculate winners
+    return this.remainingPlayers;
+  }
 
-    return winners;
+  public boolean isTournamentOver() {
+
+    // over if there was a single final game
+    if (this.roundResults.size() <= 1) {
+      return true;
+    }
+
+    // over if players < 2
+    if (this.remainingPlayers.size() < 2) {
+      return true;
+    }
+
+    // over if all the previous round's winners are still present
+    return this.remainingPlayers.containsAll(this.previousWinners);
+  }
+
+  private List<PlayerInterface> getRoundWinners() {
+    List<PlayerInterface> roundWinners = new ArrayList<>();
+    this.roundResults.forEach(gameResult -> roundWinners.addAll(gameResult.getWinners()));
+    return roundWinners;
   }
 
   /**
@@ -60,10 +85,26 @@ public class TournamentManager implements ManagerInterface {
    * @return a list of GameResult representing the outcome of all games run this round.
    */
   public List<IGameResult> runRound() {
-    // sort by age
 
     // assign to games
-    return null;
+    List<List<PlayerInterface>> playerGroups = allocatePlayers(this.remainingPlayers);
+
+    this.roundResults.clear();
+    this.remainingPlayers.clear();
+
+    for (List<PlayerInterface> group : playerGroups) {
+      IReferee referee = new Referee(group, BOARD_ROWS, BOARD_COLUMNS);
+
+      IGameResult gameResult = referee.runGame();
+
+      this.remainingPlayers.addAll(gameResult.getWinners());
+      this.losingPlayers.addAll(gameResult.getLosers());
+      this.cheaters.addAll(gameResult.getCheaters());
+
+      this.roundResults.add(gameResult);
+    }
+
+    return this.roundResults;
   }
 
   /**
