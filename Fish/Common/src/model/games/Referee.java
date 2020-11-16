@@ -24,6 +24,8 @@ import model.state.IPlayer;
 import model.state.Player;
 import model.tree.Action;
 import model.tree.GameEnded;
+import model.tree.GameTree;
+import model.tree.IGameTree;
 import model.tree.PassPenguin;
 import model.tree.PlayerCheated;
 import model.tree.PlayerInterface;
@@ -57,7 +59,7 @@ public class Referee implements IReferee {
     private final Map<Color, PlayerInterface> players;
     private final Map<Color, PlayerInterface> cheaters;
     private final List<GameAction> ongoingActions;
-    private IGameState gameState;
+    private IGameTree gameTree;
     private IGameResult gameResult;
 
     /**
@@ -145,16 +147,16 @@ public class Referee implements IReferee {
     public IGameResult runGame() {
 
         // allows players to place penguins until the game is ready to begin
-        while (!this.gameState.isGameReady()) {
+        while (!this.gameTree.getState().isGameReady()) {
             this.placementTurn();
         }
 
         // allows players to move penguins until the game is over
-        while (!this.gameState.isGameOver()) {
-            this.gameState = this.runTurn();
+        while (!this.gameTree.getState().isGameOver()) {
+            this.runTurn();
         }
 
-        Action endGame = new GameEnded(this.gameState);
+        Action endGame = new GameEnded(this.gameTree.getState());
         this.ongoingActions.add(new GameAction(endGame));
         this.gameResult = this.retrieveGameResult();
         return this.gameResult;
@@ -172,7 +174,8 @@ public class Referee implements IReferee {
         List<IPlayer> gamePlayers = this.initializePlayers();
 
         // creates game state
-        this.gameState = new GameState(rows, columns, gameBoard.getGameBoard(), gamePlayers);
+        IGameState gameState = new GameState(rows, columns, gameBoard.getGameBoard(), gamePlayers);
+        this.gameTree = new GameTree(gameState);
     }
 
     // TODO make methods consistent on whether they directly mutate gamestate or return it
