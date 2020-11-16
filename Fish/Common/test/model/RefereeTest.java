@@ -417,12 +417,6 @@ public class RefereeTest {
      * Tests for getGameState.
      *********************************************************************************************
      */
-    @Test (expected = IllegalStateException.class)
-    public void getGameStateBeforeGame() {
-        this.init();
-        IReferee ref = new Referee(players2, this.newBoard.getRows(), this.newBoard.getColumns());
-        ref.getGameState();
-    }
 
     @Test
     public void getGameStateAfterGame() {
