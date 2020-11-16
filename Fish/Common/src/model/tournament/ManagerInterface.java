@@ -1,6 +1,7 @@
 package model.tournament;
 
 import java.util.List;
+import java.util.Map;
 import model.games.GameAction;
 import model.games.IGameResult;
 import model.state.IPlayer;
@@ -29,14 +30,6 @@ public interface ManagerInterface {
   List<PlayerInterface> runTournament();
 
   /**
-   * Called only by an Observer. Allows an Observer to see the most recent ongoing GameActions in
-   * all games.
-   *
-   * @return List of IGameAction
-   */
-  List<GameAction> getOngoingActions();
-
-  /**
    * Called only by an Observer or Player Allows an observer to see the placements of all players of
    * a given tournament.
    *
@@ -47,18 +40,19 @@ public interface ManagerInterface {
 
   /**
    * Called only by an Observer or Player Allows an observer to see the results of a given
-   * tournament round.
+   * tournament round. All tournaments start at Round 1.
    *
+   * @param round integer representing round n.
    * @return List of IGameResult
    * @throws IllegalStateException if the round provided in the tournament isn't over yet
    */
-  List<IGameResult> getRoundResults() throws IllegalStateException;
+  List<IGameResult> getRoundResults(int round) throws IllegalStateException;
 
   /**
    * Called only by an Observer or Player Allows an observer to see the current statistics of the
    * tournament.
    *
-   * @return String
+   * @return Map of PlayerStanding Enumerators and a List of PlayerInterfaces
    */
-  String getTournamentStatistics();
+  Map<PlayerStanding,List<PlayerInterface>> getTournamentStatistics();
 }
