@@ -1,9 +1,13 @@
 package model.tournament;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import model.games.GameAction;
 import model.games.IGameResult;
+import model.state.Player;
 import model.tree.PlayerInterface;
 
 public class TournamentManager implements ManagerInterface {
@@ -12,10 +16,30 @@ public class TournamentManager implements ManagerInterface {
 
   private List<IGameResult> lastRoundResults;
   private List<PlayerInterface> winners;
+  private List<PlayerInterface> losers;
+  private List<PlayerInterface> cheaters;
 
+  /**
+   * Constructor for TournamentManager that initializes organized lists of Players and sorts the
+   * input list of tournamentPlayers.
+   * @param tournamentPlayers
+   */
   public TournamentManager(List<PlayerInterface> tournamentPlayers) {
+    this.tournamentPlayers = orderByAge(tournamentPlayers);
+    this.winners = new ArrayList<>();
+    this.losers = new ArrayList<>();
+    this.cheaters = new ArrayList<>();
+  }
 
-    this.tournamentPlayers = tournamentPlayers;
+  /**
+   * Returns an ordered List of PlayerInterfaces ordered by age in ascending order.
+   *
+   * @param tournamentPlayers
+   * @return List of PlayerInterface
+   */
+  private List<PlayerInterface> orderByAge(List<PlayerInterface> tournamentPlayers) {
+    tournamentPlayers.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
+    return tournamentPlayers;
   }
 
   @Override
@@ -42,29 +66,53 @@ public class TournamentManager implements ManagerInterface {
     return null;
   }
 
-  private List<List<PlayerInterface>> allocatePlayers(List<PlayerInterface> players) {
+  /**
+   * Creates a list of Player Groups following the pattern below
+   * 0 -> Err
+   * 1 -> Err
+   * 2 -> 2P
+   * 3 -> 3P
+   * 4 -> 4P
+   * 5 -> 3P + 2P
+   * 6 -> 3P + 3P
+   * 7 -> 4P + 3P
+   * 8 -> 4P + 4P
+   * 9 -> 3P + 3P + 3P
+   * 10 -> 4P + 3P + 3P
+   * 11 -> 4P + 4P + 3P
+   * 12 -> 4P + 4P + 4P
+   * 13 -> 4P + 3P + 3P + 3P
+   * 14 -> 4P + 4P + 3P + 3P
+   * 15 -> 4P + 4P + 4P + 3P
+   * 16 -> 4P + 4P + 4P + 4P
+   * 17 -> 4P + 4P + 3P + 3P + 3P
+   *
+   * @param players
+   * @return List of List of PlayerInterface
+   */
+  public List<List<PlayerInterface>> allocatePlayers(List<PlayerInterface> players) {
+    return allocatePlayersHelper(players, new ArrayList<>());
+  }
 
-    int remainder = players.size() % 4;
-
-    switch (remainder) {
-      case 0:
-        // easy
-        break;
-      case 1:
-        // send 5 players to function
-        break;
-      case 2:
-        // send 6 players to function
-        break;
-      case 3:
-        // send 3 players to function
-        break;
-    }
-
-    List<List<PlayerInterface>> playerGroups = new ArrayList<>();
-
-    for (PlayerInterface p : players) {
-      playerGroups.add()
+  /**
+   * Helper function for allocatePlayers
+   * @param players List of PlayerInterfaces remaining to allocate
+   * @param acc Accumulator for already allocated players.
+   * @return List of List of PlayerInterface
+   */
+  private List<List<PlayerInterface>> allocatePlayersHelper(List<PlayerInterface> players, List<List<PlayerInterface>> acc) {
+    int size = players.size();
+    if (size == 2 || size == 3 || size == 4) {
+      acc.add(players);
+      return acc;
+    } else if (size == 5 || size == 6 || size == 9) {
+      List<PlayerInterface> firstThree = players.subList(0, 3);
+      acc.add(firstThree);
+      return allocatePlayersHelper(players.subList(3, size), acc);
+    } else {
+      List<PlayerInterface> firstFour = players.subList(0, 4);
+      acc.add(firstFour);
+      return allocatePlayersHelper(players.subList(4, size), acc);
     }
   }
 
