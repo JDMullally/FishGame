@@ -187,18 +187,19 @@ public class Referee implements IReferee {
      *
      * @return IGameState
      */
-    public IGameState placementTurn() {
-        IPlayer curPlayer = this.gameState.playerTurn();
+    public void placementTurn() {
+        IGameState gameState = this.gameTree.getState();
+        IPlayer curPlayer = gameState.playerTurn();
         PlayerInterface curPlayerInterface = this.players.get(curPlayer.getColor());
 
         Callable<Action> task = new Callable<Action>() {
             public Action call() throws TimeoutException {
-                return curPlayerInterface.placePenguin(gameState);
+                return curPlayerInterface.placePenguin(gameTree.getState());
             }
         };
 
-        this.gameState = placeOrMove(task, curPlayer, curPlayerInterface);
-        return this.gameState.clone();
+        gameState = placeOrMove(task, curPlayer, curPlayerInterface);
+        this.gameTree = new GameTree(gameState);
     }
 
     /**
@@ -211,7 +212,7 @@ public class Referee implements IReferee {
      * @return IGameState
      */
     public IGameState runRound() {
-        IGameState roundGameState = this.gameState;
+        IGameState roundGameState = this.gameTree.getState();
         for (int i = 0; i < players.values().size(); i++) {
             if(roundGameState.isGameOver()) {
                 break;
@@ -231,25 +232,27 @@ public class Referee implements IReferee {
      */
     public IGameState runTurn() {
         IGameState newGameState;
-        IPlayer curPlayer = this.gameState.playerTurn();
+        IGameState currentGameState = this.gameTree.getState();
+        IPlayer curPlayer = currentGameState.playerTurn();
         PlayerInterface curPlayerInterface = this.players.get(curPlayer.getColor());
 
         // if the player can't move, pass for them
-        if (this.gameState.isCurrentPlayerStuck()) {
+        if (currentGameState.isCurrentPlayerStuck()) {
             Action action = new PassPenguin(curPlayer);
-            newGameState = action.apply(this.gameState);
+            newGameState = action.apply(currentGameState);
             this.ongoingActions.add(new GameAction(action));
-            return newGameState;
+            this.gameTree = new GameTree(newGameState);
         }
 
 
         Callable<Action> task = new Callable<Action>() {
             public Action call() throws TimeoutException {
-                return curPlayerInterface.movePenguin(gameState);
+                return curPlayerInterface.movePenguin(gameTree.getState());
             }
         };
 
-        return placeOrMove(task, curPlayer, curPlayerInterface);
+        this.gameTree = new GameTree(placeOrMove(task, curPlayer, curPlayerInterface));
+        return this.gameTree.getState().clone();
     }
 
     /**
@@ -268,8 +271,9 @@ public class Referee implements IReferee {
         // allow the player to move based on their strategy
         try {
             Action action = future.get(this.timeout, TimeUnit.SECONDS);
+            newGameState = this.gameTree.queryAction(this.gameTree.getState(), action);
             executor.shutdownNow();
-            newGameState = action.apply(this.gameState);
+
             this.ongoingActions.add(new GameAction(action));
         } catch (Exception e) {
             executor.shutdownNow();
@@ -286,7 +290,7 @@ public class Referee implements IReferee {
      */
     private IGameState playerCheated(IPlayer curPlayer, PlayerInterface curPlayerInterface) {
         Action action = new PlayerCheated(curPlayer);
-        IGameState newGameState = action.apply(this.gameState);
+        IGameState newGameState = action.apply(this.gameTree.getState());
         this.players.remove(curPlayer.getColor());
         this.cheaters.put(curPlayer.getColor(), curPlayerInterface);
         this.ongoingActions.add(new GameAction(action));
@@ -295,11 +299,11 @@ public class Referee implements IReferee {
 
     @Override
     public IGameState getGameState() throws IllegalStateException {
-        if (this.gameState == null) {
+        if (this.gameTree.getState() == null) {
             throw new IllegalStateException("The game has not started yet");
         }
 
-        return this.gameState;
+        return this.gameTree.getState();
     }
 
     @Override
@@ -325,7 +329,7 @@ public class Referee implements IReferee {
         // gets players from GameState by score in descending order
 
         Map<PlayerInterface, Integer> playersI = new LinkedHashMap<>();
-        for (IPlayer player : this.gameState.getPlayers()) {
+        for (IPlayer player : this.gameTree.getState().getPlayers()) {
             playersI.put(this.players.get(player.getColor()), player.getScore());
         }
 
