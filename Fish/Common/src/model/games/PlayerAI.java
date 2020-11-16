@@ -13,18 +13,20 @@ import model.tree.PlayerInterface;
 public class PlayerAI implements PlayerInterface {
 
     private IStrategy strategy;
+    private int turns;
 
     /**
      * Constructor takes in a player's IStrategy
      *
      * @param strategy IStrategy
      */
-    public PlayerAI(IStrategy strategy) {
+    public PlayerAI(IStrategy strategy, int turns) {
         if (strategy == null) {
             throw new IllegalArgumentException("IStrategy cannot be null");
         }
 
         this.strategy = strategy;
+        this.turns = turns;
     }
 
     @Override
@@ -34,7 +36,7 @@ public class PlayerAI implements PlayerInterface {
 
     @Override
     public Action movePenguin(IGameState state) {
-        return this.strategy.chooseMoveAction(state, 2);
+        return this.strategy.chooseMoveAction(state, turns);
     }
 
     @Override
