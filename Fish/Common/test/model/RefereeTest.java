@@ -46,32 +46,32 @@ public class RefereeTest {
         this.newBoard = new GameBoard(5,5,
             new ArrayList<>());
 
-        PlayerInterface p1 = new PlayerAI(new Strategy());
-        PlayerInterface p2 = new PlayerAI(new Strategy());
-        PlayerInterface p3 = new PlayerAI(new Strategy());
-        PlayerInterface p4 = new PlayerAI(new Strategy());
+        PlayerInterface p1 = new PlayerAI(new Strategy(), 2);
+        PlayerInterface p2 = new PlayerAI(new Strategy(), 2);
+        PlayerInterface p3 = new PlayerAI(new Strategy(), 2);
+        PlayerInterface p4 = new PlayerAI(new Strategy(),2 );
         PlayerInterface placeAnotherPlayerPenguin =
-            new PlayerAI(new PlaceAnotherPlayerPenguin());
+            new PlayerAI(new PlaceAnotherPlayerPenguin(),2);
 
         PlayerInterface placesPenguinsMovesWrong =
-            new PlayerAI(new PlacesPenguinsMovesWrong());
+            new PlayerAI(new PlacesPenguinsMovesWrong(), 2);
 
         PlayerInterface moveOutsideBoard =
-            new PlayerAI(new MoveOutsideBoard());
+            new PlayerAI(new MoveOutsideBoard(), 2);
 
         PlayerInterface placesPenguinOneAnotherPlayerPenguin =
-            new PlayerAI(new PlacePenguinOnAnotherPlayerPenguin());
+            new PlayerAI(new PlacePenguinOnAnotherPlayerPenguin(), 2);
 
         PlayerInterface moveAnotherPenguin =
-            new PlayerAI(new MoveAnotherPlayerPenguin());
+            new PlayerAI(new MoveAnotherPlayerPenguin(),2);
 
         PlayerInterface placeOutsideBoard =
-            new PlayerAI(new PlaceOutsideBoard());
+            new PlayerAI(new PlaceOutsideBoard(),2);
 
         PlayerInterface passOwnTurnMakeAnotherPlayerCheat =
-            new PlayerAI(new PassOwnTurnMakeAnotherPlayerCheat());
+            new PlayerAI(new PassOwnTurnMakeAnotherPlayerCheat(),2);
 
-        PlayerInterface timeout = new PlayerAI(new TimeoutStrategy());
+        PlayerInterface timeout = new PlayerAI(new TimeoutStrategy(),2);
 
         this.players2 = new ArrayList<>(Arrays.asList(p1, p2));
         this.players3 = new ArrayList<>(Arrays.asList(p1, p2, p3));
@@ -116,18 +116,14 @@ public class RefereeTest {
     public void createInitialGameFourPlayers2x3NotEnoughTiles() {
         this.init();
 
-        Referee ref = new Referee(players4);
-
-        ref.createInitialGame(2, 3);
+        IReferee ref = new Referee(players4, 2, 3);
     }
 
     @Test
     public void createInitialGameFourPlayers4x3GameReadyGameOver() {
         this.init();
 
-        Referee ref = new Referee(players4);
-
-        ref.createInitialGame(4, 3);
+        IReferee ref = new Referee(players4,4,3);
 
         IGameState initialGameState = ref.getGameState();
 
@@ -139,9 +135,7 @@ public class RefereeTest {
     public void createInitialGameFourPlayers4x3ConfirmDimensions() {
         this.init();
 
-        Referee ref = new Referee(players4);
-
-        ref.createInitialGame(4, 3);
+        IReferee ref = new Referee(players4,4,3);
 
         IGameState initialGameState = ref.getGameState();
 
@@ -158,9 +152,7 @@ public class RefereeTest {
         Color brown = ColorUtil.toColor("brown");
         Color black = ColorUtil.toColor("black");
 
-        Referee ref = new Referee(players4);
-
-        ref.createInitialGame(4, 3);
+        IReferee ref = new Referee(players4, 4, 3);
 
         IGameState initialGameState = ref.getGameState();
 
@@ -205,9 +197,9 @@ public class RefereeTest {
     public void runStandardGameTwoPlayers() {
         this.init();
 
-        IReferee ref = new Referee(players2);
+        IReferee ref = new Referee(players2, this.newBoard.getRows(), this.newBoard.getColumns());
 
-        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+        IGameResult result = ref.runGame();
 
         assertEquals(2, result.getPlayerPlacements().size());
         assertEquals(0, result.getCheaters().size());
@@ -217,9 +209,9 @@ public class RefereeTest {
     public void runStandardGameThreePlayers() {
         this.init();
 
-        IReferee ref = new Referee(players3);
+        IReferee ref = new Referee(players3, this.newBoard.getRows(), this.newBoard.getColumns());
 
-        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+        IGameResult result = ref.runGame();
 
         assertEquals(3, result.getPlayerPlacements().size());
         assertEquals(0, result.getCheaters().size());
@@ -229,9 +221,9 @@ public class RefereeTest {
     public void runStandardGameFourPlayers() {
         this.init();
 
-        IReferee ref = new Referee(players4);
+        IReferee ref = new Referee(players4, this.newBoard.getRows(), this.newBoard.getColumns());
 
-        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+        IGameResult result = ref.runGame();
 
         assertEquals(4, result.getPlayerPlacements().size());
         assertEquals(0, result.getCheaters().size());
@@ -248,9 +240,10 @@ public class RefereeTest {
     public void runGameThreePlayersOneCheater() {
         this.init();
 
-        IReferee ref = new Referee(oneCheater);
+        IReferee ref = new Referee(oneCheater, this.newBoard.getRows(), this.newBoard.getColumns());
 
-        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+        IGameResult result = ref.runGame();
+
 
         assertTrue(ref.getGameState().isGameOver());
         assertEquals(2, result.getPlayerPlacements().size());
@@ -261,9 +254,10 @@ public class RefereeTest {
     public void runGameThreePlayersOnePlacesPenguinOutsideBoard() {
         this.init();
 
-        IReferee ref = new Referee(onePlaceOutsideBoard);
+        IReferee ref = new Referee(onePlaceOutsideBoard, this.newBoard.getRows(),
+            this.newBoard.getColumns());
 
-        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+        IGameResult result = ref.runGame();
 
         assertTrue(ref.getGameState().isGameOver());
         assertEquals(2, result.getPlayerPlacements().size());
@@ -274,9 +268,11 @@ public class RefereeTest {
     public void runGameThreePlayersOnePlacesPenguinOnAnotherPlayerPenguin() {
         this.init();
 
-        IReferee ref = new Referee(onePlacesPenguinOnAnotherPlayerPenguin);
+        IReferee ref = new Referee(onePlacesPenguinOnAnotherPlayerPenguin,
+            this.newBoard.getRows(), this.newBoard.getColumns());
 
-        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+        IGameResult result = ref.runGame();
+
 
         assertTrue(ref.getGameState().isGameOver());
         assertEquals(2, result.getPlayerPlacements().size());
@@ -296,9 +292,9 @@ public class RefereeTest {
     public void runGameFourPlayersOneCheatsAfterPlacementPenguinsMovesWrong() {
         this.init();
 
-        IReferee ref = new Referee(oneBadMove);
+        IReferee ref = new Referee(oneBadMove, this.newBoard.getRows(), this.newBoard.getColumns());
 
-        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+        IGameResult result = ref.runGame();
 
         assertTrue(ref.getGameState().isGameOver());
         assertEquals(3, result.getPlayerPlacements().size());
@@ -309,9 +305,10 @@ public class RefereeTest {
     public void runGameThreePlayersMoveOutsideBoard() {
         this.init();
 
-        IReferee ref = new Referee(this.oneMoveOutsideBoard);
+        IReferee ref = new Referee(this.oneMoveOutsideBoard, this.newBoard.getRows(),
+            this.newBoard.getColumns());
 
-        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+        IGameResult result = ref.runGame();
 
         assertTrue(ref.getGameState().isGameOver());
         assertEquals(2, result.getPlayerPlacements().size());
@@ -322,9 +319,11 @@ public class RefereeTest {
     public void runGameThreePlayersOnePassAnotherPlayerTurn() {
         this.init();
 
-        IReferee ref = new Referee(this.oneMoveAnotherPenguin);
+        IReferee ref = new Referee(this.oneMoveAnotherPenguin,
+            this.newBoard.getRows(), this.newBoard.getColumns());
 
-        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+        IGameResult result = ref.runGame();
+
 
         assertTrue(ref.getGameState().isGameOver());
         assertEquals(2, result.getPlayerPlacements().size());
@@ -335,9 +334,11 @@ public class RefereeTest {
     public void runGameThreePlayersOnePassAndMoveAnotherPenguin() {
         this.init();
 
-        IReferee ref = new Referee(this.onePassOwnTurnMakeAnotherPlayerCheat);
+        IReferee ref = new Referee(this.onePassOwnTurnMakeAnotherPlayerCheat,
+            this.newBoard.getRows(), this.newBoard.getColumns());
 
-        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+        IGameResult result = ref.runGame();
+
 
         List<GameAction> actions = ref.getOngoingActions();
 
@@ -357,9 +358,11 @@ public class RefereeTest {
     public void allCheatersGameEnds() {
         this.init();
 
-        IReferee ref = new Referee(oneCheatsOneBadMove);
+        IReferee ref = new Referee(oneCheatsOneBadMove,
+            this.newBoard.getRows(), this.newBoard.getColumns());
 
-        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+        IGameResult result = ref.runGame();
+
 
         assertTrue(ref.getGameState().isGameOver());
         assertEquals(0, result.getPlayerPlacements().size());
@@ -374,9 +377,11 @@ public class RefereeTest {
     public void timeoutTest()  {
         this.init();
 
-        Referee ref = new Referee(timeoutPlayer);
+        IReferee ref = new Referee(timeoutPlayer,
+            this.newBoard.getRows(), this.newBoard.getColumns());
 
-        ref.createInitialGame(5,5);
+        IGameResult result = ref.runGame();
+
 
         List<GameAction> actions = ref.getOngoingActions();
     }
@@ -390,16 +395,17 @@ public class RefereeTest {
     @Test (expected = IllegalStateException.class)
     public void getGameResultBeforeGame() {
         this.init();
-        IReferee ref = new Referee(players2);
+        IReferee ref = new Referee(players2, this.newBoard.getRows(), this.newBoard.getColumns());
+
         ref.getGameResult();
     }
 
     @Test
     public void getGameResultAfterGame() {
         this.init();
-        IReferee ref = new Referee(players2);
+        IReferee ref = new Referee(players2, this.newBoard.getRows(), this.newBoard.getColumns());
 
-        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+        IGameResult result = ref.runGame();
 
         IGameResult result1 = ref.getGameResult();
 
@@ -414,16 +420,16 @@ public class RefereeTest {
     @Test (expected = IllegalStateException.class)
     public void getGameStateBeforeGame() {
         this.init();
-        IReferee ref = new Referee(players2);
+        IReferee ref = new Referee(players2, this.newBoard.getRows(), this.newBoard.getColumns());
         ref.getGameState();
     }
 
     @Test
     public void getGameStateAfterGame() {
         this.init();
-        IReferee ref = new Referee(players2);
+        IReferee ref = new Referee(players2, this.newBoard.getRows(), this.newBoard.getColumns());
 
-        IGameResult result = ref.runGame(this.newBoard.getRows(), this.newBoard.getColumns());
+        IGameResult result = ref.runGame();
 
         IGameState finalGameState = ref.getGameState();
 
@@ -438,7 +444,7 @@ public class RefereeTest {
     @Test
     public void getOngoingActionsBeforeGame() {
         this.init();
-        IReferee ref = new Referee(players2);
+        IReferee ref = new Referee(players2, this.newBoard.getRows(), this.newBoard.getColumns());
 
         assertTrue(ref.getOngoingActions().isEmpty());
     }
@@ -446,7 +452,7 @@ public class RefereeTest {
     @Test
     public void getOngoingActionsAfterGame() {
         this.init();
-        IReferee ref = new Referee(players2);
+        IReferee ref = new Referee(players2, this.newBoard.getRows(), this.newBoard.getColumns());
 
         assertTrue(ref.getOngoingActions().isEmpty());
     }
