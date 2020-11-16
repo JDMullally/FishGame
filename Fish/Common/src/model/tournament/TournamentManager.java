@@ -2,8 +2,11 @@ package model.tournament;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.games.GameAction;
+import model.games.GameResult;
 import model.games.IGameResult;
 import model.games.IReferee;
 import model.games.Referee;
@@ -15,10 +18,12 @@ public class TournamentManager implements ManagerInterface {
   private final static int BOARD_COLUMNS = 4;
   private final List<PlayerInterface> tournamentPlayers;
 
+  private int round;
+  private Map<Integer, List<IGameResult>> roundResultMap;
   private List<IGameResult> roundResults;
   private List<PlayerInterface> previousWinners;
   private List<PlayerInterface> remainingPlayers;
-  private List<PlayerInterface> losingPlayers;
+  private List<PlayerInterface> eliminatedPlayers;
   private List<PlayerInterface> cheaters;
 
   /**
@@ -29,8 +34,10 @@ public class TournamentManager implements ManagerInterface {
   public TournamentManager(List<PlayerInterface> tournamentPlayers) {
     this.tournamentPlayers = orderByAge(tournamentPlayers);
     this.remainingPlayers = this.tournamentPlayers;
-    this.losingPlayers = new ArrayList<>();
+    this.eliminatedPlayers = new ArrayList<>();
     this.cheaters = new ArrayList<>();
+    this.round = 0;
+    this.roundResultMap = new HashMap<>();
   }
 
   /**
@@ -48,9 +55,10 @@ public class TournamentManager implements ManagerInterface {
   public List<PlayerInterface> runTournament() {
 
     while (!isTournamentOver()) {
-      this.roundResults = this.runRound();
+      round++;
       this.previousWinners = this.remainingPlayers;
-      this.remainingPlayers = this.getRoundWinners();
+      this.roundResults = this.runRound();
+      this.roundResultMap.put(this.round, this.roundResults);
     }
 
     return this.remainingPlayers;
@@ -70,12 +78,6 @@ public class TournamentManager implements ManagerInterface {
 
     // over if all the previous round's winners are still present
     return this.remainingPlayers.containsAll(this.previousWinners);
-  }
-
-  private List<PlayerInterface> getRoundWinners() {
-    List<PlayerInterface> roundWinners = new ArrayList<>();
-    this.roundResults.forEach(gameResult -> roundWinners.addAll(gameResult.getWinners()));
-    return roundWinners;
   }
 
   /**
@@ -98,7 +100,7 @@ public class TournamentManager implements ManagerInterface {
       IGameResult gameResult = referee.runGame();
 
       this.remainingPlayers.addAll(gameResult.getWinners());
-      this.losingPlayers.addAll(gameResult.getLosers());
+      this.eliminatedPlayers.addAll(gameResult.getEliminated());
       this.cheaters.addAll(gameResult.getCheaters());
 
       this.roundResults.add(gameResult);
@@ -157,23 +159,55 @@ public class TournamentManager implements ManagerInterface {
     }
   }
 
-  @Override
-  public List<GameAction> getOngoingActions() {
-    return null;
-  }
 
   @Override
   public List<PlayerInterface> getTournamentResults() throws IllegalStateException {
-    return null;
+    if(isTournamentOver())  {
+      return new ArrayList<>(this.remainingPlayers);
+    } else {
+      throw new IllegalStateException("Tournament is not over yet!");
+    }
   }
 
   @Override
-  public List<IGameResult> getRoundResults() throws IllegalStateException {
-    return null;
+  public List<IGameResult> getRoundResults(int round) throws IllegalArgumentException {
+    if(round < 1 || round > this.round)  {
+      throw new  IllegalArgumentException("Cannot ask for results before Game has started or "
+          + "results that don't exist");
+    }
+    return new ArrayList<>(this.roundResultMap.get(round));
   }
 
   @Override
-  public String getTournamentStatistics() {
-    return null;
+  public Map<PlayerStanding,List<PlayerInterface>> getTournamentStatistics() {
+    Map<PlayerStanding,List<PlayerInterface>> map = new HashMap<>();
+    map.put(PlayerStanding.CHEATER, new ArrayList<>(this.cheaters));
+    map.put(PlayerStanding.ELIMINATED, new ArrayList<>(this.eliminatedPlayers));
+    map.put(PlayerStanding.REMAINING, new ArrayList<>(this.remainingPlayers));
+    return map;
+  }
+
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Total rounds run: " + this.round  + "\n");
+    sb.append("Cheaters: \n");
+    for (PlayerInterface cheater: cheaters) {
+      sb.append(cheater.getPlayerID() + "\n");
+    }
+    sb.append("Eliminated: \n");
+    for (PlayerInterface eliminated: eliminatedPlayers) {
+      sb.append(eliminated.getPlayerID() + "\n");
+    }
+    if (isTournamentOver()) {
+      sb.append("Winners: \n");
+    } else {
+      sb.append("Remaining: \n");
+    }
+    for (PlayerInterface remaining: remainingPlayers) {
+      sb.append(remaining.getPlayerID() + "\n");
+    }
+    return sb.toString();
   }
 }
