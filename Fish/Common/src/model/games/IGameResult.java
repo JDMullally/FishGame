@@ -24,4 +24,11 @@ public interface IGameResult {
      * @return List of PlayerInterface
      */
     List<PlayerInterface> getCheaters();
+
+    /**
+     * Gets the list of IPlayers that had the maximum score at the end of a game of Fish.
+     *
+     * @return List of PlayerInterface
+     */
+    List<PlayerInterface> getWinners();
 }
