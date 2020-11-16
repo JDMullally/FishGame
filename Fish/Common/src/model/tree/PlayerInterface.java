@@ -41,4 +41,19 @@ public interface PlayerInterface {
      * @return String
      */
     String getPlayerID();
+
+    /**
+     * Return true for confirmation that player has received the message
+     *
+     * @return boolean for confirmation that player has received the message
+     */
+    boolean tournamentHasStarted();
+
+    /**
+     * Return true for confirmation that player has received the message
+     *
+     * @param youWon a boolean that is true if the player has won or false if they have lost
+     * @return boolean for confirmation that player has received the message
+     */
+    boolean tournamentResults(boolean youWon);
 }

@@ -69,6 +69,16 @@ public class PlayerAI implements PlayerInterface {
     }
 
     @Override
+    public boolean tournamentHasStarted() {
+        return true;
+    }
+
+    @Override
+    public boolean tournamentResults(boolean youWon) {
+        return true;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o instanceof PlayerAI) {
             PlayerAI other = (PlayerAI) o;
