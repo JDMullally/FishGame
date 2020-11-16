@@ -14,6 +14,8 @@ public class PlayerAI implements PlayerInterface {
 
     private IStrategy strategy;
     private int turns;
+    private int age;
+    private String uid;
 
     /**
      * Constructor takes in a player's IStrategy
@@ -25,6 +27,23 @@ public class PlayerAI implements PlayerInterface {
             throw new IllegalArgumentException("IStrategy cannot be null");
         }
 
+        this.age = 1;
+        this.uid = "AI Player";
+        this.strategy = strategy;
+        this.turns = turns;
+    }
+
+    public PlayerAI(IStrategy strategy, int turns, int age, String uid) {
+        if (strategy == null) {
+            throw new IllegalArgumentException("IStrategy cannot be null");
+        }
+        if (uid == null || uid.length() > 12) {
+            throw new IllegalArgumentException("A Player cannot have a null name or a name with "
+                + "more that 12 characters long");
+        }
+
+        this.age = age;
+        this.uid = uid;
         this.strategy = strategy;
         this.turns = turns;
     }
@@ -40,10 +59,22 @@ public class PlayerAI implements PlayerInterface {
     }
 
     @Override
+    public int getPlayerAge() {
+        return this.age;
+    }
+
+    @Override
+    public String getPlayerID() {
+        return this.uid;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o instanceof PlayerAI) {
             PlayerAI other = (PlayerAI) o;
-            return this.strategy.equals(other.strategy);
+            return this.strategy.equals(other.strategy)
+                && this.age == other.age
+                && this.uid.equals(other.uid);
         }
         return false;
     }
