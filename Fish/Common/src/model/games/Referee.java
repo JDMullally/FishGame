@@ -79,7 +79,7 @@ public class Referee implements IReferee {
             throw new IllegalArgumentException("There must be between 2 and 4 players inclusive in the game");
         }
 
-        this.timeout = 30;
+        this.timeout = 5;
         this.players = this.initializePlayerInterfaces(players);
         this.cheaters = new LinkedHashMap<>();
         this.ongoingActions = new ArrayList<>();
@@ -242,6 +242,7 @@ public class Referee implements IReferee {
             newGameState = action.apply(currentGameState);
             this.ongoingActions.add(new GameAction(action));
             this.gameTree = new GameTree(newGameState);
+            return this.gameTree.getState().clone();
         }
 
 
