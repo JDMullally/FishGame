@@ -5,11 +5,19 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import javax.swing.BorderFactory;
 import model.games.GameAction;
 import model.games.GameResult;
 import model.games.IGameResult;
 import model.games.IReferee;
 import model.games.Referee;
+import model.tree.Action;
 import model.tree.PlayerInterface;
 
 public class TournamentManager implements ManagerInterface {
@@ -25,6 +33,7 @@ public class TournamentManager implements ManagerInterface {
   private List<PlayerInterface> remainingPlayers;
   private List<PlayerInterface> eliminatedPlayers;
   private List<PlayerInterface> cheaters;
+  private final int timeout;
 
   /**
    * Constructor for TournamentManager that initializes organized lists of Players and sorts the
@@ -38,6 +47,7 @@ public class TournamentManager implements ManagerInterface {
     this.cheaters = new ArrayList<>();
     this.round = 0;
     this.roundResultMap = new HashMap<>();
+    this.timeout = 5;
   }
 
   /**
@@ -53,6 +63,7 @@ public class TournamentManager implements ManagerInterface {
 
   @Override
   public List<PlayerInterface> runTournament() {
+    this.tournamentHasBegun();
 
     while (!isTournamentOver()) {
       round++;
@@ -60,10 +71,16 @@ public class TournamentManager implements ManagerInterface {
       this.roundResults = this.runRound();
       this.roundResultMap.put(this.round, this.roundResults);
     }
+    this.tournamentInform(this.remainingPlayers, true);
 
     return this.remainingPlayers;
   }
 
+  /**
+   * Returns true if the tournament is over, false otherwise.
+   *
+   * @return boolean that is true if the tournament is over
+   */
   public boolean isTournamentOver() {
 
     // over if there was a single final game
@@ -78,6 +95,73 @@ public class TournamentManager implements ManagerInterface {
 
     // over if all the previous round's winners are still present
     return this.remainingPlayers.containsAll(this.previousWinners);
+  }
+
+  /**
+   * Called at the start of a tournament. If those Players do not respond, they are removed from
+   * the game and added to the list of cheaters.
+   */
+  public void tournamentHasBegun() {
+    for (PlayerInterface player: this.remainingPlayers) {
+
+        Callable<Boolean> task = new Callable<Boolean>() {
+          public Boolean call() throws TimeoutException {
+            return player.tournamentHasStarted();
+          }
+        };
+
+        this.informPlayer(player, task);
+    }
+  }
+
+  /**
+   * Called when the results for players are ready or the tournament ends. If those Players do not
+   * respond, they are removed from the pool of winners and added to the list of cheaters.
+   *
+   * @param players List of players that need to be informed
+   * @param win Boolean that is true or false depending on if the players have won.
+   */
+  public void tournamentInform(List<PlayerInterface> players, boolean win) {
+    for (PlayerInterface player: players) {
+
+      Callable<Boolean> task = new Callable<Boolean>() {
+        public Boolean call() throws TimeoutException {
+          return player.tournamentResults(win);
+        }
+      };
+
+      this.informPlayer(player, task);
+    }
+  }
+
+
+  /**
+   * Removes a Player from the pool of remaining players if they do not respond to a message from
+   * the tournament. Those removed players are added to a list of cheaters.
+   *
+   * @param player PlayerInterface
+   * @param task Callable created by the Tournament that returns true if the player receives
+   *             the message.
+   */
+  private void informPlayer(PlayerInterface player, Callable<Boolean> task) {
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    Future<Boolean> future = executor.submit(task);
+
+    // allow the player to move based on their strategy
+    try {
+      Boolean response = future.get(this.timeout, TimeUnit.SECONDS);
+      if(!response) {
+        this.cheaters.add(player);
+        this.remainingPlayers.remove(player);
+        this.eliminatedPlayers.remove(player);
+      }
+      executor.shutdownNow();
+    } catch (Exception e) {
+      executor.shutdownNow();
+      this.cheaters.add(player);
+      this.remainingPlayers.remove(player);
+      this.eliminatedPlayers.remove(player);
+    }
   }
 
   /**
@@ -98,10 +182,11 @@ public class TournamentManager implements ManagerInterface {
       IReferee referee = new Referee(group, BOARD_ROWS, BOARD_COLUMNS);
 
       IGameResult gameResult = referee.runGame();
-
+      List<PlayerInterface> eliminated = gameResult.getEliminated();
       this.remainingPlayers.addAll(gameResult.getWinners());
-      this.eliminatedPlayers.addAll(gameResult.getEliminated());
+      this.eliminatedPlayers.addAll(eliminated);
       this.cheaters.addAll(gameResult.getCheaters());
+      this.tournamentInform(eliminated, false);
 
       this.roundResults.add(gameResult);
     }
