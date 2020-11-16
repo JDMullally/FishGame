@@ -259,7 +259,7 @@ public class Referee implements IReferee {
     private IGameState placeOrMove(Callable<Action> task, IPlayer curPlayer,
         PlayerInterface curPlayerInterface) {
         IGameState newGameState;
-        ExecutorService executor = Executors.newCachedThreadPool();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<Action> future = executor.submit(task);
 
         // allow the player to move based on their strategy
