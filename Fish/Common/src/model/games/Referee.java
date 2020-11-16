@@ -1,5 +1,6 @@
 package model.games;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -65,7 +66,11 @@ public class Referee implements IReferee {
      *
      * @param players List of PlayerInterface
      */
-    public Referee(List<PlayerInterface> players) {
+    public Referee(List<PlayerInterface> players, int rows, int columns) {
+        this(players, rows, columns, 0);
+    }
+
+    public Referee(List<PlayerInterface> players, int rows, int columns, int numFish) {
         if (players == null) {
             throw new IllegalArgumentException("A Referee cannot start a Game with null Players");
         } else if (players.size() <= 1 || players.size() > 4) {
@@ -76,7 +81,13 @@ public class Referee implements IReferee {
         this.players = this.initializePlayerInterfaces(players);
         this.cheaters = new LinkedHashMap<>();
         this.ongoingActions = new ArrayList<>();
+
+        IGameBoard board = new GameBoard(rows, columns,
+            new ArrayList<>(), 0, numFish);
+
+        this.createInitialGame(players, rows, columns, board);
     }
+
 
     /**
      * Initializes players as a map of Color to PlayerInterface
@@ -131,8 +142,7 @@ public class Referee implements IReferee {
     }
 
     @Override
-    public IGameResult runGame(int rows, int columns) {
-        this.createInitialGame(rows, columns);
+    public IGameResult runGame() {
 
         // allows players to place penguins until the game is ready to begin
         while (!this.gameState.isGameReady()) {
@@ -150,12 +160,13 @@ public class Referee implements IReferee {
         return this.gameResult;
     }
 
+
     /**
      * Creates an initial game state with a board, players and no penguins placed yet
      */
-    public void createInitialGame(int rows, int columns) {
+    public void createInitialGame(List<PlayerInterface> players, int rows, int columns, IGameBoard board) {
         // creates game board
-        IGameBoard gameBoard = new GameBoard(rows, columns);
+        IGameBoard gameBoard = board;
 
         // create players based on their color
         List<IPlayer> gamePlayers = this.initializePlayers();
@@ -254,11 +265,11 @@ public class Referee implements IReferee {
         // allow the player to move based on their strategy
         try {
             Action action = future.get(this.timeout, TimeUnit.SECONDS);
-            //Action action = curPlayerInterface.movePenguin(this.gameState);
+            executor.shutdownNow();
             newGameState = action.apply(this.gameState);
             this.ongoingActions.add(new GameAction(action));
-        } catch (IllegalArgumentException | InterruptedException
-            | ExecutionException | TimeoutException e) {
+        } catch (Exception e) {
+            executor.shutdownNow();
             newGameState = this.playerCheated(curPlayer, curPlayerInterface);
         }
         return newGameState;
@@ -309,11 +320,12 @@ public class Referee implements IReferee {
      */
     private IGameResult retrieveGameResult() {
         // gets players from GameState by score in descending order
-        List<PlayerInterface> playersI = this.gameState.getPlayers()
-            .stream()
-            .sorted(Comparator.comparingInt(IPlayer::getScore).reversed())
-            .map(player -> this.players.get(player.getColor()))
-            .collect(Collectors.toList());
+
+        Map<PlayerInterface, Integer> playersI = new LinkedHashMap<>();
+        for (IPlayer player : this.gameState.getPlayers()) {
+            playersI.put(this.players.get(player.getColor()), player.getScore());
+        }
+
         List<PlayerInterface> cheatersI = new ArrayList<>(this.cheaters.values());
 
         return new GameResult(playersI, cheatersI);

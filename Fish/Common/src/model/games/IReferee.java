@@ -41,11 +41,9 @@ public interface IReferee {
      * The referee will then remove them from the game and their personal list of players
      * and continue to run the game.
      *
-     * @param rows The number of rows on the GameBoard
-     * @param columns the number of columns on the GameBoard
      * @return IGameResult
      */
-    IGameResult runGame(int rows, int columns);
+    IGameResult runGame();
 
     /**
      * Returns the current GameState of the game the referee is supervising.
