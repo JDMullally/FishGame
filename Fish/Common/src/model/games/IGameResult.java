@@ -31,4 +31,11 @@ public interface IGameResult {
      * @return List of PlayerInterface
      */
     List<PlayerInterface> getWinners();
+
+    /**
+     * Gets the list of IPlayers that had less than the maximum score at the end of a game of Fish.
+     *
+     * @return List of PlayerInterface
+     */
+    List<PlayerInterface> getEliminated();
 }

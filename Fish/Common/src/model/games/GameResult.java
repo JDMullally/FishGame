@@ -50,6 +50,19 @@ public class GameResult implements IGameResult {
     }
 
     @Override
+    public List<PlayerInterface> getEliminated() {
+        List<PlayerInterface> winners = this.getWinners();
+        List<PlayerInterface> eliminated = new ArrayList<>();
+
+        for (PlayerInterface player: this.finalScores.keySet()) {
+            if(!winners.contains(player)) {
+                eliminated.add(player);
+            }
+        }
+        return eliminated;
+    }
+
+    @Override
     public List<PlayerInterface> getCheaters() {
         return new ArrayList<>(this.cheaters);
     }
