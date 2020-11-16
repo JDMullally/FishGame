@@ -5,19 +5,25 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
+import controller.Controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import model.games.GameAction;
 import model.games.IGameResult;
 import model.games.IReferee;
 import model.games.PlayerAI;
 import model.games.Referee;
+import model.state.ImmutableGameState;
+import model.state.ImmutableGameStateModel;
 import model.strategy.IStrategy;
 import model.strategy.Strategy;
 import model.tree.PlayerInterface;
+import view.IView;
+import view.VisualView;
 
 public class RefereeTestUtil {
 
@@ -49,6 +55,7 @@ public class RefereeTestUtil {
         List<PlayerInterface> gamePlayers = new ArrayList<>(interfacePlayers.keySet());
 
         IReferee referee = new Referee(gamePlayers, row, col, fish);
+
         referee.runGame();
 
         IGameResult result = referee.getGameResult();
@@ -60,10 +67,11 @@ public class RefereeTestUtil {
         for (PlayerInterface p : playerPlacements) {
             winners.add(interfacePlayers.get(p));
         }
+        List<GameAction> actions = referee.getOngoingActions();
+
+        actions.forEach(System.out::println);
+
         System.out.println(winners);
-
-        reader.close();
-
     }
 
     private static LinkedHashMap<PlayerInterface, String> jsonPlayersToInterfacePlayers(JsonArray players) {
