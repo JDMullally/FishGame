@@ -2,11 +2,16 @@ package model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import com.sun.tools.javac.util.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import model.games.IGameResult;
 import model.games.PlayerAI;
 import model.strategy.Strategy;
 import model.tournament.PlayerStanding;
@@ -38,6 +43,61 @@ public class TournamentManagerTest {
     this.players20 = generatePlayers(20);
   }
 
+  private Map<Integer, List<Pair<Integer, Integer>>> mapGroupToInteger(int max) {
+    Map<Integer, List<Pair<Integer, Integer>>> map = new HashMap<>();
+    for (int i = 2; i <= max; i++) {
+      List<Pair<Integer, Integer>> pairs = new ArrayList<>();
+      if (i % 4 == 0) {
+        int count = 0;
+        for (int j = 0; j < i/4; j++) {
+          pairs.add(new Pair<>(count, count + 4));
+          count = count + 4;
+        }
+      } else if (i == 2 || i == 3) {
+        pairs.add(new Pair<>(0, i));
+      } else if (i == 5) {
+        pairs.add(new Pair<>(0, 3));
+        pairs.add(new Pair<>(3, 5));
+      } else if (i == 6) {
+        pairs.add(new Pair<>(0, 3));
+        pairs.add(new Pair<>(3, 6));
+      } else if (i == 9) {
+        pairs.add(new Pair<>(0, 3));
+        pairs.add(new Pair<>(3, 6));
+        pairs.add(new Pair<>(6, 9));
+      } else if ((i - 3) % 4 == 0 && i != 3) {
+        int count = 0;
+        for (int j = 0; j < (i-3)/4; j++) {
+          pairs.add(new Pair<>(count, count + 4));
+          count = count + 4;
+        }
+        pairs.add(new Pair<>(count, count + 3));
+      } else if ((i - 6) % 4 == 0 && i != 6) {
+        int count = 0;
+        for (int j = 0; j < (i-6)/4; j++) {
+          pairs.add(new Pair<>(count, count + 4));
+          count = count + 4;
+        }
+        pairs.add(new Pair<>(count, count + 3));
+        pairs.add(new Pair<>(count + 3, count + 6));
+      } else if ((i - 9) % 4 == 0 && i != 9) {
+        int count = 0;
+        for (int j = 0; j < (i-9)/4; j++) {
+          pairs.add(new Pair<>(count, count + 4));
+          count = count + 4;
+        }
+        pairs.add(new Pair<>(count, count + 3));
+        pairs.add(new Pair<>(count + 3, count + 6));
+        pairs.add(new Pair<>(count + 6, count + 9));
+
+      } else {
+        throw new IllegalArgumentException("The conditional should catch everything");
+      }
+      map.put(i, pairs);
+    }
+    return map;
+  }
+
   private List<PlayerInterface> generatePlayers(int numPlayers) {
     List<PlayerInterface> players = new ArrayList<>();
 
@@ -57,10 +117,10 @@ public class TournamentManagerTest {
   @Test
   public void testConstructor2Players() {
     init();
-    tournamentManager = new TournamentManager(players2);
-    assertFalse(tournamentManager.isTournamentOver());
+    this.tournamentManager = new TournamentManager(this.players2);
+    assertFalse(this.tournamentManager.isTournamentOver());
 
-    Map<PlayerStanding, List<PlayerInterface>> stats = tournamentManager.getTournamentStatistics();
+    Map<PlayerStanding, List<PlayerInterface>> stats = this.tournamentManager.getTournamentStatistics();
 
     assertEquals(0, stats.get(PlayerStanding.CHEATER).size());
     assertEquals(0, stats.get(PlayerStanding.ELIMINATED).size());
@@ -70,10 +130,10 @@ public class TournamentManagerTest {
   @Test
   public void testConstructor3PlayersOutOfOrder() {
     init();
-    tournamentManager = new TournamentManager(players3);
-    assertFalse(tournamentManager.isTournamentOver());
+    this.tournamentManager = new TournamentManager(this.players3);
+    assertFalse(this.tournamentManager.isTournamentOver());
 
-    Map<PlayerStanding, List<PlayerInterface>> stats = tournamentManager.getTournamentStatistics();
+    Map<PlayerStanding, List<PlayerInterface>> stats = this.tournamentManager.getTournamentStatistics();
 
     assertEquals(0, stats.get(PlayerStanding.CHEATER).size());
     assertEquals(0, stats.get(PlayerStanding.ELIMINATED).size());
@@ -83,14 +143,362 @@ public class TournamentManagerTest {
   @Test
   public void testConstructor4PlayersOutOfOrder() {
     init();
-    tournamentManager = new TournamentManager(players4);
-    assertFalse(tournamentManager.isTournamentOver());
+    this.tournamentManager = new TournamentManager(this.players4);
+    assertFalse(this.tournamentManager.isTournamentOver());
 
-    Map<PlayerStanding, List<PlayerInterface>> stats = tournamentManager.getTournamentStatistics();
+    Map<PlayerStanding, List<PlayerInterface>> stats = this.tournamentManager.getTournamentStatistics();
 
     assertEquals(0, stats.get(PlayerStanding.CHEATER).size());
     assertEquals(0, stats.get(PlayerStanding.ELIMINATED).size());
     assertEquals(generatePlayers(4), stats.get(PlayerStanding.REMAINING));
   }
 
+  @Test
+  public void testConstructor20Players() {
+    init();
+    this.tournamentManager = new TournamentManager(this.players20);
+    assertFalse(this.tournamentManager.isTournamentOver());
+
+    Map<PlayerStanding, List<PlayerInterface>> stats = this.tournamentManager.getTournamentStatistics();
+
+    assertEquals(0, stats.get(PlayerStanding.CHEATER).size());
+    assertEquals(0, stats.get(PlayerStanding.ELIMINATED).size());
+    assertEquals(generatePlayers(20), stats.get(PlayerStanding.REMAINING));
+  }
+
+  /**
+   *********************************************************************************************
+   * Tests for One Game in Tournament
+   *********************************************************************************************
+   */
+  @Test
+  public void testOneGameOfTournament20Players() {
+    init();
+    this.tournamentManager = new TournamentManager(this.players20);
+
+    List<PlayerInterface> group1 = this.tournamentManager.allocatePlayers().get(0);
+
+    IGameResult result = this.tournamentManager.runGame(group1);
+
+    List<PlayerInterface> expectedCheaters = result.getCheaters();
+    List<PlayerInterface> actualCheaters =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.CHEATER);
+
+    List<PlayerInterface> expectedEliminated = result.getEliminated();
+    List<PlayerInterface> actualEliminated =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.ELIMINATED);
+
+    List<PlayerInterface> expectedRemaining = result.getWinners();
+    List<PlayerInterface> actualRemaining =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.REMAINING);
+
+    boolean someRemaining = this.players20.size() >= actualRemaining.size()
+        && actualRemaining.size() != 0;
+
+    assertEquals(expectedCheaters, actualCheaters);
+    assertEquals(expectedEliminated, actualEliminated);
+    assertEquals(expectedRemaining, actualRemaining);
+    assertTrue(someRemaining);
+  }
+
+  /**
+   * Every subsequent game adds to the statistics.
+   */
+  @Test
+  public void testSecondGameOfTournament20Players() {
+    init();
+    this.tournamentManager = new TournamentManager(this.players20);
+    List<List<PlayerInterface>> groups = this.tournamentManager.allocatePlayers();
+    List<PlayerInterface> group1 = groups.get(0);
+    List<PlayerInterface> group2 = groups.get(1);
+
+    IGameResult resultGroup1 = this.tournamentManager.runGame(group1);
+    List<PlayerInterface> expectedCheaters = resultGroup1.getCheaters();
+    List<PlayerInterface> expectedEliminated = resultGroup1.getEliminated();
+    List<PlayerInterface> expectedRemaining = resultGroup1.getWinners();
+
+    IGameResult resultGroup2 = this.tournamentManager.runGame(group2);
+    expectedCheaters.addAll(resultGroup2.getCheaters());
+    expectedEliminated.addAll(resultGroup2.getEliminated());
+    expectedRemaining.addAll(resultGroup2.getWinners());
+
+    List<PlayerInterface> actualCheaters =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.CHEATER);
+    List<PlayerInterface> actualEliminated =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.ELIMINATED);
+    List<PlayerInterface> actualRemaining =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.REMAINING);
+
+    boolean someRemaining = this.players20.size() >= actualRemaining.size()
+        && actualRemaining.size() != 0;
+
+    assertEquals(expectedCheaters, actualCheaters);
+    assertEquals(expectedEliminated, actualEliminated);
+    assertEquals(expectedRemaining, actualRemaining);
+    assertTrue(someRemaining);
+  }
+
+
+  /**
+   *********************************************************************************************
+   * Tests for One Round of Tournament
+   *********************************************************************************************
+   */
+
+  @Test
+  public void testOneRoundOfTournament20Players() {
+    init();
+    this.tournamentManager = new TournamentManager(this.players20);
+    List<IGameResult> results = this.tournamentManager.runRound();
+
+    List<PlayerInterface> expectedCheaters = new ArrayList<>();
+    List<PlayerInterface> expectedEliminated = new ArrayList<>();
+    List<PlayerInterface> expectedRemaining = new ArrayList<>();
+
+    for (IGameResult result: results) {
+      expectedCheaters.addAll(result.getCheaters());
+      expectedEliminated.addAll(result.getEliminated());
+      expectedRemaining.addAll(result.getWinners());
+    }
+
+    List<PlayerInterface> actualCheaters =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.CHEATER);
+    List<PlayerInterface> actualEliminated =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.ELIMINATED);
+    List<PlayerInterface> actualRemaining =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.REMAINING);
+
+    boolean someRemaining = this.players20.size() >= actualRemaining.size()
+        && actualRemaining.size() != 0;
+
+    assertEquals(expectedCheaters, actualCheaters);
+    assertEquals(expectedEliminated, actualEliminated);
+    assertEquals(expectedRemaining, actualRemaining);
+    assertTrue(someRemaining);
+  }
+
+  @Test
+  public void testTwoRoundsOfTournament20Players() {
+    init();
+    this.tournamentManager = new TournamentManager(this.players20);
+    List<IGameResult> resultsRound1 = this.tournamentManager.runRound();
+    List<IGameResult> resultsRound2 = this.tournamentManager.runRound();
+
+    assertEquals(resultsRound1, this.tournamentManager.getRoundResults(1));
+    assertEquals(resultsRound2, this.tournamentManager.getRoundResults(2));
+  }
+
+  @Test
+  public void testOneRoundOfTournament20PlayersProperAllocation() {
+    init();
+    this.tournamentManager = new TournamentManager(this.players20);
+
+    List<IGameResult> results = this.tournamentManager.runRound();
+    for (int i = 0; i < this.players20.size(); i = i + 4) {
+      List<PlayerInterface> players = (this.players20.subList(i, i + 4));
+      IGameResult game = results.get(i/4);
+
+      List<PlayerInterface> gamePlayers = new ArrayList<>();
+      gamePlayers.addAll(game.getWinners());
+      gamePlayers.addAll(game.getEliminated());
+      gamePlayers.addAll(game.getCheaters());
+
+      gamePlayers.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
+
+      assertEquals(players, gamePlayers);
+    }
+  }
+
+  /**
+   *********************************************************************************************
+   * Tests for Allocate Players
+   *********************************************************************************************
+   */
+  @Test (expected = IllegalArgumentException.class)
+  public void testAllocateNoPlayers() {
+    this.init();
+
+    TournamentManager t0 = new TournamentManager(new ArrayList<>());
+
+    t0.allocatePlayers();
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testAllocatedOnePlayer() {
+    this.init();
+
+    TournamentManager t1 = new TournamentManager(new ArrayList<>(Arrays.asList(p1)));
+
+    t1.allocatePlayers();
+  }
+
+
+  @Test
+  public void testAllocatePlayersBase() {
+    this.init();
+
+    TournamentManager t2 = new TournamentManager(this.players2);
+    TournamentManager t3 = new TournamentManager(this.players3);
+    TournamentManager t4 = new TournamentManager(this.players4);
+
+    List<List<PlayerInterface>> p2 = t2.allocatePlayers();
+    List<PlayerInterface> groupP2 = p2.get(0);
+
+    assertEquals(1,p2.size());
+    assertEquals(groupP2, this.players2);
+
+    List<List<PlayerInterface>> p3 = t3.allocatePlayers();
+    List<PlayerInterface> groupP3 = p3.get(0);
+    groupP3.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
+
+    assertEquals(1, p3.size());
+    assertEquals(groupP3, this.players3);
+
+    List<List<PlayerInterface>> p4 = t4.allocatePlayers();
+    List<PlayerInterface> groupP4 = p4.get(0);
+    groupP4.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
+
+    assertEquals(1, p4.size());
+    assertEquals(groupP4, this.players4);
+  }
+
+  @Test
+  public void testAllocatePlayers56And9Cases() {
+    this.init();
+
+    List<PlayerInterface> players5 = this.generatePlayers(5);
+    List<PlayerInterface> players6 = this.generatePlayers(6);
+    List<PlayerInterface> players9 = this.generatePlayers(9);
+
+    TournamentManager t5 = new TournamentManager(players5);
+    TournamentManager t6 = new TournamentManager(players6);
+    TournamentManager t9 = new TournamentManager(players9);
+
+    List<List<PlayerInterface>> p5 = t5.allocatePlayers();
+
+    assertEquals(2, p5.size());
+    assertEquals(players5.subList(0,3), p5.get(0));
+    assertEquals(players5.subList(3,5), p5.get(1));
+
+    List<List<PlayerInterface>> p6 = t6.allocatePlayers();
+
+    assertEquals(2, p6.size());
+    assertEquals(players6.subList(0,3), p6.get(0));
+    assertEquals(players6.subList(3,6), p6.get(1));
+
+    List<List<PlayerInterface>> p9 = t9.allocatePlayers();
+
+    assertEquals(3, p9.size());
+    assertEquals(players9.subList(0,3), p9.get(0));
+    assertEquals(players9.subList(3,6), p9.get(1));
+    assertEquals(players9.subList(6,9), p9.get(2));
+  }
+
+  @Test
+  public void testAllocatePlayers13() {
+    this.init();
+
+    TournamentManager t13 = new TournamentManager(this.players13);
+    List<List<PlayerInterface>> p13 = t13.allocatePlayers();
+
+    assertEquals(4, p13.size());
+    assertEquals(this.players13.subList(0,4), p13.get(0));
+    assertEquals(this.players13.subList(4,7), p13.get(1));
+    assertEquals(this.players13.subList(7,10), p13.get(2));
+    assertEquals(this.players13.subList(10,13), p13.get(3));
+  }
+
+  @Test
+  public void testAllocatePlayers14() {
+    this.init();
+
+    List<PlayerInterface> players14 = this.generatePlayers(14);
+    TournamentManager t14 = new TournamentManager(players14);
+    List<List<PlayerInterface>> p14 = t14.allocatePlayers();
+
+    assertEquals(4, p14.size());
+    assertEquals(players14.subList(0,4), p14.get(0));
+    assertEquals(players14.subList(4,8), p14.get(1));
+    assertEquals(players14.subList(8,11), p14.get(2));
+    assertEquals(players14.subList(11,14), p14.get(3));
+
+  }
+
+  @Test
+  public void testAllocatePlayer2To20() {
+    this.init();
+
+    Map<Integer, List<Pair<Integer,Integer>>> map = this.mapGroupToInteger(20);
+
+    for (int i = 2; i <= 20; i++) {
+      List<Pair<Integer,Integer>> pairs = map.get(i);
+
+      List<PlayerInterface> playersN = this.generatePlayers(i);
+      TournamentManager tN = new TournamentManager(playersN);
+      List<List<PlayerInterface>> pN = tN.allocatePlayers();
+
+      for (int p = 0; p < pairs.size(); p++) {
+        int from = pairs.get(p).fst;
+        int to = pairs.get(p).snd;
+        assertEquals(playersN.subList(from, to), pN.get(p));
+      }
+    }
+  }
+
+  @Test
+  public void testAllocatePlayer2To100() {
+    this.init();
+
+    Map<Integer, List<Pair<Integer,Integer>>> map = this.mapGroupToInteger(100);
+
+    for (int i = 2; i <= 100; i++) {
+      List<Pair<Integer,Integer>> pairs = map.get(i);
+
+      List<PlayerInterface> playersN = this.generatePlayers(i);
+      TournamentManager tN = new TournamentManager(playersN);
+      List<List<PlayerInterface>> pN = tN.allocatePlayers();
+
+      for (int p = 0; p < pairs.size(); p++) {
+        int from = pairs.get(p).fst;
+        int to = pairs.get(p).snd;
+        assertEquals(playersN.subList(from, to), pN.get(p));
+      }
+    }
+  }
+
+
+  /**
+   *********************************************************************************************
+   * Tests for GetRoundResults
+   *********************************************************************************************
+   */
+
+  /**
+   *********************************************************************************************
+   * Tests for GetTournamentStatistics
+   *********************************************************************************************
+   */
+
+  /**
+   *********************************************************************************************
+   * Tests for RunTournament
+   *********************************************************************************************
+   */
+
+  /**
+   *********************************************************************************************
+   * Tests for isTournamentOver
+   *********************************************************************************************
+   */
+
+  @Test
+  public void testTournamentOverTooSmall() {
+    this.init();
+
+    TournamentManager t0 = new TournamentManager(new ArrayList<>());
+    TournamentManager t1 = new TournamentManager(new ArrayList<>(Arrays.asList(p1)));
+
+    assertTrue(t0.isTournamentOver());
+    assertTrue(t1.isTournamentOver());
+  }
 }
