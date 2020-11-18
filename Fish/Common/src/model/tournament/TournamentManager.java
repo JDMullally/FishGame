@@ -11,7 +11,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import jdk.nashorn.internal.codegen.CompilerConstants.Call;
 import model.games.IGameResult;
 import model.games.IReferee;
 import model.games.Referee;
@@ -39,12 +38,14 @@ public class TournamentManager implements ManagerInterface {
    */
   public TournamentManager(List<PlayerInterface> tournamentPlayers) {
     this.tournamentPlayers = orderByAge(tournamentPlayers);
+    this.round = 0;
+    this.roundResultMap = new HashMap<>();
+    this.roundResults = new ArrayList<>();
+    this.previousWinners = new ArrayList<>();
+    this.timeout = 5;
     this.remainingPlayers = this.tournamentPlayers;
     this.eliminatedPlayers = new ArrayList<>();
     this.cheaters = new ArrayList<>();
-    this.round = 0;
-    this.roundResultMap = new HashMap<>();
-    this.timeout = 5;
   }
 
   /**
@@ -80,13 +81,12 @@ public class TournamentManager implements ManagerInterface {
    */
   public boolean isTournamentOver() {
 
-    // over if there was a single final game
-    if (this.roundResults.size() <= 1) {
-      return true;
-    }
-
     // over if players < 2
     if (this.remainingPlayers.size() < 2) {
+      return true;
+    } else if (this.round == 0) { // not over if first round and no games yet
+      return false;
+    } else if (this.round > 0 && this.roundResults.size() <= 1) { // Check for single final game
       return true;
     }
 
