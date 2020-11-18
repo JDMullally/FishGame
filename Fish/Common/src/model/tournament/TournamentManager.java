@@ -64,10 +64,7 @@ public class TournamentManager implements ManagerInterface {
     this.tournamentHasBegun(this.remainingPlayers);
 
     while (!isTournamentOver()) {
-      round++;
-      this.previousWinners = this.remainingPlayers;
-      this.roundResults = this.runRound();
-      this.roundResultMap.put(this.round, this.roundResults);
+      this.runRound();
     }
     this.tournamentInform(this.remainingPlayers, true);
 
@@ -136,7 +133,7 @@ public class TournamentManager implements ManagerInterface {
    * @param players List of players that need to be informed
    * @param win Boolean that is true or false depending on if the players have won.
    */
-  public void tournamentInform(List<PlayerInterface> players, boolean win) {
+  private void tournamentInform(List<PlayerInterface> players, boolean win) {
     for (PlayerInterface player: players) {
 
       Callable<Boolean> task = new Callable<Boolean>() {
@@ -156,7 +153,7 @@ public class TournamentManager implements ManagerInterface {
    * @param players PlayerInterface
    * @param result IGameResult which contains the winners, losers and cheaters in the Game.
    */
-  public void gameInform(List<PlayerInterface> players, IGameResult result) {
+  private void gameInform(List<PlayerInterface> players, IGameResult result) {
     for (PlayerInterface player: players) {
 
       Callable<Boolean> task = new Callable<Boolean>() {
@@ -209,18 +206,15 @@ public class TournamentManager implements ManagerInterface {
    * @return a list of GameResult representing the outcome of all games run this round.
    */
   public List<IGameResult> runRound() {
-
+    this.round++;
+    this.previousWinners = this.remainingPlayers;
     // assign to games
-    List<List<PlayerInterface>> playerGroups = allocatePlayers(this.remainingPlayers);
-
-    this.roundResults.clear();
-    this.remainingPlayers.clear();
+    List<List<PlayerInterface>> playerGroups = allocatePlayers();
 
     for (List<PlayerInterface> group : playerGroups) {
-      IGameResult gameResult = runGame(group);
-      this.roundResults.add(gameResult);
+      this.runGame(group);
     }
-
+    this.roundResultMap.put(this.round, this.roundResults);
     return this.roundResults;
   }
 
@@ -240,11 +234,13 @@ public class TournamentManager implements ManagerInterface {
     this.eliminatedPlayers.addAll(eliminated);
     this.cheaters.addAll(gameResult.getCheaters());
     this.tournamentInform(eliminated, false);
+    this.roundResults.add(gameResult);
     return gameResult;
   }
 
 
   /**
+   * This method clears the list of remaining players  and
    * The manager starts by assigning them to games with the maximal number of participants permitted
    * in ascending order of age. Once the number of remaining players drops below the maximal number
    * and can’t form a game, the manager backtracks by one game and tries games of size one less than
@@ -269,11 +265,16 @@ public class TournamentManager implements ManagerInterface {
    * 16 -> 4P + 4P + 4P + 4P
    * 17 -> 4P + 4P + 3P + 3P + 3P
    *
-   * @param players
    * @return List of List of PlayerInterface
    */
-  public List<List<PlayerInterface>> allocatePlayers(List<PlayerInterface> players) {
-    return allocatePlayersHelper(players, new ArrayList<>());
+  public List<List<PlayerInterface>> allocatePlayers() {
+    List<List<PlayerInterface>> groups =
+        allocatePlayersHelper(this.remainingPlayers, new ArrayList<>());
+
+    this.roundResults = new ArrayList<>();
+    this.remainingPlayers = new ArrayList<>();
+
+    return groups;
   }
 
   /**
