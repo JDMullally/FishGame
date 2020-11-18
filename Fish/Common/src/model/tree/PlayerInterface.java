@@ -1,6 +1,7 @@
 package model.tree;
 
 import java.util.concurrent.TimeoutException;
+import model.games.IGameResult;
 import model.state.IGameState;
 
 /**
@@ -48,6 +49,26 @@ public interface PlayerInterface {
      * @return boolean for confirmation that player has received the message
      */
     boolean tournamentHasStarted();
+
+    /**
+     * Return true for confirmation that player has received the message.
+     *
+     * @return boolean to acknowledge that this message was received.
+     */
+    boolean gameHasStarted();
+
+    /**
+     * Informs the player that they have been removed from the tournament for cheating.
+     */
+    void kickedForCheating();
+
+    /**
+     * Returns the result of a Game that the player had been playing in. This includes winners,
+     * losers and cheaters.
+     *
+     * @param result IGameResult
+     */
+    void gameResults(IGameResult result);
 
     /**
      * Return true for confirmation that player has received the message
