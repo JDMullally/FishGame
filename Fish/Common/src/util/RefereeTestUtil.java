@@ -19,8 +19,10 @@ import model.games.IGameResult;
 import model.games.IReferee;
 import model.games.PlayerAI;
 import model.games.Referee;
+import model.state.IPlayer;
 import model.state.ImmutableGameState;
 import model.state.ImmutableGameStateModel;
+import model.state.Player;
 import model.strategy.IStrategy;
 import model.strategy.Strategy;
 import model.tree.PlayerInterface;
@@ -51,10 +53,9 @@ public class RefereeTestUtil {
 
         JsonArray players = element.get("players").getAsJsonArray();
 
-        LinkedHashMap<PlayerInterface, String> interfacePlayers
-            = jsonPlayersToInterfacePlayers(players);
+        List<PlayerInterface> interfacePlayers = jsonPlayersToInterfacePlayers(players);
 
-        List<PlayerInterface> gamePlayers = new ArrayList<>(interfacePlayers.keySet());
+        List<PlayerInterface> gamePlayers = new ArrayList<>(interfacePlayers);
 
         IReferee referee = new Referee(gamePlayers, row, col, fish);
 
@@ -67,7 +68,7 @@ public class RefereeTestUtil {
         List<String> winners = new ArrayList();
 
         for (PlayerInterface p : playerPlacements) {
-            winners.add(interfacePlayers.get(p));
+            winners.add(p.getPlayerID());
         }
         List<GameAction> actions = referee.getOngoingActions();
 
@@ -84,17 +85,17 @@ public class RefereeTestUtil {
         System.out.println(winnersJson);
     }
 
-    private static LinkedHashMap<PlayerInterface, String> jsonPlayersToInterfacePlayers(JsonArray players) {
-        LinkedHashMap<PlayerInterface, String> map = new LinkedHashMap<>();
-        for (JsonElement player: players) {
-            String name = player.getAsJsonArray().get(0).getAsString();
-            int depth = player.getAsJsonArray().get(1).getAsInt();
+    private static List<PlayerInterface> jsonPlayersToInterfacePlayers(JsonArray players) {
+        List<PlayerInterface> newPlayers = new ArrayList<>();
+        for (int i = 0; i < players.size(); i++) {
+            String name = players.get(i).getAsJsonArray().get(0).getAsString();
+            int depth = players.get(i).getAsJsonArray().get(1).getAsInt();
 
             IStrategy strategy = new Strategy();
-            PlayerInterface newPlayer = new PlayerAI(strategy, depth);
+            PlayerInterface newPlayer = new PlayerAI(strategy, depth, i + 1 ,name);
 
-            map.put(newPlayer, name);
+            newPlayers.add(newPlayer);
         }
-        return map;
+        return newPlayers;
     }
 }
