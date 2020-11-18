@@ -74,6 +74,23 @@ public class PlayerAI implements PlayerInterface {
     }
 
     @Override
+    public boolean gameHasStarted() {
+        return true;
+    }
+
+    @Override
+    public void kickedForCheating() {
+        throw new IllegalStateException("Our AI should not cheat");
+    }
+
+    @Override
+    public void gameResults(IGameResult result) {
+        if (result.getWinners().contains(this)) {
+            System.out.println("Hooray");
+        }
+    }
+
+    @Override
     public boolean tournamentResults(boolean youWon) {
         return true;
     }
