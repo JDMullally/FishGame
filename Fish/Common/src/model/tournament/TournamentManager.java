@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import jdk.nashorn.internal.codegen.CompilerConstants.Call;
 import model.games.IGameResult;
 import model.games.IReferee;
 import model.games.Referee;
@@ -59,7 +60,7 @@ public class TournamentManager implements ManagerInterface {
 
   @Override
   public List<PlayerInterface> runTournament() {
-    this.tournamentHasBegun();
+    this.tournamentHasBegun(this.remainingPlayers);
 
     while (!isTournamentOver()) {
       round++;
@@ -97,8 +98,8 @@ public class TournamentManager implements ManagerInterface {
    * Called at the start of a tournament. If those Players do not respond, they are removed from
    * the game and added to the list of cheaters.
    */
-  public void tournamentHasBegun() {
-    for (PlayerInterface player: this.remainingPlayers) {
+  public void tournamentHasBegun(List<PlayerInterface> players) {
+    for (PlayerInterface player: players) {
 
         Callable<Boolean> task = new Callable<Boolean>() {
           public Boolean call() throws TimeoutException {
@@ -107,6 +108,24 @@ public class TournamentManager implements ManagerInterface {
         };
 
         this.informPlayer(player, task);
+    }
+  }
+
+  /**
+   * Called at the start of a game. If those Players do not respond, they are removed from
+   * the game and added to the list of cheaters
+   * @param players
+   */
+  private void gameHasBegun(List<PlayerInterface> players) {
+    for (PlayerInterface player: players) {
+
+      Callable<Boolean> task = new Callable<Boolean>() {
+        public Boolean call() throws TimeoutException {
+          return player.gameHasStarted();
+        }
+      };
+
+      this.informPlayer(player, task);
     }
   }
 
@@ -123,6 +142,27 @@ public class TournamentManager implements ManagerInterface {
       Callable<Boolean> task = new Callable<Boolean>() {
         public Boolean call() throws TimeoutException {
           return player.tournamentResults(win);
+        }
+      };
+
+      this.informPlayer(player, task);
+    }
+  }
+
+  //TODO use a lambda function to run all of the callables.
+  /**
+   * Informs the givens players the results of their most recent game.
+   *
+   * @param players PlayerInterface
+   * @param result IGameResult which contains the winners, losers and cheaters in the Game.
+   */
+  public void gameInform(List<PlayerInterface> players, IGameResult result) {
+    for (PlayerInterface player: players) {
+
+      Callable<Boolean> task = new Callable<Boolean>() {
+        public Boolean call() throws TimeoutException {
+            player.gameResults(result);
+            return true;
         }
       };
 
@@ -148,6 +188,7 @@ public class TournamentManager implements ManagerInterface {
       Boolean response = future.get(this.timeout, TimeUnit.SECONDS);
       if(!response) {
         this.cheaters.add(player);
+        player.kickedForCheating();
         this.remainingPlayers.remove(player);
         this.eliminatedPlayers.remove(player);
       }
@@ -155,6 +196,7 @@ public class TournamentManager implements ManagerInterface {
     } catch (Exception e) {
       executor.shutdownNow();
       this.cheaters.add(player);
+      player.kickedForCheating();
       this.remainingPlayers.remove(player);
       this.eliminatedPlayers.remove(player);
     }
@@ -175,15 +217,7 @@ public class TournamentManager implements ManagerInterface {
     this.remainingPlayers.clear();
 
     for (List<PlayerInterface> group : playerGroups) {
-      IReferee referee = new Referee(group, BOARD_ROWS, BOARD_COLUMNS);
-
-      IGameResult gameResult = referee.runGame();
-      List<PlayerInterface> eliminated = gameResult.getEliminated();
-      this.remainingPlayers.addAll(gameResult.getWinners());
-      this.eliminatedPlayers.addAll(eliminated);
-      this.cheaters.addAll(gameResult.getCheaters());
-      this.tournamentInform(eliminated, false);
-
+      IGameResult gameResult = runGame(group);
       this.roundResults.add(gameResult);
     }
 
@@ -191,7 +225,31 @@ public class TournamentManager implements ManagerInterface {
   }
 
   /**
-   * Creates a list of Player Groups following the pattern below
+   * Runs a single game in the tournament. Returns the IGameResult from that game and adds all
+   * winners back to remaining players along with keeping track of eliminated and cheating players.
+   *
+   * @param group List of PlayerInterface
+   * @return IGameResult
+   */
+  public IGameResult runGame(List<PlayerInterface> group) {
+    IReferee referee = new Referee(group, BOARD_ROWS, BOARD_COLUMNS);
+    this.gameHasBegun(group);
+    IGameResult gameResult = referee.runGame();
+    List<PlayerInterface> eliminated = gameResult.getEliminated();
+    this.remainingPlayers.addAll(gameResult.getWinners());
+    this.eliminatedPlayers.addAll(eliminated);
+    this.cheaters.addAll(gameResult.getCheaters());
+    this.tournamentInform(eliminated, false);
+    return gameResult;
+  }
+
+
+  /**
+   * The manager starts by assigning them to games with the maximal number of participants permitted
+   * in ascending order of age. Once the number of remaining players drops below the maximal number
+   * and can’t form a game, the manager backtracks by one game and tries games of size one less than
+   * the maximal number and so on until all players are assigned.
+   * The pattern for this is demonstrated below.
    * 0 -> Err
    * 1 -> Err
    * 2 -> 2P
