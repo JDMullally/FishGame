@@ -71,8 +71,9 @@ public class GameResult implements IGameResult {
     public boolean equals(Object o) {
         if (o instanceof GameResult) {
             GameResult other = (GameResult) o;
-            return this.finalScores.equals(other.finalScores)
-                && this.cheaters.equals(other.cheaters);
+            return this.getWinners().equals(other.getWinners())
+                && this.cheaters.equals(other.cheaters)
+                && this.getEliminated().equals(other.getEliminated());
         }
         return false;
     }
