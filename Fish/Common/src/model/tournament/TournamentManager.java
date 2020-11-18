@@ -11,13 +11,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.swing.BorderFactory;
-import model.games.GameAction;
-import model.games.GameResult;
 import model.games.IGameResult;
 import model.games.IReferee;
 import model.games.Referee;
-import model.tree.Action;
 import model.tree.PlayerInterface;
 
 public class TournamentManager implements ManagerInterface {
@@ -230,6 +226,9 @@ public class TournamentManager implements ManagerInterface {
    */
   private List<List<PlayerInterface>> allocatePlayersHelper(List<PlayerInterface> players, List<List<PlayerInterface>> acc) {
     int size = players.size();
+    if (size < 2) {
+      throw new IllegalArgumentException("Cannot run tournament with less than 2 players.");
+    }
     if (size == 2 || size == 3 || size == 4) {
       acc.add(players);
       return acc;
