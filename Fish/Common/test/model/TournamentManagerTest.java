@@ -355,14 +355,14 @@ public class TournamentManagerTest {
 
     List<List<PlayerInterface>> p3 = t3.allocatePlayers();
     List<PlayerInterface> groupP3 = p3.get(0);
-    groupP3.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
+    this.players3.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
 
     assertEquals(1, p3.size());
-    assertEquals(groupP3, this.players3);
+    assertEquals(this.players3, groupP3);
 
     List<List<PlayerInterface>> p4 = t4.allocatePlayers();
     List<PlayerInterface> groupP4 = p4.get(0);
-    groupP4.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
+    this.players4.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
 
     assertEquals(1, p4.size());
     assertEquals(groupP4, this.players4);
@@ -548,23 +548,38 @@ public class TournamentManagerTest {
    * ********************************************************************************************
    */
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testGetTournamentStatisticsNotRun() {
     init();
     this.tournamentManager = new TournamentManager(this.players13);
 
-    assertFalse(this.tournamentManager.isTournamentOver());
-    this.tournamentManager.getTournamentStatistics();
+    Map<PlayerStanding, List<PlayerInterface>> stats =
+        this.tournamentManager.getTournamentStatistics();
+
+    List<PlayerInterface> statsRemaining = stats.get(PlayerStanding.REMAINING);
+    List<PlayerInterface> statsEliminated = stats.get(PlayerStanding.ELIMINATED);
+    List<PlayerInterface> statsCheaters = stats.get(PlayerStanding.CHEATER);
+
+    assertEquals(13, statsRemaining.size());
+    assertEquals(0, statsEliminated.size());
+    assertEquals(0, statsCheaters.size());
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testGetTournamentStatisticsNotOver() {
+  @Test
+  public void testGetTournamentStatistics13Players1Round() {
     init();
     this.tournamentManager = new TournamentManager(this.players13);
     this.tournamentManager.runRound();
 
-    assertFalse(this.tournamentManager.isTournamentOver());
-    this.tournamentManager.getTournamentStatistics();
+    Map<PlayerStanding, List<PlayerInterface>> stats =
+        this.tournamentManager.getTournamentStatistics();
+
+    List<PlayerInterface> statsRemaining = stats.get(PlayerStanding.REMAINING);
+    List<PlayerInterface> statsEliminated = stats.get(PlayerStanding.ELIMINATED);
+    List<PlayerInterface> statsCheaters = stats.get(PlayerStanding.CHEATER);
+
+    assertEquals(13, statsRemaining.size() + statsEliminated.size());
+    assertEquals(0, statsCheaters.size());
   }
 
   @Test
