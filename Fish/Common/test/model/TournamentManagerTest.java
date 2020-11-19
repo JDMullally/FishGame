@@ -150,7 +150,7 @@ public class TournamentManagerTest {
     List<PlayerInterface> players = new ArrayList<>();
 
     for (int i = 0; i < numPlayers; i++) {
-      players.add(new PlayerAI(new Strategy(), 1, i + 1, "Player " + (i + 1)));
+      players.add(new PlayerAI(new Strategy(), 2, i + 1, "Player " + (i + 1)));
     }
 
     return players;
