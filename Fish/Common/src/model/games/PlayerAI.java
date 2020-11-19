@@ -1,5 +1,6 @@
-package model.games;
+package model.games.playerAI;
 
+import model.games.IGameResult;
 import model.state.IGameState;
 import model.strategy.IStrategy;
 import model.tree.Action;

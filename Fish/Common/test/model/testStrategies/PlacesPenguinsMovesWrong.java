@@ -1,4 +1,4 @@
-package model.strategy.testStrategies;
+package model.testStrategies;
 
 import java.awt.Point;
 import model.state.IGameState;

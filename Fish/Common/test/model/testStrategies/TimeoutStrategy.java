@@ -1,4 +1,4 @@
-package model.strategy.testStrategies;
+package model.testStrategies;
 
 import java.util.concurrent.TimeUnit;
 import model.state.IGameState;

@@ -1,11 +1,9 @@
-package model.strategy.testStrategies;
+package model.testStrategies;
 
 import java.awt.Point;
 import model.state.IGameState;
-import model.state.Penguin;
 import model.strategy.IStrategy;
 import model.tree.Action;
-import model.tree.MovePenguin;
 import model.tree.PassPenguin;
 import model.tree.PlacePenguin;
 

@@ -1,4 +1,4 @@
-package model.strategy.testStrategies;
+package model.testStrategies;
 
 import java.awt.Point;
 import model.state.IGameState;
@@ -8,7 +8,6 @@ import model.strategy.Strategy;
 import model.tree.Action;
 import model.tree.MovePenguin;
 import model.tree.PassPenguin;
-import util.ColorUtil;
 
 /**
  * Represents a Strategy that will always try to make an Invalid move.
