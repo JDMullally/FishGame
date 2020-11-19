@@ -1,1 +1,1 @@
-// see Common/src/model/games/ManagerInterface.java
+// see Common/src/model/tournament/ManagerInterface.java
