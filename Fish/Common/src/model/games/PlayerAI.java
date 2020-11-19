@@ -23,14 +23,7 @@ public class PlayerAI implements PlayerInterface {
      * @param strategy IStrategy
      */
     public PlayerAI(IStrategy strategy, int turns) {
-        if (strategy == null) {
-            throw new IllegalArgumentException("IStrategy cannot be null");
-        }
-
-        this.age = 1;
-        this.uid = "AI Player";
-        this.strategy = strategy;
-        this.turns = turns;
+        this(strategy, turns, 1, "AI Player");
     }
 
     public PlayerAI(IStrategy strategy, int turns, int age, String uid) {
@@ -100,6 +93,7 @@ public class PlayerAI implements PlayerInterface {
         if (o instanceof PlayerAI) {
             PlayerAI other = (PlayerAI) o;
             return this.strategy.equals(other.strategy)
+                && this.turns == other.turns
                 && this.age == other.age
                 && this.uid.equals(other.uid);
         }
