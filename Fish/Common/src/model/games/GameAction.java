@@ -17,7 +17,7 @@ public class GameAction {
      *
      * @param action Action
      */
-    GameAction(Action action) {
+    public GameAction(Action action) {
         if (action == null) {
             throw new IllegalArgumentException("Action cannot be null");
         }
@@ -30,4 +30,12 @@ public class GameAction {
         return action.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof GameAction) {
+            GameAction other = (GameAction) o;
+            return this.action.equals(other.action);
+        }
+        return false;
+    }
 }
