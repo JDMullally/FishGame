@@ -80,7 +80,7 @@ public class PlayerAI implements PlayerInterface {
 
     @Override
     public void kickedForCheating() {
-        throw new IllegalStateException("Our AI should not cheat");
+        //throw new IllegalStateException("Our AI should not cheat");
     }
 
     @Override
