@@ -41,6 +41,12 @@ To run unit tests, go to the `Fish` directory (this directory) and run
 $  ./xtest
 ```
 
+To run the testing harness for milestone 8, go to the `../8` directory and run the following, passing a Game-Description to STDIN:
+
+```
+$ ./xref
+```
+
 To run the testing harness for milestone 6, go to the `../6` directory and run the following, passing a Depth-State to STDIN:
 
 ```
