@@ -1,10 +1,10 @@
 package util;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import model.state.GameState;
@@ -77,8 +77,12 @@ public class GameStateUtil {
      */
     public IGameState JsonToGameState(JsonArray board, JsonArray players) {
         int rows = board.size();
-        // TODO find the max column size
-        int columns = board.get(0).getAsJsonArray().size();
+
+        int columns = 0;
+
+        for (JsonElement row : board) {
+            columns = Math.max(columns, row.getAsJsonArray().size());
+        }
 
         return new GameState(rows, columns, board, players);
     }
