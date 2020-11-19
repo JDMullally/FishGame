@@ -245,6 +245,17 @@ public class TournamentManager implements ManagerInterface {
     }
   }
 
+  /**
+   * Returns the current round number. Used for testing.
+   *
+   * O represents that no rounds have been run.
+   *
+   * @return the round number.
+   */
+  public int getRound() {
+    return this.round;
+  }
+
   @Override
   public List<PlayerInterface> getTournamentResults() throws IllegalStateException {
     if (isTournamentOver()) {
