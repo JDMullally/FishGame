@@ -59,9 +59,6 @@ public class RefereeTestUtil {
         for (PlayerInterface p : playerPlacements) {
             winners.add(p.getPlayerID());
         }
-        List<GameAction> actions = referee.getOngoingActions();
-
-        actions.forEach(System.out::println);
 
         Collections.sort(winners);
 
