@@ -23,7 +23,7 @@ public class TournamentManager implements ManagerInterface {
   private final List<PlayerInterface> tournamentPlayers;
 
   private int round;
-  private Map<Integer, List<IGameResult>> roundResultMap;
+  private final Map<Integer, List<IGameResult>> roundResultMap;
   private List<IGameResult> roundResults;
   private List<PlayerInterface> previousWinners;
   private List<PlayerInterface> remainingPlayers;
