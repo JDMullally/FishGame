@@ -86,7 +86,7 @@ public class PlayerAI implements PlayerInterface {
     @Override
     public void gameResults(IGameResult result) {
         if (result.getWinners().contains(this)) {
-            System.out.println("Hooray");
+            //System.out.println("Hooray");
         }
     }
 
@@ -104,5 +104,10 @@ public class PlayerAI implements PlayerInterface {
                 && this.uid.equals(other.uid);
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + this.uid + ", " + this.age + ", " + this.strategy + ")";
     }
 }
