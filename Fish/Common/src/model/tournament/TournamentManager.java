@@ -88,7 +88,14 @@ public class TournamentManager implements ManagerInterface {
     return this.remainingPlayers.containsAll(this.previousWinners);
   }
 
-
+  /**
+   * Inform all players of an update to the tournament status. Takes in a list of players to inform
+   * and a function that takes a player and returns a boolean representing whether the player
+   * received the information.
+   *
+   * @param players the players to inform
+   * @param playerTask the update to give to the players
+   */
   private void informPlayers(List<PlayerInterface> players,
       Function<PlayerInterface, Boolean> playerTask) {
     for (PlayerInterface player : players) {
