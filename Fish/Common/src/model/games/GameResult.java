@@ -37,8 +37,13 @@ public class GameResult implements IGameResult {
 
     @Override
     public List<PlayerInterface> getWinners() {
-        Integer max = Collections.max(this.finalScores.values());
         List<PlayerInterface> winners = new ArrayList<>();
+
+        if (this.finalScores.isEmpty()) {
+            return winners;
+        }
+
+        Integer max = Collections.max(this.finalScores.values());
 
         for (Map.Entry<PlayerInterface, Integer> entry : this.finalScores.entrySet()) {
             if (entry.getValue().equals(max)) {
