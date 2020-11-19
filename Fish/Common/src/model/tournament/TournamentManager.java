@@ -184,7 +184,7 @@ public class TournamentManager implements ManagerInterface {
     List<PlayerInterface> cheaters = gameResult.getCheaters();
 
     // Update fields
-    this.remainingPlayers.addAll(winners);
+    this.remainingPlayers.addAll(orderByAge(winners));
     this.eliminatedPlayers.addAll(eliminated);
     this.cheaters.addAll(cheaters);
 
