@@ -3,6 +3,7 @@ package model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,12 +13,16 @@ import java.util.List;
 import java.util.Map;
 import model.games.IGameResult;
 import model.games.PlayerAI;
+import model.testPlayerAI.DoesNotWantGameResult;
+import model.testPlayerAI.NoResponseGameStart;
+import model.testPlayerAI.TimeOutWinner;
 import model.strategy.Strategy;
-import model.strategy.testStrategies.MoveAnotherPlayerPenguin;
-import model.strategy.testStrategies.MoveOutsideBoard;
-import model.strategy.testStrategies.PlaceOutsideBoard;
-import model.strategy.testStrategies.PlacePenguinOnAnotherPlayerPenguin;
-import model.strategy.testStrategies.TimeoutStrategy;
+import model.testPlayerAI.TournamentStaller;
+import model.testStrategies.MoveAnotherPlayerPenguin;
+import model.testStrategies.MoveOutsideBoard;
+import model.testStrategies.PlaceOutsideBoard;
+import model.testStrategies.PlacePenguinOnAnotherPlayerPenguin;
+import model.testStrategies.TimeoutStrategy;
 import model.tournament.PlayerStanding;
 import model.tournament.TournamentManager;
 import model.tree.PlayerInterface;
@@ -25,16 +30,19 @@ import org.junit.Test;
 
 public class TournamentManagerTest {
 
-  PlayerInterface p1, p2, p3, p4, p5;
-  PlayerInterface cheater1, cheater2, cheater3, cheater4;
-  PlayerInterface timeout1;
+  private PlayerInterface p1, p2, p3, p4, p5;
+  private PlayerInterface cheater1, cheater2, cheater3, cheater4;
+  private PlayerInterface timeout1, timeOutWinner, timeoutTourney, noResponseGameStart,
+      doesNotWantGameResult;
 
-  List<PlayerInterface> players2, players3, players4;
-  List<PlayerInterface> players13, players20;
-  List<PlayerInterface> players1cheater4normal, players4cheaters, players4cheaters1normal;
-  List<PlayerInterface> players1timeoutStrategy4normal;
+  private List<PlayerInterface> players2, players3, players4;
+  private List<PlayerInterface> players13, players20;
+  private List<PlayerInterface> players1cheater4normal, players4cheaters, players4cheaters1normal;
+  private List<PlayerInterface> players1timeoutStrategy4normal, players3Cheaters1TimeOutWinner,
+      players3Normal1TimeOutTourneyStart, players3Normal1TimeOutGameResult,
+      players3Normal1TimeOutGameStart;
 
-  TournamentManager tournamentManager;
+  private TournamentManager tournamentManager;
 
 
   void init() {
@@ -59,8 +67,16 @@ public class TournamentManagerTest {
     this.players4cheaters1normal = new ArrayList<>(Arrays.asList(p5, cheater1, cheater2, cheater3, cheater4));
 
     this.timeout1 = new PlayerAI(new TimeoutStrategy(), 2, 3, "Timeout 1");
-
+    this.timeOutWinner = new TimeOutWinner(new Strategy());
+    this.timeoutTourney = new TournamentStaller(new Strategy());
+    this.noResponseGameStart = new NoResponseGameStart(new Strategy());
+    this.doesNotWantGameResult = new DoesNotWantGameResult(new Strategy());
     this.players1timeoutStrategy4normal = new ArrayList<>(Arrays.asList(p2, timeout1, p1, p4, p5));
+
+    this.players3Cheaters1TimeOutWinner = new ArrayList<>(Arrays.asList(cheater1, cheater2, cheater3, timeOutWinner));
+    this.players3Normal1TimeOutTourneyStart = new ArrayList<>(Arrays.asList(p1, p2, p3, timeoutTourney));
+    this.players3Normal1TimeOutGameStart = new ArrayList<>(Arrays.asList(p1, p2, p3, noResponseGameStart));
+    this.players3Normal1TimeOutGameResult = new ArrayList<>(Arrays.asList(p1, p2, p3, doesNotWantGameResult));
   }
   
   private static class Pair {
@@ -580,6 +596,21 @@ public class TournamentManagerTest {
   }
 
   @Test
+  public void testGetRoundResultsOnePlayerTimesOutWinningMessageRestAreCheaters() {
+    init();
+    this.tournamentManager = new TournamentManager(this.players3Cheaters1TimeOutWinner);
+    this.tournamentManager.runRound();
+    List<PlayerInterface> winner =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.REMAINING);
+
+    assertEquals(1, winner.size());
+    assertEquals(this.timeOutWinner, winner.get(0));
+
+    List<PlayerInterface> tourneyWinners = this.tournamentManager.runTournament();
+    assertEquals(new ArrayList<>(), tourneyWinners);
+  }
+
+  @Test
   public void testGetRoundResults1OneRound() {
     init();
     this.tournamentManager = new TournamentManager(this.players13);
@@ -712,6 +743,34 @@ public class TournamentManagerTest {
     assertEquals(0, statsCheaters.size());
   }
 
+  @Test
+  public void testGetTournamentStatisticsInOrder13Player() {
+    init();
+    this.tournamentManager = new TournamentManager(this.players13);
+    List<PlayerInterface> winners = this.tournamentManager.runTournament();
+
+    List<PlayerInterface> winnersClone = new ArrayList<>(winners);
+    winnersClone.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
+    assertEquals(winners, winnersClone);
+  }
+
+  @Test
+  public void testGetTournamentStatisticsInOrder20PlayerOneRound() {
+    init();
+    this.tournamentManager = new TournamentManager(this.players20);
+    List<IGameResult> results = this.tournamentManager.runRound();
+
+    List<PlayerInterface> players =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.REMAINING);
+
+    boolean fiveOrMorePlayers = players.size() >= 5;
+    assertTrue(fiveOrMorePlayers);
+
+    List<PlayerInterface> playersSorted = new ArrayList<>(players);
+    playersSorted.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
+    assertEquals(playersSorted, players);
+  }
+
   /**
    *********************************************************************************************
    * Tests for RunTournament
@@ -727,6 +786,58 @@ public class TournamentManagerTest {
     List<IGameResult> round1Results = this.tournamentManager.getRoundResults(1);
 
     assertEquals(round1Results.get(0).getWinners(), winners);
+  }
+
+  @Test
+  public void testRunTournamentOneTimeOutPlayer() {
+    this.init();
+    this.tournamentManager = new TournamentManager(this.players1timeoutStrategy4normal);
+    List<PlayerInterface> winners = this.tournamentManager.runTournament();
+
+    List<PlayerInterface> timeOutCheaters =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.CHEATER);
+
+    assertEquals(1, timeOutCheaters.size());
+    assertEquals(this.timeout1, timeOutCheaters.get(0));
+  }
+
+  @Test
+  public void testRunTournamentOnePlayerDelayStart() {
+    this.init();
+    this.tournamentManager = new TournamentManager(this.players3Normal1TimeOutTourneyStart);
+    List<PlayerInterface> winners = this.tournamentManager.runTournament();
+
+    List<PlayerInterface> timeOutCheaters =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.CHEATER);
+
+    assertEquals(1, timeOutCheaters.size());
+    assertEquals(this.timeoutTourney, timeOutCheaters.get(0));
+  }
+
+  @Test
+  public void testRunTournamentOnePlayerDoesNotWantGameResult() {
+    this.init();
+    this.tournamentManager = new TournamentManager(this.players3Normal1TimeOutGameResult);
+    List<PlayerInterface> winners = this.tournamentManager.runTournament();
+
+    List<PlayerInterface> timeOutCheaters =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.CHEATER);
+
+    assertEquals(1, timeOutCheaters.size());
+    assertEquals(this.doesNotWantGameResult, timeOutCheaters.get(0));
+  }
+
+  @Test
+  public void testRunTournamentOnePlayerNoResponseGameStart() {
+    this.init();
+    this.tournamentManager = new TournamentManager(this.players3Normal1TimeOutGameStart);
+    List<PlayerInterface> winners = this.tournamentManager.runTournament();
+
+    List<PlayerInterface> timeOutCheaters =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.CHEATER);
+
+    assertEquals(1, timeOutCheaters.size());
+    assertEquals(this.noResponseGameStart, timeOutCheaters.get(0));
   }
 
   @Test
@@ -760,6 +871,35 @@ public class TournamentManagerTest {
     assertTrue(round2Results.size() < round1Results.size());
     assertTrue(round3Results.size() < round2Results.size());
   }
+
+  @Test
+  public void testRunTournament1Cheater4Standard() {
+    this.init();
+    this.tournamentManager = new TournamentManager(this.players1cheater4normal);
+    List<PlayerInterface> winners = this.tournamentManager.runTournament();
+
+    List<PlayerInterface> cheaters =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.CHEATER);
+    assertEquals(1, cheaters.size());
+
+    PlayerInterface cheater = cheaters.get(0);
+    assertEquals(this.cheater4,cheater);
+
+  }
+
+  @Test
+  public void testRunTournamentAllCheaters() {
+    this.init();
+    this.tournamentManager = new TournamentManager(this.players4cheaters);
+    List<PlayerInterface> winners = this.tournamentManager.runTournament();
+    assertEquals(new ArrayList<>(), winners);
+
+    List<PlayerInterface> cheaters =
+        this.tournamentManager.getTournamentStatistics().get(PlayerStanding.CHEATER);
+    cheaters.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
+    assertEquals(this.players4cheaters, cheaters);
+  }
+
 
   /**
    * ********************************************************************************************
