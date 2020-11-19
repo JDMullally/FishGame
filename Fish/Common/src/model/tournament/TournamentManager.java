@@ -98,7 +98,8 @@ public class TournamentManager implements ManagerInterface {
    */
   private void informPlayers(List<PlayerInterface> players,
       Function<PlayerInterface, Boolean> playerTask) {
-    for (PlayerInterface player : players) {
+    List<PlayerInterface> playersCopy = new ArrayList<>(players);
+    for (PlayerInterface player : playersCopy) {
       this.informPlayer(player, () -> playerTask.apply(player));
     }
   }
@@ -125,8 +126,9 @@ public class TournamentManager implements ManagerInterface {
     }
 
     if (!response) {
-      this.cheaters.add(player);
-      player.kickedForCheating();
+      if(!this.cheaters.contains(player)) {
+        this.cheaters.add(player);
+      }
       this.remainingPlayers.remove(player);
       this.eliminatedPlayers.remove(player);
     }
@@ -145,7 +147,6 @@ public class TournamentManager implements ManagerInterface {
     this.previousWinners = this.remainingPlayers;
     // assign to games
     List<List<PlayerInterface>> playerGroups = this.allocatePlayers();
-
     // Run rounds and add to map of all round results
     List<IGameResult> roundResults = new ArrayList<>();
     for (List<PlayerInterface> group : playerGroups) {
@@ -178,14 +179,23 @@ public class TournamentManager implements ManagerInterface {
       return true;
     });
 
-    // Inform eliminated players
+    List<PlayerInterface> winners = gameResult.getWinners();
     List<PlayerInterface> eliminated = gameResult.getEliminated();
-    this.informPlayers(eliminated, player -> player.tournamentResults(false));
+    List<PlayerInterface> cheaters = gameResult.getCheaters();
 
     // Update fields
-    this.remainingPlayers.addAll(gameResult.getWinners());
+    this.remainingPlayers.addAll(winners);
     this.eliminatedPlayers.addAll(eliminated);
-    this.cheaters.addAll(gameResult.getCheaters());
+    this.cheaters.addAll(cheaters);
+
+    // Inform eliminated players
+    this.informPlayers(eliminated, player ->
+        player.tournamentResults(false));
+
+    this.informPlayers(cheaters, player -> {
+      player.kickedForCheating();
+      return true;
+    });
 
     return gameResult;
   }
