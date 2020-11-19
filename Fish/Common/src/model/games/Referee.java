@@ -203,26 +203,6 @@ public class Referee implements IReferee {
     }
 
     /**
-     * Returns the state of the game after running a Round of Fish.
-     *
-     * A Round of Fish means all non-cheating players play their turn, and if the game doesn't end
-     * the current Player's turn of the returned GameState should return the first player who
-     * played that round.
-     *
-     * @return IGameState
-     */
-    public IGameState runRound() {
-        IGameState roundGameState = this.gameTree.getState();
-        for (int i = 0; i < players.values().size(); i++) {
-            if(roundGameState.isGameOver()) {
-                break;
-            }
-            roundGameState = runTurn();
-        }
-        return roundGameState;
-    }
-
-    /**
      * Returns the state of the Game after a running single turn of Fish.
      *
      * A Turn of Fish means that the current player enters a valid move to move
