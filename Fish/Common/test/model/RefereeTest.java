@@ -1,6 +1,11 @@
 package model;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.awt.Color;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +18,8 @@ import model.games.PlayerAI;
 import model.games.Referee;
 import model.state.IGameState;
 import model.state.IPlayer;
+import model.state.Penguin;
+import model.strategy.Strategy;
 import model.testStrategies.MoveAnotherPlayerPenguin;
 import model.testStrategies.MoveOutsideBoard;
 import model.testStrategies.PassOwnTurnMakeAnotherPlayerCheat;
@@ -20,13 +27,12 @@ import model.testStrategies.PlaceAnotherPlayerPenguin;
 import model.testStrategies.PlaceOutsideBoard;
 import model.testStrategies.PlacePenguinOnAnotherPlayerPenguin;
 import model.testStrategies.PlacesPenguinsMovesWrong;
-import model.strategy.Strategy;
 import model.testStrategies.TimeoutStrategy;
+import model.tree.MovePenguin;
+import model.tree.PlacePenguin;
 import model.tree.PlayerInterface;
 import org.junit.Test;
 import util.ColorUtil;
-
-import static org.junit.Assert.*;
 
 public class RefereeTest {
 
@@ -40,7 +46,9 @@ public class RefereeTest {
         oneMoveAnotherPenguin,
         onePlaceOutsideBoard,
         onePassOwnTurnMakeAnotherPlayerCheat,
-        timeoutPlayer;
+        timeoutPlayer,
+        timeoutPlayerFirst,
+        firstPlacesOutsideBoard;
 
     void init() {
         this.newBoard = new GameBoard(5,5,
@@ -96,11 +104,15 @@ public class RefereeTest {
 
         this.onePlaceOutsideBoard = new ArrayList<>(Arrays.asList(p1, p2, placeOutsideBoard));
 
+        this.firstPlacesOutsideBoard = new ArrayList<>(Arrays.asList(p1, p2, placeOutsideBoard));
+
         this.onePassOwnTurnMakeAnotherPlayerCheat =
             new ArrayList<>(Arrays.asList(p1, p2, passOwnTurnMakeAnotherPlayerCheat));
 
         this.timeoutPlayer = new ArrayList<>(Arrays.asList(p1, p2,
             timeout));
+
+        this.timeoutPlayerFirst = new ArrayList<>(Arrays.asList(timeout, p1, p2));
     }
 
     /**
@@ -170,7 +182,44 @@ public class RefereeTest {
      *********************************************************************************************
      */
 
-    // TODO finish these tests
+    @Test
+    public void runOnePlacementTurnCheater() {
+        this.init();
+        Referee ref = new Referee(this.firstPlacesOutsideBoard, 3, 3);
+
+        ref.placementTurn();
+
+        assertEquals(3, ref.getGameState().getPlayers().size());
+        PlayerInterface cheater = this.firstPlacesOutsideBoard.get(0);
+        assertFalse(ref.getGameState().getPlayers().contains(cheater));
+    }
+
+    @Test
+    public void runOneValidPlacementTurn() {
+        this.init();
+        Referee ref = new Referee(this.players3, 4, 4);
+
+        IPlayer firstPlayer = ref.getGameState().playerTurn();
+
+        ref.placementTurn();
+
+        assertEquals(1, ref.getOngoingActions().size());
+
+        GameAction placeAction = new GameAction(new PlacePenguin(firstPlayer, new Point(0, 0)));
+        assertEquals(placeAction, ref.getOngoingActions().get(0));
+    }
+
+    @Test
+    public void runTimeoutPlacementTurn() {
+        this.init();
+        Referee ref = new Referee(this.timeoutPlayerFirst, 3, 5);
+
+        ref.placementTurn();
+
+        assertEquals(2, ref.getGameState().getPlayers().size());
+        PlayerInterface cheater = this.timeoutPlayerFirst.get(0);
+        assertFalse(ref.getGameState().getPlayers().contains(cheater));
+    }
 
     /**
      *********************************************************************************************
@@ -178,11 +227,50 @@ public class RefereeTest {
      *********************************************************************************************
      */
 
-    /**
-     *********************************************************************************************
-     * Tests for runRound
-     *********************************************************************************************
-     */
+    @Test
+    public void runOneValidMovementTurn() {
+        this.init();
+        Referee ref = new Referee(this.players3, 4, 4, 4);
+
+        IPlayer firstPlayer = ref.getGameState().playerTurn();
+
+        while (!ref.getGameState().isGameReady()) {
+            ref.placementTurn();
+        }
+
+        assertEquals(9, ref.getOngoingActions().size());
+
+        ref.runTurn();
+        assertEquals(10, ref.getOngoingActions().size());
+
+        GameAction placeAction = new GameAction(
+            new MovePenguin(firstPlayer, new Penguin(firstPlayer.getColor(), new Point(3, 0)),
+                new Point(3, 2)));
+        assertEquals(placeAction, ref.getOngoingActions().get(9));
+    }
+
+    @Test
+    public void runThreeMovementTurnCheater() {
+        this.init();
+        Referee ref = new Referee(this.oneMoveOutsideBoard, 4, 5, 3);
+
+        while (!ref.getGameState().isGameReady()) {
+            ref.placementTurn();
+        }
+
+        assertEquals(3, ref.getGameState().getPlayers().size());
+
+        ref.runTurn();
+        assertEquals(3, ref.getGameState().getPlayers().size());
+
+        ref.runTurn();
+        assertEquals(3, ref.getGameState().getPlayers().size());
+
+        ref.runTurn();
+        assertEquals(2, ref.getGameState().getPlayers().size());
+        PlayerInterface cheater = this.oneMoveOutsideBoard.get(2);
+        assertFalse(ref.getGameState().getPlayers().contains(cheater));
+    }
 
     /**
      *********************************************************************************************
