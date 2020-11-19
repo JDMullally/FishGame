@@ -3,8 +3,8 @@
 Fish is a board game for two to four players.
 
 ###File Structure
-`/Admin` : Contains references to the interface for the tournament manager, 
-and implementation of the Referee.
+`/Admin` : Contains references to the interface for the tournament manager, the manager
+ implementation and implementation of the Referee.
 
 `/Planning` : Contains all self evaluations along with all memos to Dot Game CEOs for our design 
 plans regarding the interface and protocol of the game, referee, players, tournament manager, 
