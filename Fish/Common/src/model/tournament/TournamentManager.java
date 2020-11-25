@@ -153,6 +153,9 @@ public class TournamentManager implements ManagerInterface {
       roundResults.add(this.runGame(group));
     }
     this.roundResultMap.put(round, roundResults);
+    this.remainingPlayers.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
+    this.eliminatedPlayers.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
+    this.cheaters.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
     return roundResults;
   }
 
