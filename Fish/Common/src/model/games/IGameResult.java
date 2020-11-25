@@ -19,23 +19,30 @@ public interface IGameResult {
     List<PlayerInterface> getPlayerPlacements();
 
     /**
-     * Gets a list of IPlayers that cheated during the game.
+     * Gets a list of PlayerInterface that cheated during the game.
      *
      * @return List of PlayerInterface
      */
     List<PlayerInterface> getCheaters();
 
     /**
-     * Gets the list of IPlayers that had the maximum score at the end of a game of Fish.
+     * Gets the list of PlayerInterface that had the maximum score at the end of a game of Fish.
      *
      * @return List of PlayerInterface
      */
     List<PlayerInterface> getWinners();
 
     /**
-     * Gets the list of IPlayers that had less than the maximum score at the end of a game of Fish.
+     * Gets the list of PlayerInterface that had less than the maximum score at the end of a game of Fish.
      *
      * @return List of PlayerInterface
      */
     List<PlayerInterface> getEliminated();
+
+    /**
+     * Gets the score of the given PlayerInterface.
+     * @param player PlayerInterface
+     * @return int
+     */
+    int getPlayerScore(PlayerInterface player);
 }

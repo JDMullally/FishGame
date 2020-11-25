@@ -68,6 +68,16 @@ public class GameResult implements IGameResult {
     }
 
     @Override
+    public int getPlayerScore(PlayerInterface player) {
+        for (PlayerInterface p : finalScores.keySet()) {
+            if(player.equals(p)) {
+                return finalScores.get(p);
+            }
+        }
+        throw new IllegalArgumentException("Player doesn't exist");
+    }
+
+    @Override
     public List<PlayerInterface> getCheaters() {
         return new ArrayList<>(this.cheaters);
     }
