@@ -57,7 +57,10 @@ public class GameVisualizer implements IGameVisualizer {
     @Override
     public ImmutableGameStateModel nextScene(IGameAction action,
         ImmutableGameStateModel currentImmutableGameState) {
-
+        if (action == null || currentImmutableGameState == null) {
+            throw new IllegalArgumentException("Cannot get the next scene if either the action "
+                + "or the current Immutable GameState is null");
+        }
         currentImmutableGameState = currentImmutableGameState.getNextGameState(action);
         return currentImmutableGameState;
     }
