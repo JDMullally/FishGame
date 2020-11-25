@@ -5,7 +5,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import controller.Controller;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,10 +19,6 @@ import model.board.Tile;
 import model.state.IGameState;
 import model.state.IPenguin;
 import model.state.IPlayer;
-import model.state.ImmutableGameState;
-import model.state.ImmutableGameStateModel;
-import view.IView;
-import view.VisualView;
 
 /**
  * Tests the GameTree for the Fish Game.
