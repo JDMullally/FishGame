@@ -95,7 +95,7 @@ public class Strategy implements IStrategy {
      * Performs minimax on the given game tree, returning the best action for the current player
      * to make.
      *
-     * @param tree IGameTree<?>
+     * @param tree IGameTree
      * @return Action
      */
     private Action minimax(IGameTree tree, int depth) {
