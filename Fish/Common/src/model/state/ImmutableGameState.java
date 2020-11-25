@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import model.board.Canvas;
+import model.board.ICanvas;
 import model.board.Tile;
+import model.games.IGameAction;
 
 /**
  * Class implementation that represents the model for an immutable implementation of a GameState. No new methods are
@@ -27,7 +29,7 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     }
 
     @Override
-    public Canvas getCanvas() {
+    public ICanvas getCanvas() {
         return this.gameState.getCanvas();
     }
 
@@ -139,5 +141,10 @@ public class ImmutableGameState implements ImmutableGameStateModel {
     @Override
     public boolean isGameReady() {
         return this.gameState.isGameReady();
+    }
+
+    @Override
+    public ImmutableGameStateModel getNextGameState(IGameAction action) {
+        return action.getNextState(this);
     }
 }

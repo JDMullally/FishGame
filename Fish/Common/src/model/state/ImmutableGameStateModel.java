@@ -1,6 +1,7 @@
 package model.state;
 
 import model.board.IGameBoard;
+import model.games.IGameAction;
 
 /**
  * Represents the model for an immutable implementation of a GameState. No new methods are
@@ -8,4 +9,6 @@ import model.board.IGameBoard;
  * to distinguish the difference between classes that implement a mutable vs immutable model.
  */
 public interface ImmutableGameStateModel extends IGameState, IGameBoard {
+
+    ImmutableGameStateModel getNextGameState(IGameAction action);
 }
