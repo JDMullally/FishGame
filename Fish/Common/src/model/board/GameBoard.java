@@ -34,7 +34,7 @@ public class GameBoard implements IGameBoard {
     private final int rows; // rows of the board
     private final int columns; // columns of the board
     private final Tile[][] board; // the game board (row major)
-    private final Canvas canvas; // the game board canvas
+    private final ICanvas canvas; // the game board canvas
 
     /**
      * Constructor that only takes in a rows and columns of the board.
@@ -200,7 +200,7 @@ public class GameBoard implements IGameBoard {
      * @param columns
      * @return Canvas
      */
-    private Canvas generateCanvas(int rows, int columns) {
+    private ICanvas generateCanvas(int rows, int columns) {
         int canvasWidth = columns * 4 * HEX_SIZE + HEX_SIZE + 3;
         int canvasHeight = (rows + 1) * HEX_SIZE + 3;
         return new Canvas(0, 0, canvasWidth, canvasHeight);
@@ -225,7 +225,7 @@ public class GameBoard implements IGameBoard {
     }
 
     @Override
-    public Canvas getCanvas() {
+    public ICanvas getCanvas() {
         return this.canvas;
     }
 

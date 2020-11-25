@@ -19,9 +19,9 @@ public interface IGameBoard {
 
     /**
      * Returns the GameBoards canvas.
-     * @return Canvas
+     * @return ICanvas
      */
-    Canvas getCanvas();
+    ICanvas getCanvas();
 
     /**
      * Returns the maximum width of the board.

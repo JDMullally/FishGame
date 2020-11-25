@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import javax.swing.*;
 
-import model.state.GameState;
 import model.state.IGameState;
 import model.state.IPenguin;
 import model.state.ImmutableGameState;
@@ -62,12 +61,12 @@ public class Controller implements IController {
                     }
                     // left click shows viable paths
                     if (e.getButton() == 1) {
-                        this.view.update(new ImmutableGameState(this.model), move, tile);
+                        this.view.update(new ImmutableGameState(this.model));
                     }
                     // right click removes the tile
                     if (e.getButton() == 3) {
                         this.model.removeTile(tile.getPosition());
-                        this.view.update(new ImmutableGameState(this.model), new ArrayList<>(), null);
+                        this.view.update(new ImmutableGameState(this.model));
                     }
 
                     return;
@@ -75,7 +74,7 @@ public class Controller implements IController {
             }
         }
 
-        this.view.update(new ImmutableGameState(this.model), new ArrayList<>(), null);
+        this.view.update(new ImmutableGameState(this.model));
     }
 
     @Override
