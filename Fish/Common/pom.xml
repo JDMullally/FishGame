@@ -59,7 +59,8 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
-                    <!-- Compile xboard jar-->
+
+                    <!-- Compile xboard jar
                     <execution>
                         <configuration>
                             <archive>
@@ -73,15 +74,15 @@
                             <finalName>xboard</finalName>
                             <appendAssemblyId>true</appendAssemblyId>
                         </configuration>
-                        <id>make-xboard</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <id>make-xboard</id> this is used for inheritance merges
+                        <phase>package</phase>  bind to the packaging phase
                         <goals>
                             <goal>single</goal>
                         </goals>
                     </execution>
 
-                    <!-- Compile xstate jar-->
-                    <execution>
+                    Compile xstate jar-->
+                    <!--<execution>
                         <configuration>
                             <archive>
                                 <manifest>
@@ -94,15 +95,15 @@
                             <finalName>xstate</finalName>
                             <appendAssemblyId>true</appendAssemblyId>
                         </configuration>
-                        <id>make-xstate</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <id>make-xstate</id>   this is used for inheritance merges
+                        <phase>package</phase> bind to the packaging phase
                         <goals>
                             <goal>single</goal>
                         </goals>
-                    </execution>
+                    </execution> -->
 
                     <!-- Compile xtree jar-->
-                    <execution>
+                    <!-- <execution>
                         <configuration>
                             <archive>
                                 <manifest>
@@ -115,15 +116,15 @@
                             <finalName>xtree</finalName>
                             <appendAssemblyId>true</appendAssemblyId>
                         </configuration>
-                        <id>make-xtree</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <id>make-xtree</id>     this is used for inheritance merges
+                        <phase>package</phase>   bind to the packaging phase
                         <goals>
                             <goal>single</goal>
                         </goals>
-                    </execution>
+                    </execution>  -->
 
                     <!-- Compile xstrategy jar-->
-                    <execution>
+                    <!-- <execution>
                         <configuration>
                             <archive>
                                 <manifest>
@@ -136,15 +137,15 @@
                             <finalName>xstrategy</finalName>
                             <appendAssemblyId>true</appendAssemblyId>
                         </configuration>
-                        <id>make-xstrategy</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <id>make-xstrategy</id>  this is used for inheritance merges
+                        <phase>package</phase>  bind to the packaging phase
                         <goals>
                             <goal>single</goal>
                         </goals>
-                    </execution>
+                    </execution> -->
 
                     <!-- Compile xref jar-->
-                    <execution>
+                    <!--<execution>
                         <configuration>
                             <archive>
                                 <manifest>
@@ -157,7 +158,27 @@
                             <finalName>xref</finalName>
                             <appendAssemblyId>true</appendAssemblyId>
                         </configuration>
-                        <id>make-xref</id> <!-- this is used for inheritance merges -->
+                        <id>make-xref</id>        this is used for inheritance merges
+                        <phase>package</phase>    bind to the packaging phase
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution> -->
+
+                    <execution>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>util.GameVisualizerUtil</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                            <finalName>xgui</finalName>
+                            <appendAssemblyId>true</appendAssemblyId>
+                        </configuration>
+                        <id>make-xgui</id> <!-- this is used for inheritance merges -->
                         <phase>package</phase> <!-- bind to the packaging phase -->
                         <goals>
                             <goal>single</goal>

@@ -6,6 +6,7 @@ all:
 	cp target/xtree-jar-with-dependencies.jar xtree.jar
 	cp target/xstrategy-jar-with-dependencies.jar xstrategy.jar
 	cp target/xref-jar-with-dependencies.jar xref.jar
+	cp target/xgui-jar-with-dependencies.jar xgui.jar
 
 clean:
 	rm *.jar
