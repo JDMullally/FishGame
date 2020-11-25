@@ -12,6 +12,7 @@ import java.util.List;
 import model.board.GameBoard;
 import model.board.IGameBoard;
 import model.games.GameAction;
+import model.games.IGameAction;
 import model.games.IGameResult;
 import model.games.IReferee;
 import model.games.PlayerAI;
@@ -428,7 +429,7 @@ public class RefereeTest {
         IGameResult result = ref.runGame();
 
 
-        List<GameAction> actions = ref.getOngoingActions();
+        List<IGameAction> actions = ref.getOngoingActions();
 
         //actions.stream().forEach(action -> 1.println(action));
 
@@ -471,7 +472,7 @@ public class RefereeTest {
         IGameResult result = ref.runGame();
 
 
-        List<GameAction> actions = ref.getOngoingActions();
+        List<IGameAction> actions = ref.getOngoingActions();
     }
 
 
