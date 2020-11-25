@@ -4,7 +4,7 @@ Fish is a board game for two to four players.
 
 ###File Structure
 `/Admin` : Contains references to the interface for the tournament manager, the manager
- implementation and implementation of the Referee.
+ implementation, implementation of the Referee and interface of the game-visualizer.
 
 `/Planning` : Contains all self evaluations along with all memos to Dot Game CEOs for our design 
 plans regarding the interface and protocol of the game, referee, players, tournament manager, 
@@ -39,6 +39,12 @@ To run unit tests, go to the `Fish` directory (this directory) and run
 
 ```
 $  ./xtest
+```
+
+To run the test game gui for game observers from milestone 9, go to the `../9` directory and run the following command
+
+```
+$ ./xgui -np NATURAL (range 2-4)
 ```
 
 To run the testing harness for milestone 8, go to the `../8` directory and run the following, passing a Game-Description to STDIN:
