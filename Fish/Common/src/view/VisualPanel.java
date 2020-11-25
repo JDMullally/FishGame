@@ -1,22 +1,29 @@
 package view;
 
 import java.awt.*;
+import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.swing.*;
 
+import model.games.IGameResult;
 import model.state.IPenguin;
 import model.state.IPlayer;
 import model.state.ImmutableGameStateModel;
 import model.state.Penguin;
 import model.board.Tile;
+import model.state.Player;
+import model.tree.PlayerInterface;
 
 public class VisualPanel extends JPanel {
 
+    public static final int FONTSIZE = 20;
     private ImmutableGameStateModel immutableModel; // Immutable GameState
-    private List<Tile> targets; // current viable paths
-    private Tile origin;
+    private IGameResult gameResults;
 
     /**
      * Default constructor takes in an immutable model.
@@ -30,10 +37,10 @@ public class VisualPanel extends JPanel {
         }
 
         this.immutableModel = immutableModel;
-        this.targets = new ArrayList<>();
+        //this.targets = new ArrayList<>();
 
-        this.setBackground(new Color(150,150,150));
-        this.setBorder(BorderFactory.createMatteBorder(1,1,1,1, Color.BLACK));
+        this.setBackground(new Color(150, 150, 150));
+        this.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
     }
 
     @Override
@@ -42,9 +49,37 @@ public class VisualPanel extends JPanel {
 
         Graphics2D g2d = (Graphics2D) g;
 
-        // draws hexagons and fish
+        // draws hexagons, fish and penguins
+        if (this.gameResults == null) {
+            renderBoard(g2d);
+            renderPenguins(g2d);
+        } else {
+            renderGameResults(g2d);
+        }
+    }
+
+    /**
+     * Rends the Penguins for a game of fish
+     *
+     * @param g2d Graphics2D
+     */
+    private void renderPenguins(Graphics2D g2d) {
+        for (IPlayer players : this.immutableModel.getPlayers()) {
+            for (IPenguin penguin : players.getPenguins()) {
+                g2d.setColor(penguin.getColor());
+                g2d.fill(penguin.drawPenguin());
+            }
+        }
+    }
+
+    /**
+     * Renders the GameBoard for a game of Fish
+     *
+     * @param g2d Graphics2D
+     */
+    private void renderBoard(Graphics2D g2d) {
         for (Tile[] row : this.immutableModel.getGameBoard()) {
-            for (Tile tile: row) {
+            for (Tile tile : row) {
                 // draws hexagon
                 Polygon hexagon = tile.getVisualHexagon();
                 if (!tile.isEmpty()) {
@@ -56,7 +91,8 @@ public class VisualPanel extends JPanel {
                 }
 
                 g2d.setColor(new Color(0, 28, 150));
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
 
                 // draws fish
                 List<Shape> fishList = tile.getVisualFish();
@@ -65,36 +101,84 @@ public class VisualPanel extends JPanel {
                 }
             }
         }
+    }
 
-        // draws penguins
-        for (IPlayer players : this.immutableModel.getPlayers()) {
-            for (IPenguin penguin : players.getPenguins()) {
-                g2d.setColor(penguin.getColor());
-                g2d.fill(penguin.drawPenguin());
+    /**
+     * Renders the results of a Game of Fish
+     *
+     * @param g2d Graphics2D
+     */
+    private void renderGameResults(Graphics2D g2d) {
+        List<PlayerInterface> winners = gameResults.getWinners();
+        Map<PlayerInterface, Integer> map = new HashMap<>();
+        for (PlayerInterface winner : winners) {
+            map.put(winner, this.gameResults.getPlayerScore(winner));
+        }
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setColor(Color.black);
+        g2d.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, FONTSIZE));
+
+        renderWinners(g2d, winners, map);
+    }
+
+    /**
+     * Rends the winners in a Game of Fish
+     * @param g2d Graphics2D
+     * @param winners List of PlayerInterface
+     * @param map Map PlayerInterface (player) -> Integer (score)
+     */
+    private void renderWinners(Graphics2D g2d, List<PlayerInterface> winners,
+        Map<PlayerInterface, Integer> map) {
+        if (winners.size() > 1) {
+            int currentIndent = 4;
+            g2d.drawString("Winners",
+                immutableModel.getCanvas().getWidth() / 3,
+                immutableModel.getCanvas().getHeight() - currentIndent * FONTSIZE);
+            for (Entry<PlayerInterface, Integer> winner : map.entrySet()) {
+                currentIndent--;
+                g2d.drawString(
+                    buildString(winner),
+                    immutableModel.getCanvas().getWidth() / 3,
+                    immutableModel.getCanvas().getHeight()
+                        - currentIndent * FONTSIZE);
+            }
+        } else {
+            g2d.drawString("Winner",
+                immutableModel.getCanvas().getWidth() / 3,
+                immutableModel.getCanvas().getHeight() / 2 - FONTSIZE);
+            for (Entry<PlayerInterface, Integer> winner : map.entrySet()) {
+                g2d.drawString(
+                    buildString(winner),
+                    immutableModel.getCanvas().getWidth() / 3,
+                    immutableModel.getCanvas().getHeight() / 2);
             }
         }
+    }
 
-        // draws viable paths
-        g2d.setColor(Color.RED);
-        g2d.setStroke(new BasicStroke(2));
-            for (Tile target: this.targets) {
-                Point tileCenter1 = origin.getCenter();
-                Point tileCenter2 = target.getCenter();
-                g2d.drawLine(tileCenter1.x, tileCenter1.y, tileCenter2.x, tileCenter2.y);
-            }
+    String buildString(Entry<PlayerInterface, Integer> player) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(player.getKey().getPlayerID());
+        sb.append(": [Score: ");
+        sb.append(player.getValue());
+        sb.append("]");
+        sb.append("\n");
+        return sb.toString();
     }
 
     /**
      * Updates the model and repaints it
      *
      * @param immutableModel ImmutableGameStateModel
-     * @param targets potential paths
-     * @param origin origin Tile where all lines are drawn
      */
-    void update(ImmutableGameStateModel immutableModel, List<Tile> targets, Tile origin){
+    void update(ImmutableGameStateModel immutableModel) {
         this.immutableModel = immutableModel;
-        this.targets = targets;
-        this.origin = origin;
+        this.gameResults = null;
+        this.repaint();
+    }
+
+    void update(ImmutableGameStateModel immutableModel, IGameResult result) {
+        this.immutableModel = immutableModel;
+        this.gameResults = result;
         this.repaint();
     }
 

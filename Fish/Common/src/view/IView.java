@@ -5,6 +5,7 @@ import java.util.List;
 import javax.swing.*;
 
 import controller.IController;
+import model.games.IGameResult;
 import model.state.ImmutableGameStateModel;
 import model.board.Tile;
 
@@ -36,8 +37,13 @@ public interface IView {
      * Updates the view with the new immutable model and redraws the board
      *
      * @param immutableModel ImmutableGameStateModel
-     * @param targets potential paths
-     * @param origin origin Tile where all lines are drawn
      */
-    void update(ImmutableGameStateModel immutableModel, List<Tile> targets, Tile origin);
+    void update(ImmutableGameStateModel immutableModel);
+
+    /**
+     * Updates the view with the new immutable model where the game is over and
+     * @param immutableModel ImmutableGameStateModel
+     * @param result IGameResult
+     */
+    public void update(ImmutableGameStateModel immutableModel, IGameResult result);
 }

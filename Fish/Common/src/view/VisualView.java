@@ -6,7 +6,9 @@ import java.util.List;
 import javax.swing.*;
 
 import controller.IController;
-import model.board.Canvas;
+import model.board.ICanvas;
+import model.games.GameResult;
+import model.games.IGameResult;
 import model.state.ImmutableGameStateModel;
 import model.board.Tile;
 
@@ -24,7 +26,7 @@ public class VisualView extends JFrame implements IView {
 
         this.panel = new VisualPanel(immutableModel);
 
-        Canvas canvas = immutableModel.getCanvas();
+        ICanvas canvas = immutableModel.getCanvas();
         this.panel.setPreferredSize(new Dimension(canvas.getWidth(), canvas.getHeight()));
 
         JScrollPane scrollPane = new JScrollPane(this.panel);
@@ -54,7 +56,12 @@ public class VisualView extends JFrame implements IView {
     }
 
     @Override
-    public void update(ImmutableGameStateModel immutableModel, List<Tile> targets, Tile origin) {
-        this.panel.update(immutableModel, targets, origin);
+    public void update(ImmutableGameStateModel immutableModel) {
+        this.panel.update(immutableModel);
+    }
+
+    @Override
+    public void update(ImmutableGameStateModel immutableModel, IGameResult result) {
+        this.panel.update(immutableModel, result);
     }
 }
