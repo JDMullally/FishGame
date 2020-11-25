@@ -8,7 +8,9 @@ import model.games.IGameResult;
 import model.state.ImmutableGameState;
 import model.state.ImmutableGameStateModel;
 
-
+/**
+ * A GameVisualizer is an implementation of IGameVisualizer that we use to update an observers view.
+ */
 public class GameVisualizer implements IGameVisualizer {
 
     private ImmutableGameStateModel initialState;
@@ -17,6 +19,14 @@ public class GameVisualizer implements IGameVisualizer {
     private List<IGameAction> actions;
     private IGameResult result;
 
+    /**
+     * A constructor for a GameVisualizer. It takes in an intialState, list of IGameActions, IGameResults, and observers.
+     * It checks if the validity of all fields and throws an IllegalArgumentException if not.
+     * @param initialState
+     * @param actions
+     * @param result
+     * @param observers
+     */
     public GameVisualizer(ImmutableGameStateModel initialState,
         List<IGameAction> actions, IGameResult result, List<IGameObserver> observers) {
         if (initialState == null || actions == null || result == null  || observers == null) {

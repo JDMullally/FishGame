@@ -6,6 +6,9 @@ import model.state.ImmutableGameStateModel;
 import view.IView;
 import view.VisualView;
 
+/**
+ * A GameObserver is implementation of IGameObserver that creates an Observer for the game.
+ */
 public class GameObserver implements IGameObserver {
 
     private ImmutableGameStateModel currentState;

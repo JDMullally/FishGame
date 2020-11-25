@@ -19,6 +19,13 @@ public class VisualView extends JFrame implements IView {
 
     private VisualPanel panel;
 
+
+    /**
+     *A constructor of a VisualView
+     * It takes in an immutableModel that is not null and sets the JFrame for the Game.
+     *
+     * @param immutableModel
+     */
     public VisualView(ImmutableGameStateModel immutableModel) {
         if (immutableModel == null) {
             throw new IllegalArgumentException("Model can't be null.");

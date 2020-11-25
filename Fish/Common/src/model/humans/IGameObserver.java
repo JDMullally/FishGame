@@ -4,6 +4,11 @@ import model.games.IGameAction;
 import model.games.IGameResult;
 import model.state.ImmutableGameStateModel;
 
+/**
+ * An IGameObserver will be able to view the game based on the given state. It will get sent initial ImmutableGameStateModel,
+ * for a game run by a Referee, update the GameObserver with next Action to be performed on the current state, and the results of a game.
+ *
+ */
 public interface IGameObserver {
 
     /**

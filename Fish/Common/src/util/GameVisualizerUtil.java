@@ -21,6 +21,11 @@ import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
 
+/**
+ * A GameVisualizerUtil handles the functionality of the view for AI Players. It will generate a game based on the given
+ * args to generate the AI players. After it creates the AI players, it creates a Referee and starts a game. Observers will be
+ * allowed to view the game at any state.
+ */
 public class GameVisualizerUtil {
 
     private static int numPlayers;
@@ -33,6 +38,11 @@ public class GameVisualizerUtil {
         runGame(players);
     }
 
+    /**
+     * This function generates the AI players based on the colors given.
+     * @param colors
+     * @return
+     */
     private static List<PlayerInterface> generatePlayers(List<String> colors) {
         List<PlayerInterface> players = new ArrayList<>();
         for (int i = 0; i < numPlayers; i++) {
@@ -43,6 +53,14 @@ public class GameVisualizerUtil {
         return players;
     }
 
+    /**
+     * This function runs a single game. It takes in the list of PlayerInterfaces and creates a Referee.
+     * After a Game is complete, the IGameActions are stored in a list for future observers to view a given GameState.
+     * The visualizer will tell the observer to update their current GameState view after a brief delay.
+     *
+     * @param players
+     * @throws InterruptedException
+     */
     public static void runGame(List<PlayerInterface> players) throws InterruptedException {
         Referee ref = new Referee(players, 4,4);
 
@@ -64,7 +82,11 @@ public class GameVisualizerUtil {
         System.exit(0);
     }
 
-
+    /**
+     * This function parses the given args.
+     * @param args
+     * @throws ArgumentParserException
+     */
     private static void parseArgs(String[] args) throws ArgumentParserException {
         ArgumentParser parser = ArgumentParsers.newArgumentParser("Main", true);
 

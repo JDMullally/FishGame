@@ -155,7 +155,13 @@ public class VisualPanel extends JPanel {
         }
     }
 
-    String buildString(Entry<PlayerInterface, Integer> player) {
+    /**
+     * Renders a player with their associated score
+     *
+     * @param player
+     * @return string
+     */
+    private String buildString(Entry<PlayerInterface, Integer> player) {
         StringBuilder sb = new StringBuilder();
         sb.append(player.getKey().getPlayerID());
         sb.append(": [Score: ");
@@ -176,6 +182,11 @@ public class VisualPanel extends JPanel {
         this.repaint();
     }
 
+    /**
+     * Updates the model when Game is over
+     * @param immutableModel
+     * @param result
+     */
     void update(ImmutableGameStateModel immutableModel, IGameResult result) {
         this.immutableModel = immutableModel;
         this.gameResults = result;
