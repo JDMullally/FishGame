@@ -46,19 +46,27 @@ public interface IReferee {
     IGameResult runGame();
 
     /**
-     * Returns the current GameState of the game the referee is supervising.
+     * Returns the initial state of the game the referee is supervising.
      *
      * @return IGameState
-     * @throws IllegalStateException If the game has not yet started
+     * @throws IllegalStateException If the IGameState has not been generated yet.
+     */
+    IGameState getInitialGameState() throws IllegalStateException;
+
+    /**
+     * Returns the current state of the game the referee is supervising.
+     *
+     * @return IGameState
+     * @throws IllegalStateException If the game hasn't started yet.
      */
     IGameState getGameState() throws IllegalStateException;
 
     /**
-     * Returns the most recent GameAction that has occurred in a Referee's Game.
+     * Returns a list of all recent GameAction that has occurred in a Referee's Game.
      *
-     * @return GameAction
+     * @return List of GameAction
      */
-    List<GameAction> getOngoingActions();
+    List<IGameAction> getOngoingActions();
 
     /**
      * Returns the Result of a Referee's Game.

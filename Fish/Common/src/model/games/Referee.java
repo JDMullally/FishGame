@@ -60,6 +60,7 @@ public class Referee implements IReferee {
     private final Map<Color, PlayerInterface> cheaters;
     private final List<GameAction> ongoingActions;
     private IGameTree gameTree;
+    private IGameState initialGameState;
     private IGameResult gameResult;
 
     /**
@@ -175,6 +176,7 @@ public class Referee implements IReferee {
 
         // creates game state
         IGameState gameState = new GameState(rows, columns, gameBoard.getGameBoard(), gamePlayers);
+        this.initialGameState = gameState;
         this.gameTree = new GameTree(gameState);
     }
 
@@ -279,16 +281,25 @@ public class Referee implements IReferee {
     }
 
     @Override
+    public IGameState getInitialGameState() throws IllegalStateException {
+        if (this.initialGameState == null) {
+            throw new IllegalStateException("The game has not started yet");
+        }
+
+        return this.initialGameState.clone();
+    }
+
+    @Override
     public IGameState getGameState() throws IllegalStateException {
         if (this.gameTree.getState() == null) {
             throw new IllegalStateException("The game has not started yet");
         }
 
-        return this.gameTree.getState();
+        return this.gameTree.getState().clone();
     }
 
     @Override
-    public List<GameAction> getOngoingActions() {
+    public List<IGameAction> getOngoingActions() {
         return new ArrayList<>(this.ongoingActions);
     }
 
