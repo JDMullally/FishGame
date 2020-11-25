@@ -1,5 +1,8 @@
 package model.games;
 
+import model.state.IGameState;
+import model.state.ImmutableGameState;
+import model.state.ImmutableGameStateModel;
 import model.tree.Action;
 
 /**
@@ -8,7 +11,7 @@ import model.tree.Action;
  * their turn, a player cheating, and a game ending. A GameAction also includes a toString
  * representation of a GameAction.
  */
-public class GameAction {
+public class GameAction implements IGameAction{
 
     private Action action;
 
@@ -28,6 +31,15 @@ public class GameAction {
     @Override
     public String toString() {
         return action.toString();
+    }
+
+    @Override
+    public ImmutableGameStateModel getNextState(ImmutableGameStateModel model) {
+        IGameState state = model.clone();
+
+        IGameState nextState = action.apply(state);
+
+        return new ImmutableGameState(nextState);
     }
 
     @Override
