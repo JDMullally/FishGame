@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import model.games.GameAction;
+import model.games.IGameAction;
 import model.games.IGameResult;
 import model.games.PlayerAI;
 import model.games.Referee;
-import model.state.IGameState;
+import model.humans.GameObserver;
+import model.humans.GameVisualizer;
+import model.humans.IGameObserver;
+import model.humans.IGameVisualizer;
 import model.state.ImmutableGameState;
 import model.state.ImmutableGameStateModel;
 import model.strategy.Strategy;
@@ -17,13 +20,10 @@ import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
-import view.IView;
-import view.VisualView;
 
-public class GameVisualizer {
+public class GameVisualizerUtil {
 
     private static int numPlayers;
-
 
     public static void main(String[] args) throws ArgumentParserException, InterruptedException {
         List<String> colors = Arrays.asList("Red", "White", "Brown", "Black");
@@ -46,36 +46,24 @@ public class GameVisualizer {
     public static void runGame(List<PlayerInterface> players) throws InterruptedException {
         Referee ref = new Referee(players, 4,4);
 
-        IGameState initialState = ref.getGameState();
-
-        ImmutableGameStateModel gameStateModel = new ImmutableGameState(initialState);
-
         ref.runGame();
-
-        List<GameAction> actions = ref.getOngoingActions();
-
+        List<IGameAction> actions = ref.getOngoingActions();
         IGameResult gameResult = ref.getGameResult();
+        ImmutableGameStateModel initial = new ImmutableGameState(ref.getInitialGameState());
 
-        renderGame(actions, gameStateModel, gameResult);
+        IGameObserver observer1 = new GameObserver();
+        List<IGameObserver> observers = new ArrayList<>();
+        observers.add(observer1);
 
-        //System.exit(0);
-    }
+        IGameVisualizer visualizer = new GameVisualizer(initial, actions, gameResult, observers);
 
-    private static void renderGame(List<GameAction> actions, ImmutableGameStateModel gameStateModel,
-        IGameResult gameResult) throws InterruptedException {
-        IView view = new VisualView(gameStateModel);
-        view.makeVisible();
+        visualizer.sendGame();
 
-        for (GameAction action: actions) {
-            TimeUnit.MILLISECONDS.sleep(500);
-            gameStateModel = gameStateModel.getNextGameState(action);
-            view.update(gameStateModel);
-        }
-
-        view.update(gameStateModel, gameResult);
         TimeUnit.SECONDS.sleep(3);
-        //System.exit(0);
+
+        System.exit(0);
     }
+
 
     private static void parseArgs(String[] args) throws ArgumentParserException {
         ArgumentParser parser = ArgumentParsers.newArgumentParser("Main", true);
