@@ -14,6 +14,7 @@ and/or player-interface modules:
 
 2. for game observers, point the TA to
    - the `game-observer` interface that observers implement 
+   https://github.ccs.neu.edu/CS4500-F20/unionridge/blob/a64abb1e1dcc31773b9617a89bc54eb495768653/Fish/Common/src/model/humans/GameObserver.java#L12
    - the point where the `referee` consumes observers 
    - the callback from `referee` to observers concerning turns
 
