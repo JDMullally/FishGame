@@ -18,8 +18,9 @@ import model.tree.PlayerInterface;
 
 public class TournamentManager implements ManagerInterface {
 
-  private final static int BOARD_ROWS = 4;
-  private final static int BOARD_COLUMNS = 4;
+  private final static int BOARD_ROWS = 5;
+  private final static int BOARD_COLUMNS = 5;
+  private final static int FISH = 2;
   private final Map<Integer, List<IGameResult>> roundResultMap;
   private final List<PlayerInterface> eliminatedPlayers;
   private final List<PlayerInterface> cheaters;
@@ -38,7 +39,7 @@ public class TournamentManager implements ManagerInterface {
     this.round = 0;
     this.roundResultMap = new HashMap<>();
     this.previousWinners = new ArrayList<>();
-    this.timeout = 5;
+    this.timeout = 1;
     this.remainingPlayers = this.orderByAge(new ArrayList<>(tournamentPlayers));
     this.eliminatedPlayers = new ArrayList<>();
     this.cheaters = new ArrayList<>();
@@ -173,7 +174,7 @@ public class TournamentManager implements ManagerInterface {
     this.informPlayers(group, PlayerInterface::gameHasStarted);
 
     // Run the game
-    IReferee referee = new Referee(group, BOARD_ROWS, BOARD_COLUMNS);
+    IReferee referee = new Referee(group, BOARD_ROWS, BOARD_COLUMNS, FISH);
     IGameResult gameResult = referee.runGame();
 
     // Inform player game is over
