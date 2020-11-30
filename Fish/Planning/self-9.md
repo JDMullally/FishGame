@@ -23,6 +23,15 @@ and/or player-interface modules:
    - the point where the `manager` consumes observers 
    - the callback to observes concerning the results of rounds 
 
+Our Game Visualizer consumes a list of observers and updates the observer on every action done by the state concering rounds.
+
+Here is where we consume the list of observers 
+
+https://github.ccs.neu.edu/CS4500-F20/unionridge/blob/a64abb1e1dcc31773b9617a89bc54eb495768653/Fish/Common/src/model/humans/GameVisualizer.java#L30
+
+Here is where we update the observer based on action
+
+https://github.ccs.neu.edu/CS4500-F20/unionridge/blob/a64abb1e1dcc31773b9617a89bc54eb495768653/Fish/Common/src/model/humans/GameVisualizer.java#L69
 
 Do not forget to meet the assigned TA for a demo; see bottom.  If the
 TA's office hour overlaps with other obligations, sign up for a 1-1.
