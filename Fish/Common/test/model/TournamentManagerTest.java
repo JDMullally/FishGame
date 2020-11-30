@@ -370,6 +370,11 @@ public class TournamentManagerTest {
       expectedRemaining.addAll(result.getWinners());
     }
 
+    expectedCheaters.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
+    expectedEliminated.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
+    expectedRemaining.sort(Comparator.comparing(PlayerInterface::getPlayerAge));
+
+
     List<PlayerInterface> actualCheaters =
         this.tournamentManager.getTournamentStatistics().get(PlayerStanding.CHEATER);
     List<PlayerInterface> actualEliminated =
