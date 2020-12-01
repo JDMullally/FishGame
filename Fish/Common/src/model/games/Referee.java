@@ -1,9 +1,8 @@
 package model.games;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -11,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -104,22 +102,45 @@ public class Referee implements IReferee {
             switch (i) {
                 case 0:
                     mappedPlayers.put(Color.RED, players.get(i));
+                    players.get(i).playerColor(Color.RED);
                     break;
                 case 1:
                     mappedPlayers.put(Color.WHITE, players.get(i));
+                    players.get(i).playerColor(Color.WHITE);
                     break;
                 case 2:
                     mappedPlayers.put(new Color(210, 105, 30), players.get(i));
+                    players.get(i).playerColor(new Color(210, 105, 30));
                     break;
                 case 3:
                     mappedPlayers.put(Color.BLACK, players.get(i));
+                    players.get(i).playerColor(Color.BLACK);
                     break;
                 default:
                     throw new IllegalArgumentException("There should not be more than 4 players");
             }
         }
 
+        this.informPlayersOfOtherPlayers(mappedPlayers);
+
         return mappedPlayers;
+    }
+
+    private void informPlayersOfOtherPlayers(Map<Color, PlayerInterface> mappedPlayers) {
+        for (Entry<Color, PlayerInterface> entry : mappedPlayers.entrySet()) {
+            entry.getValue().otherPlayerColors(this.getOtherColors(entry.getKey()));
+        }
+    }
+
+
+    private List<Color> getOtherColors(Color color) {
+        List<Color> colors = new ArrayList<>();
+        colors.add(Color.RED);
+        colors.add(Color.WHITE);
+        colors.add(new Color(210, 105, 30));
+        colors.add(Color.BLACK);
+        colors.remove(color);
+        return colors;
     }
 
     /**

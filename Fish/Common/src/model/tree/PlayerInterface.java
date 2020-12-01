@@ -1,5 +1,7 @@
 package model.tree;
 
+import java.awt.Color;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 import model.games.IGameResult;
 import model.state.IGameState;
@@ -77,4 +79,18 @@ public interface PlayerInterface {
      * @return boolean for confirmation that player has received the message
      */
     boolean tournamentResults(boolean youWon);
+
+    /**
+     * informs the player of their current color in a game of Fish.
+     *
+     * @param color the color for this player interface
+     */
+    void playerColor(Color color);
+
+    /**
+     * Informs the player of the colors of other players in a game of Fish.
+     *
+     * @param otherPlayers
+     */
+    void otherPlayerColors(List<Color> otherPlayers);
 }

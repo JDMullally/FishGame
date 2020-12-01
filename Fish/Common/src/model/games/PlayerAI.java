@@ -1,5 +1,7 @@
 package model.games;
 
+import java.awt.Color;
+import java.util.List;
 import model.state.IGameState;
 import model.strategy.IStrategy;
 import model.tree.Action;
@@ -87,6 +89,12 @@ public class PlayerAI implements PlayerInterface {
     public boolean tournamentResults(boolean youWon) {
         return true;
     }
+
+    @Override
+    public void playerColor(Color color) { }
+
+    @Override
+    public void otherPlayerColors(List<Color> otherPlayers) { }
 
     @Override
     public boolean equals(Object o) {
