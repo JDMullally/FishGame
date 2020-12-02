@@ -327,9 +327,17 @@ public class Referee implements IReferee {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<Action> future = executor.submit(task);
 
+        List<PlayerInterface> otherPlayers = new ArrayList<>(this.players.values());
+        otherPlayers.remove(curPlayerInterface);
+
         // allow the player to move based on their strategy
         try {
             Action action = future.get(this.timeout, TimeUnit.SECONDS);
+
+            for (PlayerInterface player : otherPlayers) {
+                player.getOnGoingAction(action);
+            }
+
             newGameState = this.gameTree.queryAction(this.gameTree.getState(), action);
             executor.shutdownNow();
 
@@ -337,6 +345,10 @@ public class Referee implements IReferee {
         } catch (Exception e) {
             executor.shutdownNow();
             newGameState = this.playerCheated(curPlayer, curPlayerInterface);
+
+            for (PlayerInterface player : otherPlayers) {
+                player.clearOnGoingAction();
+            }
         }
         return newGameState;
     }
