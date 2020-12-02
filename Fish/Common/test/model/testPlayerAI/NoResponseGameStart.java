@@ -1,5 +1,7 @@
 package model.testPlayerAI;
 
+import java.awt.Color;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 import model.games.IGameResult;
 import model.state.IGameState;
@@ -60,5 +62,25 @@ public class NoResponseGameStart implements PlayerInterface {
     @Override
     public boolean tournamentResults(boolean youWon) {
         return false;
+    }
+
+    @Override
+    public void playerColor(Color color) {
+
+    }
+
+    @Override
+    public void otherPlayerColors(List<Color> otherPlayers) {
+
+    }
+
+    @Override
+    public void getOnGoingAction(Action action) {
+
+    }
+
+    @Override
+    public void clearOnGoingAction() {
+
     }
 }
