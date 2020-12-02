@@ -157,6 +157,7 @@ public class Referee implements IReferee {
             Color color = entry.getKey();
 
             Callable<Boolean> task = new Callable<Boolean>() {
+                @Override
                 public Boolean call() throws TimeoutException {
                     player.otherPlayerColors(getOtherColors(color));
                     return true;
