@@ -102,19 +102,20 @@ public class Referee implements IReferee {
             switch (i) {
                 case 0:
                     mappedPlayers.put(Color.RED, players.get(i));
-                    players.get(i).playerColor(Color.RED);
+                    informPlayersOfColor(Color.RED, players.get(i));
                     break;
                 case 1:
                     mappedPlayers.put(Color.WHITE, players.get(i));
-                    players.get(i).playerColor(Color.WHITE);
+                    informPlayersOfColor(Color.WHITE, players.get(i));
                     break;
                 case 2:
-                    mappedPlayers.put(new Color(210, 105, 30), players.get(i));
-                    players.get(i).playerColor(new Color(210, 105, 30));
+                    Color brown = new Color(210, 105, 30);
+                    mappedPlayers.put(brown, players.get(i));
+                    informPlayersOfColor(brown, players.get(i));
                     break;
                 case 3:
                     mappedPlayers.put(Color.BLACK, players.get(i));
-                    players.get(i).playerColor(Color.BLACK);
+                    informPlayersOfColor(Color.BLACK, players.get(i));
                     break;
                 default:
                     throw new IllegalArgumentException("There should not be more than 4 players");
@@ -126,13 +127,67 @@ public class Referee implements IReferee {
         return mappedPlayers;
     }
 
+    /**
+     * Implements a callable that calls playerColor that informs a player of their own
+     * color. The callable has a set timeout, but in this implementation it is one second.
+     *
+     * @param color Color of the player
+     * @param player PlayerInterface that is being informed
+     */
+
+    private void informPlayersOfColor(Color color, PlayerInterface player) {
+        Callable<Boolean> task = new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                player.playerColor(color);
+                return true;
+            }};
+        executeTask(task);
+    }
+
+    /**
+     * Implements a callable that calls otherPlayerColors that informs a player of the other player
+     * colors. The callable has a set timeout, but in this implementation it is one second.
+     *
+     * @param mappedPlayers a map of all Players in the Game and their Colors.
+     */
     private void informPlayersOfOtherPlayers(Map<Color, PlayerInterface> mappedPlayers) {
         for (Entry<Color, PlayerInterface> entry : mappedPlayers.entrySet()) {
-            entry.getValue().otherPlayerColors(this.getOtherColors(entry.getKey()));
+            PlayerInterface player = entry.getValue();
+            Color color = entry.getKey();
+
+            Callable<Boolean> task = new Callable<Boolean>() {
+                public Boolean call() throws TimeoutException {
+                    player.otherPlayerColors(getOtherColors(color));
+                    return true;
+                }};
+
+            executeTask(task);
         }
     }
 
+    /**
+     * Executes a callable with a SingleThreadExecutor.  Once the task is complete or times out,
+     * the thread executor is shutdown.
+     *
+     * @param task Callable task that is being executed.
+     */
+    private void executeTask(Callable<Boolean> task) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Boolean> future = executor.submit(task);
+        try {
+            future.get(this.timeout, TimeUnit.SECONDS);
+            executor.shutdownNow();
+        } catch (Exception e) {
+            executor.shutdownNow();
+        }
+    }
 
+    /**
+     * Gets all other class
+     * @param color
+     * @return
+     */
     private List<Color> getOtherColors(Color color) {
         List<Color> colors = new ArrayList<>();
         colors.add(Color.RED);
@@ -201,7 +256,6 @@ public class Referee implements IReferee {
         this.gameTree = new GameTree(gameState);
     }
 
-    // TODO make methods consistent on whether they directly mutate gamestate or return it
     /**
      * Runs a single Placement Turn and returns the new state after the move is made.
      *
