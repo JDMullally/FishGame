@@ -1,5 +1,5 @@
 package model.server;
 
-public class TournamenProxy {
+public class TournamentProxy {
 
 }
