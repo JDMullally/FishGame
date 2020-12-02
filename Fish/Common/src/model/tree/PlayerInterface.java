@@ -93,4 +93,16 @@ public interface PlayerInterface {
      * @param otherPlayers
      */
     void otherPlayerColors(List<Color> otherPlayers);
+
+    /**
+     * Informs the player of the most recent action
+     *
+     * @param action
+     */
+    void getOnGoingAction(Action action);
+
+    /**
+     * Informs the players that they should clear their most recent actions.
+     */
+    void clearOnGoingAction();
 }
