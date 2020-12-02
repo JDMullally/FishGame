@@ -97,6 +97,12 @@ public class PlayerAI implements PlayerInterface {
     public void otherPlayerColors(List<Color> otherPlayers) { }
 
     @Override
+    public void getOnGoingAction(Action action) { }
+
+    @Override
+    public void clearOnGoingAction() { }
+
+    @Override
     public boolean equals(Object o) {
         if (o instanceof PlayerAI) {
             PlayerAI other = (PlayerAI) o;
