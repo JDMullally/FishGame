@@ -8,33 +8,28 @@ import java.net.Socket;
 import java.util.List;
 import model.state.IGameState;
 import model.tree.Action;
+import model.tree.PlayerInterface;
 
-public class Client extends Thread {
+public class Client {
 
     protected Socket socket;
-    private final int age;
-    private String id;
     private InputStream inStream;
     private OutputStream outStream;
+    private PlayerInterface playerInterface;
+    private int age;
 
     public Client(Socket clientSocket, int age) throws IOException {
         this.socket = clientSocket;
-        this.age = age;
         this.inStream = socket.getInputStream();
         this.outStream = socket.getOutputStream();
+        this.age = age;
     }
 
-    public void start(boolean start) {
+    public void start(boolean start) { }
 
-    }
+    public void playingAs(Color color) { }
 
-    public void playingAs(Color color) {
-
-    }
-
-    public void playingWith(List<Color> otherPlayers) {
-
-    }
+    public void playingWith(List<Color> otherPlayers) { }
 
     public Action setUp(IGameState state) {
         return null;
@@ -44,15 +39,13 @@ public class Client extends Thread {
         return null;
     }
 
-    public void end(boolean win) {
-
-    }
+    public void end(boolean win) { }
 
     public int getAge() {
         return this.age;
     }
 
     public String getID() {
-        return this.id;
+        return "Remote Player";
     }
 }
