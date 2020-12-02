@@ -107,7 +107,7 @@ public class ClientProxy implements PlayerInterface {
 
             if(this.jsonStreamParser.hasNext()) {
                 JsonElement element = this.jsonStreamParser.next();
-                return util.toPlacementAction(element, state);
+                return util.toMoveAction(element, state);
             }
         } catch (IOException e) {
             return null;
@@ -125,7 +125,7 @@ public class ClientProxy implements PlayerInterface {
         return this.name;
     }
 
-    //TODO
+
     @Override
     public boolean tournamentHasStarted() {
         try {
@@ -198,6 +198,12 @@ public class ClientProxy implements PlayerInterface {
 
     @Override
     public void getOnGoingAction(Action action) {
-
+        this.observedActions.add(action);
     }
+
+    @Override
+    public void clearOnGoingAction() {
+        this.observedActions = new ArrayList<>();
+    }
+
 }
