@@ -1,9 +1,10 @@
-package model.server;
+package model;
 
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import model.games.PlayerAI;
+import model.server.ClientInterface;
 import model.state.GameState;
 import model.state.IGameState;
 import model.state.IPenguin;
@@ -32,7 +33,7 @@ public class ClientTest {
     {
       "color": "white",
       "score": 0,
-      "places": [[1, 0], [3, 3], [2, 0], [2, 1]]
+      "places": [[2, 2], [3, 3], [2, 0], [2, 1]]
     }
   ],
   "board":  [
@@ -142,8 +143,8 @@ public class ClientTest {
         JsonArray pos13 = new JsonArray();
 
 
-        pos11.add(1);
-        pos11.add(0);
+        pos11.add(2);
+        pos11.add(2);
 
         pos12.add(3);
         pos12.add(3);
