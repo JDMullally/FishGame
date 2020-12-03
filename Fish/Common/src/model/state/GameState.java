@@ -104,8 +104,19 @@ public class GameState extends GameBoard implements IGameState {
 
         this.players = this.jsonToPlayers(players);
         this.cheaters = 0;
+        for (IPlayer player : this.players) {
+            if (player.getScore() > 0) {
+                int numPenguins = player.getPenguins().size();
+                int numPlayers = players.size();
 
+                if (numPenguins != (6 - numPlayers)) {
+                    this.cheaters = (6 - numPlayers) - numPenguins;
+                    System.out.println("Made it here");
+                }
+            }
+        }
         this.validateInitialPlayers();
+        System.out.println(this.cheaters);
     }
 
     /**
@@ -121,6 +132,7 @@ public class GameState extends GameBoard implements IGameState {
             JsonObject jsonPlayer = jsonArray.get(i).getAsJsonObject();
             JsonArray jsonPenguins = jsonPlayer.get("places").getAsJsonArray();
             String strColor = jsonPlayer.get("color").toString();
+            int score = jsonPlayer.get("score").getAsInt();
 
             Color color = ColorUtil.toColor(strColor);
 
@@ -132,7 +144,7 @@ public class GameState extends GameBoard implements IGameState {
                 penguins.add(new Penguin(color, point));
             }
 
-            players.add(new Player(color, i + 1, penguins));
+            players.add(new Player(color, i + 1, penguins, score));
         }
 
         return players;
@@ -505,6 +517,7 @@ public class GameState extends GameBoard implements IGameState {
             this.validatePlayers();
             return true;
         } catch (Exception e) {
+            //e.printStackTrace();
             return false;
         }
     }
