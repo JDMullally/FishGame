@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.awt.Point;
 import java.util.List;
-import model.state.GameState;
 import model.state.IGameState;
 import model.state.IPenguin;
 import model.state.IPlayer;
