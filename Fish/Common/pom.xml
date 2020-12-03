@@ -53,6 +53,7 @@
                     <forkCount>0</forkCount>
                     <!-- Instruct Surefire to run each test class one after another in the same JVM forks (which there are none now, so it's running in the main process.)-->
                     <reuseForks>true</reuseForks>
+                    <runOrder>alphabetical</runOrder>
                 </configuration>
             </plugin>
 
