@@ -340,15 +340,13 @@ public class Referee implements IReferee {
 
             newGameState = this.gameTree.queryAction(this.gameTree.getState(), action);
             executor.shutdownNow();
-
+            for (PlayerInterface player : otherPlayers) {
+                player.getOnGoingAction(action);
+            }
             this.ongoingActions.add(new GameAction(action));
         } catch (Exception e) {
             executor.shutdownNow();
             newGameState = this.playerCheated(curPlayer, curPlayerInterface);
-
-            for (PlayerInterface player : otherPlayers) {
-                player.clearOnGoingAction();
-            }
         }
         return newGameState;
     }
@@ -362,6 +360,14 @@ public class Referee implements IReferee {
     private IGameState playerCheated(IPlayer curPlayer, PlayerInterface curPlayerInterface) {
         Action action = new PlayerCheated(curPlayer);
         IGameState newGameState = action.apply(this.gameTree.getState());
+
+        List<PlayerInterface> otherPlayers = new ArrayList<>(this.players.values());
+        otherPlayers.remove(curPlayerInterface);
+
+        for (PlayerInterface player : otherPlayers) {
+            player.clearOnGoingAction();
+        }
+
         this.players.remove(curPlayer.getColor());
         this.cheaters.put(curPlayer.getColor(), curPlayerInterface);
         this.ongoingActions.add(new GameAction(action));
