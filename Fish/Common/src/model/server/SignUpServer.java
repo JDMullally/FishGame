@@ -14,7 +14,7 @@ import model.tournament.PlayerStanding;
 import model.tournament.TournamentManager;
 import model.tree.PlayerInterface;
 
-public class SignUpServer {
+public class SignUpServer implements Server {
 
     private static final int PORT = 4567;
     private final int  MAX_PLAYERS = 10;
@@ -24,14 +24,15 @@ public class SignUpServer {
     private ServerSocket server;
     private List<PlayerInterface> proxyPlayerList;
 
-    private SignUpServer(int port) throws IOException {
+    public SignUpServer(int port) throws IOException {
         this.proxyPlayerList = new ArrayList<>();
         this.server = new ServerSocket(port);
         this.signUp();
         List<PlayerInterface> result = this.sendToTournamentManager();
     }
 
-    private void signUp() throws IOException {
+    @Override
+    public void signUp() throws IOException {
         int count = 0;
         int repeat = 0;
         while (repeat < 2) {
@@ -55,10 +56,11 @@ public class SignUpServer {
             }
             repeat++;
         }
-        this.server.setSoTimeout(this.infiniteTimout);
+        //this.server.setSoTimeout(this.infiniteTimout);
     }
 
-    private List<PlayerInterface> sendToTournamentManager() {
+    @Override
+    public List<PlayerInterface> sendToTournamentManager() {
         ManagerInterface tournament = new TournamentManager(this.proxyPlayerList);
         List<PlayerInterface> winners = tournament.runTournament();
         tournament.getTournamentStatistics().get(PlayerStanding.CHEATER);
