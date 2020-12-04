@@ -208,12 +208,7 @@ public class ClientTest {
         IGameState state = util.JsonToGameState(this.state.get("board").getAsJsonArray(),
             this.state.get("players").getAsJsonArray());
 
-        System.out.println("Over?: " + state.isGameOver());
-        System.out.println("Ready?: " + state.isGameReady());
-
-        System.out.println(state.getPlayers());
-
-        System.out.println(state);
+       assertTrue(state.isGameReady());
 
     }
 
