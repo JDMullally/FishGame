@@ -141,6 +141,7 @@ public class Client implements ClientInterface {
         return action;
     }
 
+    //TODO close thread
     @Override
     public void endTournament(JsonArray parameters) { }
 
