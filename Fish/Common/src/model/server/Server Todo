@@ -1,0 +1,10 @@
+Todo :
+
+[ ] Have Client extend a Thread and implement run method
+
+[ ] Implement ClientMain
+
+[ ] add DataOutputStreamer and DataInputStreamer to all method calls for Client and ClientProxy and
+use Gson object to parse.
+
+[ ] create runnables xserver and xclient
