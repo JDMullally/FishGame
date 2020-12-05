@@ -1,25 +1,24 @@
 package model.server;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import constants.Constants;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.List;
+import model.state.IPlayer;
 import model.tree.Action;
 import model.state.IGameState;
 import util.PlayerUtil;
 import model.tree.PlayerInterface;
 
-public class Client implements ClientInterface {
+public class Client extends Thread implements ClientInterface {
 
     private InetAddress ip;
     private PlayerInterface player;
@@ -29,9 +28,9 @@ public class Client implements ClientInterface {
     private InputStream is;
     private DataInputStream dis;
     private DataOutputStream dos;
-    private JsonWriter writer;
-    private JsonReader reader;
     private PlayerUtil util;
+    private boolean running;
+    private Gson gson;
 
     public Client(int port, InetAddress ip, PlayerInterface player) throws IOException {
         if (player == null) {
@@ -41,17 +40,15 @@ public class Client implements ClientInterface {
         this.port = port;
         this.player = player;
         this.socket = new Socket(this.ip, this.port);
+        System.out.println("connected to " + this.socket.getPort() + " at " + this.socket.getLocalPort());
         this.is = this.socket.getInputStream();
         this.os = this.socket.getOutputStream();
         this.dis = new DataInputStream(this.is);
         this.dos = new DataOutputStream(this.os);
-
-        InputStreamReader isr = new InputStreamReader(is);
-        OutputStreamWriter osw = new OutputStreamWriter(os);
-
-        this.writer = new JsonWriter(osw);
-        this.reader = new JsonReader(isr);
         this.util = new PlayerUtil();
+        this.running = true;
+        this.gson = new Gson();
+        this.start();
     }
 
     /**
@@ -64,6 +61,21 @@ public class Client implements ClientInterface {
         this(port, InetAddress.getByAddress("localhost", new byte[]{127, 0, 0, 1}), player);
     }
 
+    @Override
+    public void run() {
+        while (this.running) {
+            try {
+                //this.sendName();
+                String message = this.dis.readUTF();
+                JsonArray function = this.gson.fromJson(message, JsonArray.class);
+                this.checkMethod(function);
+            } catch (IOException e) {
+                throw new RuntimeException(e.getMessage());
+            }
+
+        }
+    }
+
     /**
      * Testing constructor
      * @param player
@@ -74,22 +86,29 @@ public class Client implements ClientInterface {
     }
 
     @Override
-    public void checkMethod(JsonArray functionObject) {
+    public void checkMethod(JsonArray functionObject) throws IOException {
         String function = functionObject.get(0).getAsString();
         JsonArray parameters = functionObject.get(1).getAsJsonArray();
+
         switch (function) {
             case Constants.startTournament:
                 this.startTournament(parameters);
+                break;
             case Constants.playAs:
                 this.playingAs(parameters);
+                break;
             case Constants.playWith:
                 this.playingWith(parameters);
+                break;
             case Constants.setup:
                 this.setUp(parameters);
+                break;
             case Constants.takeTurn:
                 this.takeTurn(parameters);
+                break;
             case Constants.end:
                 this.endTournament(parameters);
+                break;
             default:
                 throw new IllegalArgumentException("Should have never gotten here");
         }
@@ -97,7 +116,7 @@ public class Client implements ClientInterface {
 
     @Override
     public void startTournament(JsonArray parameters) {
-
+        boolean bool = parameters.get(0).getAsBoolean();
     }
 
     @Override
@@ -109,47 +128,80 @@ public class Client implements ClientInterface {
     public void playingWith(JsonArray parameters) { }
 
     @Override
-    public JsonArray setUp(JsonArray parameters) {
+    public JsonArray setUp(JsonArray parameters) throws IOException {
         JsonObject object = parameters.get(0).getAsJsonObject();
         JsonArray board = object.get("board").getAsJsonArray();
         JsonArray players = object.get("players").getAsJsonArray();
         IGameState state = util.JsonToGameState(board, players);
+
+        System.out.println(this.getName() + " Setup");
+        System.out.println("*************************************************");
+        System.out.println(state);
+        List<IPlayer> gamePlayers = state.getPlayers();
+        for (IPlayer player : gamePlayers) {
+            System.out.println(player+ " : " + player.getPenguins());
+        }
+        System.out.println(state.isGameReady());
+        System.out.println("*************************************************");
+        System.out.println();
+
 
         Action move = null;
         try {
             move = this.player.placePenguin(state);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
 
         assert move != null;
         JsonArray placement = this.util.pointToJson(move.getToPosition());
+        this.dos.writeUTF(gson.toJson(placement));
         return placement;
     }
 
     @Override
-    public JsonArray takeTurn(JsonArray parameters) {
+    public JsonArray takeTurn(JsonArray parameters) throws IOException {
         JsonObject object = parameters.get(0).getAsJsonObject();
-        JsonArray board = object.get("board").getAsJsonArray();
         JsonArray players = object.get("players").getAsJsonArray();
+        JsonArray board = object.get("board").getAsJsonArray();
         IGameState state = util.JsonToGameState(board, players);
+
+        System.out.println();
+        System.out.println(this.getName() + " TakeTurn");
+        System.out.println("*************************************************");
+        System.out.println(state);
+        List<IPlayer> gamePlayers = state.getPlayers();
+        for (IPlayer player : gamePlayers) {
+            System.out.println(player+ " : " + player.getPenguins());
+        }
+        System.out.println(state.isGameReady());
+        System.out.println("*************************************************");
+        System.out.println();
 
         Action move = null;
         try {
             move = this.player.movePenguin(state);
-        } catch (Exception e) { }
-
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
         JsonArray action = this.util.moveToJson(move);
+        this.dos.writeUTF(gson.toJson(action));
         return action;
     }
 
-    //TODO close thread
-    @Override
-    public void endTournament(JsonArray parameters) { }
 
     @Override
-    public String sendName() {
+    public void endTournament(JsonArray parameters) throws IOException {
+        this.running = false;
+        this.socket.close();
+        this.interrupt();
+    }
+
+    @Override
+    public String sendName() throws IOException {
         // send this
         String str = this.player.getPlayerID();
-        // send this
+        this.dos.writeUTF(str);
         return str;
 
     }
