@@ -3,6 +3,7 @@ package model.server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.io.IOException;
 
 /**
  * Represents interface of Client and describes how the client sends information back and forth
@@ -17,7 +18,7 @@ public interface ClientInterface {
      *
      * @param functionObject is the Json Object that represents a function message from the server.
      */
-    void checkMethod(JsonArray functionObject);
+    void checkMethod(JsonArray functionObject) throws IOException;
 
     /**
      * This method is called if the function Object from the server is the start function. It takes
@@ -55,8 +56,9 @@ public interface ClientInterface {
      *
      * @param parameters a JsonArray that represents all of the parameters sent with this function
      * @return JsonArray that represents a Position as specified in the Fish Specifications.
+     * @throws IOException if communication is cut short due to a timeout
      */
-    JsonArray setUp(JsonArray parameters);
+    JsonArray setUp(JsonArray parameters) throws IOException;
 
     /**
      * This method is called if the function Object from the server is the take-turn function. It
@@ -65,8 +67,9 @@ public interface ClientInterface {
      *
      * @param parameters a JsonArray that represents all of the parameters sent with this function
      * @return JsonArray that represents an Action as specified in the Fish Specifications.
+     * @throws IOException if communication is cut short due to a timeout
      */
-    JsonArray takeTurn(JsonArray parameters);
+    JsonArray takeTurn(JsonArray parameters) throws IOException;
 
     /**
      * This method is called if the function Object from the server is the end function. It takes in
@@ -74,7 +77,7 @@ public interface ClientInterface {
      *
      * @param parameters a JsonArray that represents all of the parameters sent with this function
      */
-    void endTournament(JsonArray parameters);
+    void endTournament(JsonArray parameters) throws IOException;
 
     /**
      * This method is called after the remote Player is created to give the server their user ID.
@@ -82,6 +85,6 @@ public interface ClientInterface {
      *
      * @return String that is equivalent to that sent name
      */
-    String sendName();
+    String sendName() throws IOException;
 
 }
