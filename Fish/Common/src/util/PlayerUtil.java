@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.awt.Point;
 import java.util.List;
+import model.state.GameState;
 import model.state.IGameState;
 import model.state.IPenguin;
 import model.state.IPlayer;
@@ -24,8 +25,43 @@ public class PlayerUtil {
        return this.stateUtil.GameStateToJson(gameState);
     }
 
-    public IGameState JsonToGameState(JsonArray board, JsonArray players) {
-        return this.stateUtil.JsonToGameState(board, players);
+
+    /**
+     * Takes in a JSON reprentation of a GameState and returns an IGameState.
+     *
+     * @param board Json representation of a board
+     * @param players Json representation of players
+     * @return the GameState created with the JsonObject
+     */
+    public IGameState JsonToGameStateMovement(JsonArray board, JsonArray players) {
+        int rows = board.size();
+
+        int columns = 0;
+
+        for (JsonElement row : board) {
+            columns = Math.max(columns, row.getAsJsonArray().size());
+        }
+
+        return new GameState(rows, columns, board, players, true);
+    }
+
+    /**
+     * Takes in a JSON reprentation of a GameState and returns an IGameState.
+     *
+     * @param board Json representation of a board
+     * @param players Json representation of players
+     * @return the GameState created with the JsonObject
+     */
+    public IGameState JsonToGameStatePlacement(JsonArray board, JsonArray players) {
+        int rows = board.size();
+
+        int columns = 0;
+
+        for (JsonElement row : board) {
+            columns = Math.max(columns, row.getAsJsonArray().size());
+        }
+
+        return new GameState(rows, columns, board, players, false);
     }
 
     public JsonArray GameActionsToJson(List<Action> actions) {
@@ -71,7 +107,6 @@ public class PlayerUtil {
             }
             assert playerPenguin != null;
             Action move = new MovePenguin(player, playerPenguin, to);
-            System.out.println(move);
             return move;
         } catch (Exception e) {
             return null;
