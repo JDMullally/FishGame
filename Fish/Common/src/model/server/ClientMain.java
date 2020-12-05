@@ -1,11 +1,10 @@
 package model.server;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import model.games.PlayerAI;
+import model.strategy.IStrategy;
 import model.strategy.Strategy;
 import model.tree.PlayerInterface;
 
@@ -29,18 +28,10 @@ public class ClientMain {
         }
         */
         List<Client> clients = new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-
-            InetAddress ip = InetAddress.getByName("localhost");
-
+        for (int i = 0; i < 10; i++) {
             PlayerInterface player = new PlayerAI(new Strategy(), 2);
-
             Client newClient = new Client(5056, player);
-
             clients.add(newClient);
         }
-        System.out.println(clients);
-
-
     }
 }
