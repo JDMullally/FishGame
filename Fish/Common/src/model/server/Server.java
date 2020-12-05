@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.util.List;
 import model.tree.PlayerInterface;
 
+
 /**
- *
+ * Represents a Game Server that signs up players based on the Fish Remote Interaction Protocol and
+ * runs a game using that
  */
 public interface Server {
 
@@ -25,17 +27,15 @@ public interface Server {
      * If there are not a sufficient number of clients signed up at the end of the waiting period,
      * the server shuts down without running a tournament.
      */
-    void signUp() throws IOException;
+    List<PlayerInterface> signUp() throws IOException;
 
     /**
      * When a sufficient number of clients are connected, the server signs them up with the manager
      * and asks the latter to run a complete tournament;
      *
-     * When the manager’s work is done, it outputs the number of winners and cheaters and
-     * the server shuts down.
-     *
-     * @return List of PlayerInterface that represent the winners in the tournament.
+     * When the manager’s work is done, it outputs the number of winners and cheaters as a Json Array
+     * and the server shuts down.
      */
-    List<PlayerInterface> sendToTournamentManager();
+    void sendToTournamentManager() throws IOException;
 
 }
