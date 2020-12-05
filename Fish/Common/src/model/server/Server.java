@@ -1,5 +1,6 @@
 package model.server;
 
+import com.google.gson.JsonArray;
 import java.io.IOException;
 import java.util.List;
 import model.tree.PlayerInterface;
@@ -35,7 +36,9 @@ public interface Server {
      *
      * When the manager’s work is done, it outputs the number of winners and cheaters as a Json Array
      * and the server shuts down.
+     *
+     * @return JsonArray that represents the  number of winning and failing players [w,f]
      */
-    void sendToTournamentManager() throws IOException;
+    JsonArray sendToTournamentManager() throws IOException;
 
 }
