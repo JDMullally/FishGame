@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 import model.tournament.ManagerInterface;
 import model.tournament.PlayerStanding;
 import model.tournament.TournamentManager;
@@ -18,7 +19,8 @@ public class SignUpServer implements Server {
     private static final int PORT = 4567;
     private final int MAX_PLAYERS = 10;
     private final int MIN_PLAYERS = 5;
-    private final int timeout = 30000;
+    private final int TIMEOUT = 30;
+    private final int SECOND = 1000;
     private final int infiniteTimout = 0;
     private ServerSocket server;
     private List<PlayerInterface> proxyPlayerList;
@@ -30,16 +32,37 @@ public class SignUpServer implements Server {
 
     @Override
     public List<PlayerInterface> signUp() throws IOException {
-        for (int i = 0; i < 6; i++) {
-        Socket s = this.server.accept();
-        PlayerInterface clientProxy = new ClientProxy(s, i + 1);
-        this.proxyPlayerList.add(clientProxy);
+        for (int i = 0; i < 2; i++) {
+            if (this.proxyPlayerList.size() >= 5) {
+                break;
+            } else {
+                while (this.proxyPlayerList.size() < MAX_PLAYERS) {
+                    try {
+                        this.server.setSoTimeout(TIMEOUT * SECOND);
+                        Socket s = this.server.accept();
+                        PlayerInterface clientProxy = new ClientProxy(s, i + 1);
+                        this.proxyPlayerList.add(clientProxy);
+                    } catch (SocketTimeoutException e) {
+                        break;
+                    }
+                }
+            }
         }
+        for (PlayerInterface player : this.proxyPlayerList
+        ) {
+            System.out.println(player.getPlayerID());
+        }
+
         return new ArrayList<>(this.proxyPlayerList);
     }
 
     @Override
-    public void sendToTournamentManager() throws IOException {
+    public JsonArray sendToTournamentManager() throws IOException {
+        if (this.proxyPlayerList.size() < 5) {
+            System.out.println("Not enough players connected.  Shutting down");
+            this.server.close();
+            return null;
+        }
         Gson gson = new Gson();
         ManagerInterface tournament = new TournamentManager(this.proxyPlayerList);
         int winners = tournament.runTournament().size();
@@ -49,6 +72,7 @@ public class SignUpServer implements Server {
         output.add(cheaters);
         System.out.println(gson.toJson(output));
         this.server.close();
+        return output;
     }
 
 

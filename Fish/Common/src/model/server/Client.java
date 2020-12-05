@@ -32,15 +32,14 @@ public class Client extends Thread implements ClientInterface {
     private boolean running;
     private Gson gson;
 
-    public Client(int port, InetAddress ip, PlayerInterface player) throws IOException {
+    public Client(int port, String ip, PlayerInterface player) throws IOException {
         if (player == null) {
             throw new IllegalArgumentException("Can't create a new client with a null name");
         }
-        this.ip = ip;
+        //this.ip = ip;
         this.port = port;
         this.player = player;
-        this.socket = new Socket(this.ip, this.port);
-        System.out.println("connected to " + this.socket.getPort() + " at " + this.socket.getLocalPort());
+        this.socket = new Socket(ip, this.port);
         this.is = this.socket.getInputStream();
         this.os = this.socket.getOutputStream();
         this.dis = new DataInputStream(this.is);
@@ -58,11 +57,16 @@ public class Client extends Thread implements ClientInterface {
      * @throws IOException
      */
     public Client(int port, PlayerInterface player) throws IOException {
-        this(port, InetAddress.getByAddress("localhost", new byte[]{127, 0, 0, 1}), player);
+        this(port, "127.0.0.1", player);
     }
 
     @Override
     public void run() {
+        try {
+            this.dos.writeUTF(player.getPlayerID());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         while (this.running) {
             try {
                 //this.sendName();
@@ -132,19 +136,7 @@ public class Client extends Thread implements ClientInterface {
         JsonObject object = parameters.get(0).getAsJsonObject();
         JsonArray board = object.get("board").getAsJsonArray();
         JsonArray players = object.get("players").getAsJsonArray();
-        IGameState state = util.JsonToGameState(board, players);
-
-        System.out.println(this.getName() + " Setup");
-        System.out.println("*************************************************");
-        System.out.println(state);
-        List<IPlayer> gamePlayers = state.getPlayers();
-        for (IPlayer player : gamePlayers) {
-            System.out.println(player+ " : " + player.getPenguins());
-        }
-        System.out.println(state.isGameReady());
-        System.out.println("*************************************************");
-        System.out.println();
-
+        IGameState state = util.JsonToGameStatePlacement(board, players);
 
         Action move = null;
         try {
@@ -164,19 +156,7 @@ public class Client extends Thread implements ClientInterface {
         JsonObject object = parameters.get(0).getAsJsonObject();
         JsonArray players = object.get("players").getAsJsonArray();
         JsonArray board = object.get("board").getAsJsonArray();
-        IGameState state = util.JsonToGameState(board, players);
-
-        System.out.println();
-        System.out.println(this.getName() + " TakeTurn");
-        System.out.println("*************************************************");
-        System.out.println(state);
-        List<IPlayer> gamePlayers = state.getPlayers();
-        for (IPlayer player : gamePlayers) {
-            System.out.println(player+ " : " + player.getPenguins());
-        }
-        System.out.println(state.isGameReady());
-        System.out.println("*************************************************");
-        System.out.println();
+        IGameState state = util.JsonToGameStateMovement(board, players);
 
         Action move = null;
         try {
