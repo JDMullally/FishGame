@@ -38,24 +38,36 @@ public class ClientProxy implements PlayerInterface {
         JsonArray function = new JsonArray();
         function.add(func);
         function.add(parameters);
-        System.out.println(this.gson.toJson(function));
         return function;
     }
 
+    /**
+     * This function
+     *
+     * @param func String that represents the function  call
+     * @param parameters JsonArray that holds all the parameters for the given function call
+     * @return JsonArray that represents the response from a client.
+     * @throws IOException if the connection is broken while reading or writing
+     */
     private JsonArray callAndResponse(String func, JsonArray parameters) throws IOException {
         JsonArray function = createFunctionObject(func, parameters);
         this.dos.writeUTF(this.gson.toJson(function));
         String response = this.dis.readUTF();
-        System.out.println("Response: " + response);
         return gson.fromJson(response, JsonArray.class);
     }
 
+    /**
+     * Constructor for ClientProxy
+     * @param s
+     * @param age
+     * @throws IOException
+     */
     public ClientProxy(Socket s, int age) throws IOException {
         if (s == null || age < 1) {
-            throw new IllegalArgumentException("Invalid ClientProxy Player");
+            throw new IllegalArgumentException("The player must have an age of at least 1 "
+                + "and a valid socket");
         }
         this.socket = s;
-        System.out.println("connected to " + s.getPort() + " at " + s.getLocalPort());
         this.is = this.socket.getInputStream();
         this.os = this.socket.getOutputStream();
         this.dis = new DataInputStream(this.is);
@@ -64,16 +76,6 @@ public class ClientProxy implements PlayerInterface {
         this.gson = new Gson();
         this.observedActions = new ArrayList<>();
     }
-
-    private String getName() throws IOException {
-        String newName = dis.readUTF();
-        //System.out.println(newName);
-        if (name.length() == 0 || name.length() > 12) {
-            throw new IllegalArgumentException("This name is not the right length");
-        }
-        return newName;
-    }
-
 
     @Override
     public Action placePenguin(IGameState state) throws TimeoutException {
@@ -101,7 +103,6 @@ public class ClientProxy implements PlayerInterface {
             parameters.add(this.util.GameActionsToJson(this.observedActions));
 
             JsonArray placement = callAndResponse(Constants.takeTurn, parameters);
-            System.out.println("Answer " + placement);
             return this.util.toMoveAction(placement, state);
 
         } catch (IOException e) {
@@ -116,6 +117,12 @@ public class ClientProxy implements PlayerInterface {
 
     @Override
     public String getPlayerID() {
+        try {
+            socket.setSoTimeout(1000);
+            this.name = this.dis.readUTF();
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
         return this.name;
     }
 
