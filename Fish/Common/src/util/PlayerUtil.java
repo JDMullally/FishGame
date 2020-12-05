@@ -45,36 +45,34 @@ public class PlayerUtil {
         return jsonAction;
     }
 
-    public Action toPlacementAction(JsonElement place, IGameState state) {
+    public Action toPlacementAction(JsonArray place, IGameState state) {
         try {
-            JsonArray placeMove = place.getAsJsonArray();
             IPlayer player = state.playerTurn();
-            Point point = new Point(placeMove.get(0).getAsInt(), placeMove.get(1).getAsInt());
-
+            Point point = new Point(place.get(0).getAsInt(), place.get(1).getAsInt());
             return new PlacePenguin(player, point);
         } catch (Exception e) {
+            System.out.println("Issue?");
             return null;
         }
     }
 
-    public Action toMoveAction(JsonElement action, IGameState state) {
+    public Action toMoveAction(JsonArray action, IGameState state) {
         try {
-            JsonArray move = action.getAsJsonArray();
             IPlayer player = state.playerTurn();
-            JsonArray fromPosition = move.get(0).getAsJsonArray();
-            JsonArray toPosition = move.get(1).getAsJsonArray();
+            JsonArray fromPosition = action.get(0).getAsJsonArray();
+            JsonArray toPosition = action.get(1).getAsJsonArray();
             IPenguin playerPenguin = null;
-            Point from = new Point(fromPosition.get(1).getAsInt(), fromPosition.get(0).getAsInt());
-            Point to = new Point(toPosition.get(1).getAsInt(), toPosition.get(0).getAsInt());
+            Point from = new Point(fromPosition.get(0).getAsInt(), fromPosition.get(1).getAsInt());
+            Point to = new Point(toPosition.get(0).getAsInt(), toPosition.get(1).getAsInt());
             for (IPenguin penguin : player.getPenguins()) {
                 if (penguin.getPosition().equals(from)) {
                     playerPenguin = penguin;
                 }
             }
-            if (playerPenguin == null) {
-                return null;
-            }
-            return new MovePenguin(player, playerPenguin, to);
+            assert playerPenguin != null;
+            Action move = new MovePenguin(player, playerPenguin, to);
+            System.out.println(move);
+            return move;
         } catch (Exception e) {
             return null;
         }
