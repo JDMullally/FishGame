@@ -84,23 +84,6 @@ public class GameStateUtil {
             columns = Math.max(columns, row.getAsJsonArray().size());
         }
 
-        return new GameState(rows, columns, board, players);
-    }
-
-    /**
-     * Inverts a Game Board representation.
-     *
-     * @param board the game board
-     * @return inverted game board
-     */
-    private Tile[][] invert(Tile[][] board) {
-        Tile[][] newBoard = new Tile[board[0].length][board.length];
-
-        for (Tile[] col : board) {
-            for (Tile tile: col) {
-                newBoard[tile.getPosition().y][tile.getPosition().x] = tile.clone();
-            }
-        }
-        return newBoard;
+        return new GameState(rows, columns, board, players, true);
     }
 }

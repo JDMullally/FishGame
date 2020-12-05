@@ -25,9 +25,10 @@ public class GameState extends GameBoard implements IGameState {
 
     private final List<IPlayer> players; // the players of the game
     private int cheaters; // the number of cheating players, who have been removed from the game
-
+    private boolean remotePlayerSerializationFlag;
     /**
      * Constructor that allows the addition of a full list of players.
+     *
      * @param rows number of rows on the board
      * @param columns number of columns on the board
      * @param holes list of holes on the board
@@ -44,6 +45,7 @@ public class GameState extends GameBoard implements IGameState {
 
         this.players = new ArrayList<>(players);
         this.cheaters = 0;
+        this.remotePlayerSerializationFlag = false;
 
         this.validateInitialPlayers();
     }
@@ -51,10 +53,11 @@ public class GameState extends GameBoard implements IGameState {
     /**
      * Allows the creation of a GameState with a 2D Array of Tiles that keeps track
      * of the holes and values of the fish.
-     * @param rows
-     * @param columns
-     * @param board
-     * @param players
+     *
+     * @param rows number of rows on the game board.
+     * @param columns number of columns on the game board
+     * @param board the game board.
+     * @param players list of current players
      */
     public GameState(int rows, int columns, Tile[][] board, List<IPlayer> players) {
         super(rows, columns, board);
@@ -65,6 +68,7 @@ public class GameState extends GameBoard implements IGameState {
 
         this.players = new ArrayList<>(players);
         this.cheaters = 0;
+        this.remotePlayerSerializationFlag = false;
 
         this.validateInitialPlayers();
     }
@@ -72,13 +76,16 @@ public class GameState extends GameBoard implements IGameState {
     /**
      * Allows the creation of a GameState with a 2D Array of Tiles that keeps track
      * of the holes and values of the fish.
-     * @param rows
-     * @param columns
-     * @param board
-     * @param players
-     * @param cheaters
+     * @param rows number of rows on the game board.
+     * @param columns number of columns on the game board
+     * @param board the game board.
+     * @param players list of current players
+     * @param cheaters number of players who cheated in this game.
+     * @param remotePlayerSerializationFlag is a flag that determines if this state was
+     *                                      dematerialized by a remote player.
      */
-    private GameState(int rows, int columns, Tile[][] board, List<IPlayer> players, int cheaters) {
+    private GameState(int rows, int columns, Tile[][] board, List<IPlayer> players, int cheaters,
+        boolean remotePlayerSerializationFlag) {
         super(rows, columns, board);
 
         if (players == null) {
@@ -87,6 +94,7 @@ public class GameState extends GameBoard implements IGameState {
 
         this.players = new ArrayList<>(players);
         this.cheaters = cheaters;
+        this.remotePlayerSerializationFlag = remotePlayerSerializationFlag;
 
         this.validateInitialPlayers();
     }
@@ -99,10 +107,11 @@ public class GameState extends GameBoard implements IGameState {
      * @param board a JsonArray representing a game board
      * @param players a JsonArray representing players
      */
-    public GameState(int rows, int columns, JsonArray board, JsonArray players) {
+    public GameState(int rows, int columns, JsonArray board, JsonArray players, boolean remotePlayerSerializationFlag) {
         super(rows, columns, board);
         this.players = this.jsonToPlayers(players);
         this.cheaters = 0;
+        this.remotePlayerSerializationFlag = remotePlayerSerializationFlag;
         for (IPlayer player : this.players) {
             if (player.getScore() > 0) {
                 int numPenguins = player.getPenguins().size();
@@ -120,7 +129,7 @@ public class GameState extends GameBoard implements IGameState {
      * Returns a a list of players with the specified parameters.
      *
      * @param jsonArray JsonArray
-     * @return List of Iplayer
+     * @return List of IPlayer
      */
     private List<IPlayer> jsonToPlayers(JsonArray jsonArray) {
         List<IPlayer> players = new ArrayList<>();
@@ -149,8 +158,10 @@ public class GameState extends GameBoard implements IGameState {
      */
     private void validateInitialPlayers() {
         int size = this.players.size() + this.cheaters;
-        if (size <= 1) {
-            throw new IllegalArgumentException("Cannot have a game with zero or one players");
+        if (size == 0) {
+            throw new IllegalArgumentException("Cannot have a game with zero players");
+        } else if (size == 1 && !this.remotePlayerSerializationFlag) {
+            throw new IllegalArgumentException("Cannot have a game with one player");
         } else if (size > 4) {
             throw new IllegalArgumentException("Cannot have a game with more than 4 players");
         }
@@ -162,7 +173,7 @@ public class GameState extends GameBoard implements IGameState {
         }
 
         // check if there are enough tiles for all player penguins
-        int neededTiles = players.size() * (6 - (players.size() + cheaters) );
+        int neededTiles = players.size() * (6 - (players.size() + cheaters));
         if (allPlayersHaveNoPlacements() && countTilesOnBoard() < neededTiles) {
             throw new IllegalArgumentException("Board does not have enough non-empty tiles for the "
                 + "current number of players");
@@ -221,7 +232,7 @@ public class GameState extends GameBoard implements IGameState {
                 IPlayer player = this.players.get(i);
 
                 // checks that penguin size is valid
-                if (player.getPenguins().size() != (6 - size)) {
+                if (player.getPenguins().size() != (6 - size) && !this.remotePlayerSerializationFlag) {
                     throw new IllegalArgumentException("Player '" + player.getColor().toString() + "' has the wrong number of penguins");
                 }
 
@@ -559,7 +570,7 @@ public class GameState extends GameBoard implements IGameState {
         for (IPlayer player : players) {
             newPlayers.add(player.clone());
         }
-        return new GameState(this.getRows(), this.getColumns(), this.getGameBoard(), newPlayers, this.cheaters);
+        return new GameState(this.getRows(), this.getColumns(), this.getGameBoard(), newPlayers, this.cheaters, this.remotePlayerSerializationFlag);
     }
 
 }
