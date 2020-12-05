@@ -46,7 +46,7 @@ public interface IPlayer {
     List<IPenguin> getPenguins();
 
     /**
-     * Adds an Ipenguin to the Player's List of IPenguins.
+     * Adds an IPenguin to the Player's List of IPenguins.
      *
      * @param penguin IPenguin
      */
