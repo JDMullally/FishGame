@@ -123,7 +123,6 @@ public class Referee implements IReferee {
         }
 
         this.informPlayersOfOtherPlayers(mappedPlayers);
-
         return mappedPlayers;
     }
 
@@ -159,7 +158,7 @@ public class Referee implements IReferee {
             Callable<Boolean> task = new Callable<Boolean>() {
                 @Override
                 public Boolean call() throws TimeoutException {
-                    player.otherPlayerColors(getOtherColors(color));
+                    player.otherPlayerColors(getOtherColors(color, mappedPlayers));
                     return true;
                 }};
 
@@ -189,12 +188,8 @@ public class Referee implements IReferee {
      * @param color
      * @return
      */
-    private List<Color> getOtherColors(Color color) {
-        List<Color> colors = new ArrayList<>();
-        colors.add(Color.RED);
-        colors.add(Color.WHITE);
-        colors.add(new Color(210, 105, 30));
-        colors.add(Color.BLACK);
+    private List<Color> getOtherColors(Color color, Map<Color, PlayerInterface> mappedPlayers) {
+        List<Color> colors = new ArrayList<>(mappedPlayers.keySet());
         colors.remove(color);
         return colors;
     }
@@ -334,20 +329,14 @@ public class Referee implements IReferee {
         try {
             Action action = future.get(this.timeout, TimeUnit.SECONDS);
 
-            for (PlayerInterface player : otherPlayers) {
-                player.getOnGoingAction(action);
-            }
-
             newGameState = this.gameTree.queryAction(this.gameTree.getState(), action);
             executor.shutdownNow();
-            for (PlayerInterface player : otherPlayers) {
-                player.getOnGoingAction(action);
-            }
             this.ongoingActions.add(new GameAction(action));
         } catch (Exception e) {
             executor.shutdownNow();
             newGameState = this.playerCheated(curPlayer, curPlayerInterface);
         }
+
         return newGameState;
     }
 
