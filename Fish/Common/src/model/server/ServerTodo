@@ -5,6 +5,17 @@ Todo :
 [X] add DataOutputStream and DataInputStream to all method calls for Client and ClientProxy and
 use Gson object to parse.
 
-[ ] create runnables xserver and xclient
+[X] create runnables xserver and xclient and bind them to makefile
 
 [ ] Implement ClientMain
+
+[ ] Implement ServerMain
+
+[X] Implement SignUp method in the SignUpServer
+
+[X] Have server Terminate at the end of a game.
+
+[X] Fix bug (if a player cheats on the first move, the GameState will recognize the game as having
+the incorrect number of penguins and all moves made are rejected
+
+[ ] Tests baybee
