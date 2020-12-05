@@ -1,14 +1,14 @@
 package model.server;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonStreamParser;
 import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,49 +19,55 @@ import model.tree.Action;
 import model.tree.PlayerInterface;
 import constants.Constants;
 import util.ColorUtil;
-import util.GameStateUtil;
 import util.PlayerUtil;
 
 public class ClientProxy implements PlayerInterface {
 
     private Socket socket;
+    private InputStream is;
+    private OutputStream os;
     private final DataInputStream dis;
     private final DataOutputStream dos;
-    private JsonStreamParser jsonStreamParser;
     private final int age;
     private String name;
+    private Gson gson;
     private final PlayerUtil util = new PlayerUtil();
     private List<Action> observedActions;
 
-    public ClientProxy(Socket s, DataInputStream dis, DataOutputStream dos, int age) {
-        if (s == null || dis == null || dos == null || age < 1) {
+    private JsonArray createFunctionObject(String func, JsonArray parameters) {
+        JsonArray function = new JsonArray();
+        function.add(func);
+        function.add(parameters);
+        System.out.println(this.gson.toJson(function));
+        return function;
+    }
+
+    private JsonArray callAndResponse(String func, JsonArray parameters) throws IOException {
+        JsonArray function = createFunctionObject(func, parameters);
+        this.dos.writeUTF(this.gson.toJson(function));
+        String response = this.dis.readUTF();
+        System.out.println("Response: " + response);
+        return gson.fromJson(response, JsonArray.class);
+    }
+
+    public ClientProxy(Socket s, int age) throws IOException {
+        if (s == null || age < 1) {
             throw new IllegalArgumentException("Invalid ClientProxy Player");
         }
         this.socket = s;
-        this.dis = dis;
-        this.dos = dos;
+        System.out.println("connected to " + s.getPort() + " at " + s.getLocalPort());
+        this.is = this.socket.getInputStream();
+        this.os = this.socket.getOutputStream();
+        this.dis = new DataInputStream(this.is);
+        this.dos = new DataOutputStream(this.os);
         this.age = age;
-        InputStreamReader reader = new InputStreamReader(dis);
-        this.jsonStreamParser = new JsonStreamParser(reader);
-        this.name = this.getName();
+        this.gson = new Gson();
         this.observedActions = new ArrayList<>();
     }
 
-    public void addObservedAction(Action action) {
-        this.observedActions.add(action);
-    }
-
-    public void resetActions() {
-        this.observedActions = new ArrayList<>();
-    }
-
-    private String getName() throws IllegalArgumentException {
-        String newName = "";
-        try {
-            newName = dis.readUTF();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private String getName() throws IOException {
+        String newName = dis.readUTF();
+        //System.out.println(newName);
         if (name.length() == 0 || name.length() > 12) {
             throw new IllegalArgumentException("This name is not the right length");
         }
@@ -72,47 +78,35 @@ public class ClientProxy implements PlayerInterface {
     @Override
     public Action placePenguin(IGameState state) throws TimeoutException {
         try {
-            JsonArray function = new JsonArray();
-            function.add(Constants.takeTurn);
-            JsonObject jsonState = this.util.GameStateToJson(state);
             JsonArray parameters = new JsonArray();
+            JsonObject jsonState = this.util.GameStateToJson(state);
             parameters.add(jsonState);
-            function.add(parameters);
 
-            this.dos.writeUTF(function.toString());
+            JsonArray placement = callAndResponse(Constants.setup, parameters);
+            return this.util.toPlacementAction(placement, state);
 
-            if(this.jsonStreamParser.hasNext()) {
-                JsonElement element = this.jsonStreamParser.next();
-                return util.toPlacementAction(element, state);
-            }
         } catch (IOException e) {
             return null;
         }
-        return null;
+
     }
 
 
     @Override
     public Action movePenguin(IGameState state) throws TimeoutException {
         try {
-            JsonArray function = new JsonArray();
-            function.add(Constants.takeTurn);
-            JsonObject jsonState = this.util.GameStateToJson(state);
             JsonArray parameters = new JsonArray();
+            JsonObject jsonState = this.util.GameStateToJson(state);
             parameters.add(jsonState);
             parameters.add(this.util.GameActionsToJson(this.observedActions));
-            function.add(parameters);
 
-            this.dos.writeUTF(function.toString());
+            JsonArray placement = callAndResponse(Constants.takeTurn, parameters);
+            System.out.println("Answer " + placement);
+            return this.util.toMoveAction(placement, state);
 
-            if(this.jsonStreamParser.hasNext()) {
-                JsonElement element = this.jsonStreamParser.next();
-                return util.toMoveAction(element, state);
-            }
         } catch (IOException e) {
             return null;
         }
-        return null;
     }
 
     @Override
@@ -129,12 +123,11 @@ public class ClientProxy implements PlayerInterface {
     @Override
     public boolean tournamentHasStarted() {
         try {
-            JsonArray function = new JsonArray();
-            function.add(Constants.startTournament);
             JsonArray parameters = new JsonArray();
             parameters.add(true);
-            function.add(parameters);
-            this.dos.writeUTF(function.toString());
+            JsonArray function = createFunctionObject(Constants.startTournament, parameters);
+
+            this.dos.writeUTF(this.gson.toJson(function));
         } catch (IOException e) {
             return false;
         }
@@ -149,21 +142,22 @@ public class ClientProxy implements PlayerInterface {
 
     //Not necessary for remote interactions
     @Override
-    public void kickedForCheating() { }
+    public void kickedForCheating() {
+    }
 
     //Not necessary for remote interactions
     @Override
-    public void gameResults(IGameResult result) { }
+    public void gameResults(IGameResult result) {
+    }
 
     @Override
     public boolean tournamentResults(boolean youWon) {
         try {
-            JsonArray function = new JsonArray();
-            function.add(Constants.end);
             JsonArray parameters = new JsonArray();
             parameters.add(youWon);
-            function.add(parameters);
-            this.dos.writeUTF(function.toString());
+            JsonArray function = createFunctionObject(Constants.end, parameters);
+
+            this.dos.writeUTF(this.gson.toJson(function));
         } catch (IOException e) {
             return false;
         }
@@ -173,27 +167,26 @@ public class ClientProxy implements PlayerInterface {
     @Override
     public void playerColor(Color color) {
         try {
-            JsonArray function = new JsonArray();
-            function.add(Constants.playAs);
             JsonArray parameters = new JsonArray();
             parameters.add(ColorUtil.toColorString(color));
-            function.add(parameters);
-            this.dos.writeUTF(function.toString());
-        } catch (IOException e) { }
+            JsonArray function = createFunctionObject(Constants.playAs, parameters);
+
+            this.dos.writeUTF(this.gson.toJson(function));
+        } catch (IOException e) {
+        }
     }
 
     @Override
     public void otherPlayerColors(List<Color> otherPlayers) {
         try {
-            JsonArray function = new JsonArray();
-            function.add(Constants.playAs);
             JsonArray parameters = new JsonArray();
             for (Color color : otherPlayers) {
                 parameters.add(ColorUtil.toColorString(color));
             }
-            function.add(parameters);
-            this.dos.writeUTF(function.toString());
-        } catch (IOException e) { }
+            JsonArray function = createFunctionObject(Constants.playWith, parameters);
+            this.dos.writeUTF(this.gson.toJson(function));
+        } catch (IOException e) {
+        }
     }
 
     @Override
@@ -205,5 +198,6 @@ public class ClientProxy implements PlayerInterface {
     public void clearOnGoingAction() {
         this.observedActions = new ArrayList<>();
     }
+
 
 }
