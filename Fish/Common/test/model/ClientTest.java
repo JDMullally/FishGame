@@ -3,13 +3,8 @@ package model;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import model.games.PlayerAI;
 import model.server.ClientInterface;
-import model.state.GameState;
 import model.state.IGameState;
-import model.state.IPenguin;
-import model.state.IPlayer;
-import model.strategy.Strategy;
 import model.tree.PlayerInterface;
 import org.junit.Test;
 import util.PlayerUtil;
@@ -205,7 +200,7 @@ public class ClientTest {
         this.init();
         PlayerUtil util = new PlayerUtil();
 
-        IGameState state = util.JsonToGameState(this.state.get("board").getAsJsonArray(),
+        IGameState state = util.JsonToGameStateMovement(this.state.get("board").getAsJsonArray(),
             this.state.get("players").getAsJsonArray());
 
        assertTrue(state.isGameReady());
@@ -218,11 +213,9 @@ public class ClientTest {
 
         PlayerUtil util = new PlayerUtil();
 
-        IGameState state = util.JsonToGameState(this.state.get("board").getAsJsonArray(),
+        IGameState state = util.JsonToGameStateMovement(this.state.get("board").getAsJsonArray(),
             this.state.get("players").getAsJsonArray());
 
-        System.out.println(state);
-
-        IPlayer player = state.playerTurn();
+        assertTrue(state.isGameReady());
     }
 }
