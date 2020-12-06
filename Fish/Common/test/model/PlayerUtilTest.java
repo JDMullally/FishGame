@@ -3,42 +3,20 @@ package model;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import java.awt.Point;
 import model.server.ClientInterface;
 import model.state.IGameState;
+import model.tree.Action;
+import model.tree.MovePenguin;
+import model.tree.PlacePenguin;
 import model.tree.PlayerInterface;
 import org.junit.Test;
 import util.PlayerUtil;
 
 import static org.junit.Assert.*;
 
-public class ClientTest {
-
-    private PlayerInterface player;
-    private ClientInterface c1, c2, c3;
+public class PlayerUtilTest {
     private JsonObject state;
-
-    /*
-    {
-        "players": [
-    {
-      "color": "red",
-      "score": 0,
-      "places": [[0, 0], [3, 0], [3, 1], [3, 2]]
-    },
-    {
-      "color": "white",
-      "score": 0,
-      "places": [[2, 2], [3, 3], [2, 0], [2, 1]]
-    }
-  ],
-  "board":  [
-    [1, 0, 3, 1],
-    [0, 0, 5, 1],
-    [0, 1, 1, 1],
-    [1, 1, 1, 1]
-  ]
-}
-     */
 
     public void init() {
         this.state = new JsonObject();
@@ -264,4 +242,47 @@ public class ClientTest {
 
         assertTrue(state.isGameOver());
     }
+
+    @Test
+    public void convertActionToJson() {
+        this.init2();
+        PlayerUtil util = new PlayerUtil();
+
+        IGameState state = util.JsonToGameStateMovement(this.state.get("board").getAsJsonArray(),
+            this.state.get("players").getAsJsonArray());
+
+        Action action = new MovePenguin(state.playerTurn(), state.playerTurn().getPenguins().get(0), new Point(5,5));
+        JsonArray actual = util.moveToJson(action);
+
+        JsonArray expected = new JsonArray();
+        JsonArray from = new JsonArray();
+        from.add(state.playerTurn().getPenguins().get(0).getPosition().x);
+        from.add(state.playerTurn().getPenguins().get(0).getPosition().y);
+        JsonArray to = new JsonArray();
+        to.add(5);
+        to.add(5);
+        expected.add(from);
+        expected.add(to);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void convertPositionToJson() {
+        this.init2();
+        PlayerUtil util = new PlayerUtil();
+
+        IGameState state = util.JsonToGameStateMovement(this.state.get("board").getAsJsonArray(),
+            this.state.get("players").getAsJsonArray());
+
+        Action action = new PlacePenguin(state.playerTurn(), new Point(5,5));
+        JsonArray actual = util.pointToJson(action.getToPosition());
+
+        JsonArray expected = new JsonArray();
+        expected.add(5);
+        expected.add(5);
+
+        assertEquals(expected, actual);
+    }
+
 }
