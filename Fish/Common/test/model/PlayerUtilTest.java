@@ -62,7 +62,7 @@ public class ClientTest {
         players.add(player1);
         players.add(player2);
 
-        JsonArray board = getBoard();
+        JsonArray board = getBoard(2, 5);
 
         state.add("board", board);
         state.add("players", players);
@@ -90,44 +90,28 @@ public class ClientTest {
         players.add(player1);
         players.add(player2);
 
-        JsonArray board = getBoard();
+        JsonArray board = getBoard(2, 5);
 
         state.add("board", board);
         state.add("players", players);
     }
 
-    private JsonArray getBoard() {
+    /**
+     * Creates a size X size board that each have input value fish and returns it as a JsonArray.
+     * @param val the value of the fish
+     * @param size length and width of the board
+     * @return JsonArray
+     */
+    private JsonArray getBoard(int val, int size) {
         JsonArray board = new JsonArray();
-        JsonArray row1 = new JsonArray();
-        JsonArray row2 = new JsonArray();
-        JsonArray row3 = new JsonArray();
-        JsonArray row4 = new JsonArray();
+        for (int i = 0; i < size; i++) {
+            JsonArray array = new JsonArray();
+            for (int j = 0; j < size; j++) {
+                array.add(val);
 
-        row1.add(1);
-        row1.add(0);
-        row1.add(3);
-        row1.add(1);
-
-        row2.add(0);
-        row2.add(0);
-        row2.add(5);
-        row2.add(1);
-
-        row3.add(0);
-        row3.add(1);
-        row3.add(1);
-        row3.add(1);
-
-        row4.add(1);
-        row4.add(1);
-        row4.add(3);
-        row4.add(1);
-
-        board.add(row1);
-        board.add(row2);
-        board.add(row3);
-        board.add(row4);
-
+            }
+            board.add(array);
+        }
         return board;
     }
 
@@ -136,7 +120,6 @@ public class ClientTest {
         JsonArray pos11 = new JsonArray();
         JsonArray pos12 = new JsonArray();
         JsonArray pos13 = new JsonArray();
-
 
         pos11.add(2);
         pos11.add(2);
@@ -195,6 +178,11 @@ public class ClientTest {
         return places2;
     }
 
+    /**
+     * When the board is deserialized, it should calculate the number of cheaters if it can.
+     * This will allow the game to still run if players are removed and no one has a valid number
+     * of penguins.
+     */
     @Test
     public void invalidBoardUnlessPlayerCheated() {
         this.init();
@@ -204,9 +192,12 @@ public class ClientTest {
             this.state.get("players").getAsJsonArray());
 
        assertTrue(state.isGameReady());
-
     }
 
+    /**
+     * A valid board should be deserialized very easily.  A valid board is defined by having
+     * the correct number of penguins and players.
+     */
     @Test
     public void validBoard() {
         this.init2();
@@ -217,5 +208,60 @@ public class ClientTest {
             this.state.get("players").getAsJsonArray());
 
         assertTrue(state.isGameReady());
+    }
+
+    /**
+     * If multiple players have been removed and it leaves only one player in the game, they
+     * should still be able to play until the end to assure a cheating player doesn't win a game.
+     */
+    @Test
+    public void validBoardPlayerRemovedForCheatingOneRemaining() {
+        this.init2();
+
+        PlayerUtil util = new PlayerUtil();
+        JsonArray players = this.state.get("players").getAsJsonArray();
+
+        //Removes the last player in the list because they cheated last round.s
+        players.remove(players.size() - 1);
+
+        IGameState state = util.JsonToGameStateMovement(this.state.get("board").getAsJsonArray(),
+            players);
+
+        assertTrue(state.isGameReady());
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void invalidBoard() {
+        this.init2();
+
+        PlayerUtil util = new PlayerUtil();
+
+        JsonArray shittyBoard = this.getBoard(2, 2);
+        JsonArray players = this.state.get("players").getAsJsonArray();
+
+        //Removes the last player in the list because they cheated last round.s
+
+        IGameState state = util.JsonToGameStateMovement(shittyBoard,
+            players);
+
+        assertFalse(state.isGameReady());
+    }
+
+    @Test
+    public void validBoardNoPlayers() {
+        this.init2();
+
+        PlayerUtil util = new PlayerUtil();
+
+        JsonArray board = this.getBoard(2, 5);
+        JsonArray players = new JsonArray();
+
+        IGameState state = util.JsonToGameStateMovement(board,
+            players);
+
+        assertTrue(state.isGameOver());
     }
 }
