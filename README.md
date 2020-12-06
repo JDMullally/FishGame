@@ -1,6 +1,6 @@
 # texline
 
-Mark Preschern and Joseph Mullally's CS4500 assignments.
+Mark Preschern, Eddie Zhou, Mica Tonge and Joseph Mullally's CS4500 assignments.
 
 ### Assignment Documentation
 
@@ -12,4 +12,6 @@ Mark Preschern and Joseph Mullally's CS4500 assignments.
 
 * [E - TCP](E/Other/README.md)
 
-* [Fish](/Fish/README.md)
+* [Fish](/Fish/Common/README.md)
+
+* [Fish Remote Interactions](/Fish/Remote/README.md)

@@ -41,6 +41,9 @@ To run unit tests, go to the `Fish` directory (this directory) and run
 $  ./xtest
 ```
 
+To run both server and client runnables for milestone 10, 
+See [Remote Interactions README.md](/Fish/Remote/README.md)
+
 To run the test game gui for game observers from milestone 9, go to the `../9` directory and run the following command
 
 ```
