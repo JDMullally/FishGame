@@ -223,8 +223,10 @@ public class GameState extends GameBoard implements IGameState {
      */
     private void validatePlayers() {
         int size = this.players.size() + this.cheaters;
-        if (this.players.isEmpty() || size <= 1) {
-            throw new IllegalArgumentException("Cannot have a game with zero or one players");
+        if (this.players.isEmpty()) {
+            throw new IllegalArgumentException("Cannot have a game with zero players");
+        } else if (size <= 1 && !this.remotePlayerSerializationFlag) {
+            throw new IllegalArgumentException("Cannot have a game with one player");
         } else if (size > 4) {
             throw new IllegalArgumentException("Cannot have a game with more than 4 players");
         } else {
