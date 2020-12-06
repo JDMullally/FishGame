@@ -8,20 +8,21 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import model.tournament.ManagerInterface;
 import model.tournament.PlayerStanding;
 import model.tournament.TournamentManager;
 import model.tree.PlayerInterface;
 
+/**
+ * Represents a Server that can sign up between 5 and 10 players and send them to a tournament
+ * manager to run a Game of Fish.
+ */
 public class SignUpServer implements Server {
 
-    private static final int PORT = 4567;
     private final int MAX_PLAYERS = 10;
     private final int MIN_PLAYERS = 5;
     private final int TIMEOUT = 30;
     private final int SECOND = 1000;
-    private final int infiniteTimout = 0;
     private ServerSocket server;
     private List<PlayerInterface> proxyPlayerList;
 
@@ -33,7 +34,7 @@ public class SignUpServer implements Server {
     @Override
     public List<PlayerInterface> signUp() throws IOException {
         for (int i = 0; i < 2; i++) {
-            if (this.proxyPlayerList.size() >= 5) {
+            if (this.proxyPlayerList.size() >= this.MIN_PLAYERS) {
                 break;
             } else {
                 while (this.proxyPlayerList.size() < MAX_PLAYERS) {
@@ -48,9 +49,8 @@ public class SignUpServer implements Server {
                 }
             }
         }
-        for (PlayerInterface player : this.proxyPlayerList
-        ) {
-            System.out.println(player.getPlayerID());
+        for (PlayerInterface player : this.proxyPlayerList) {
+            player.getPlayerID();
         }
 
         return new ArrayList<>(this.proxyPlayerList);
