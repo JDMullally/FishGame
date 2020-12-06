@@ -20,7 +20,7 @@ import model.tree.PlayerInterface;
 
 public class Client extends Thread implements ClientInterface {
 
-    private InetAddress ip;
+    private String ip;
     private PlayerInterface player;
     private int port;
     private Socket socket;
@@ -36,7 +36,7 @@ public class Client extends Thread implements ClientInterface {
         if (player == null) {
             throw new IllegalArgumentException("Can't create a new client with a null name");
         }
-        //this.ip = ip;
+        this.ip = ip;
         this.port = port;
         this.player = player;
         this.socket = new Socket(ip, this.port);
@@ -69,7 +69,6 @@ public class Client extends Thread implements ClientInterface {
         }
         while (this.running) {
             try {
-                //this.sendName();
                 String message = this.dis.readUTF();
                 JsonArray function = this.gson.fromJson(message, JsonArray.class);
                 this.checkMethod(function);
@@ -119,14 +118,10 @@ public class Client extends Thread implements ClientInterface {
     }
 
     @Override
-    public void startTournament(JsonArray parameters) {
-        boolean bool = parameters.get(0).getAsBoolean();
-    }
+    public void startTournament(JsonArray parameters) { }
 
     @Override
-    public void playingAs(JsonArray parameters) {
-
-    }
+    public void playingAs(JsonArray parameters) { }
 
     @Override
     public void playingWith(JsonArray parameters) { }

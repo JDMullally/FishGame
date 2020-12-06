@@ -42,7 +42,9 @@ public class ClientProxy implements PlayerInterface {
     }
 
     /**
-     * This function
+     * This function creates the function based on the input string  func and the  JsonArray parameters
+     * and sends it to the Client. It then reads back the response, converts it to JsonArray and
+     * returns it.
      *
      * @param func String that represents the function  call
      * @param parameters JsonArray that holds all the parameters for the given function call
@@ -102,8 +104,8 @@ public class ClientProxy implements PlayerInterface {
             parameters.add(jsonState);
             parameters.add(this.util.GameActionsToJson(this.observedActions));
 
-            JsonArray placement = callAndResponse(Constants.takeTurn, parameters);
-            return this.util.toMoveAction(placement, state);
+            JsonArray move = callAndResponse(Constants.takeTurn, parameters);
+            return this.util.toMoveAction(move, state);
 
         } catch (IOException e) {
             return null;
