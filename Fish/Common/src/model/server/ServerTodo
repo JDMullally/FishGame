@@ -7,9 +7,9 @@ use Gson object to parse.
 
 [X] create runnables xserver and xclient and bind them to makefile
 
-[ ] Implement ClientMain
+[X] Implement ClientMain
 
-[ ] Implement ServerMain
+[X] Implement ServerMain
 
 [X] Implement SignUp method in the SignUpServer
 
@@ -17,5 +17,7 @@ use Gson object to parse.
 
 [X] Fix bug (if a player cheats on the first move, the GameState will recognize the game as having
 the incorrect number of penguins and all moves made are rejected
+
+[ ] README
 
 [ ] Tests baybee

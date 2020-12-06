@@ -8,7 +8,8 @@ import model.tree.PlayerInterface;
 
 /**
  * Represents a Game Server that signs up players based on the Fish Remote Interaction Protocol and
- * runs a game using that
+ * runs a game using an existing Tournament manager.  At the end of a game, the server prints the
+ * results of the game.
  */
 public interface Server {
 

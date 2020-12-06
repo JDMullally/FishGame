@@ -21,14 +21,31 @@ public class SignUpServer implements Server {
 
     private final int MAX_PLAYERS = 10;
     private final int MIN_PLAYERS = 5;
-    private final int TIMEOUT = 30;
+    private int TIMEOUT = 30;
     private final int SECOND = 1000;
     private ServerSocket server;
     private List<PlayerInterface> proxyPlayerList;
 
+    /**
+     *
+     * @param port Port for clients to connect to.
+     * @throws IOException if the connection fails
+     */
     public SignUpServer(int port) throws IOException {
         this.proxyPlayerList = new ArrayList<>();
         this.server = new ServerSocket(port);
+    }
+
+    /**
+     * Testing Constructor that takes in a timeout.
+     * @param port Port for clients to connect to.
+     * @param timeout a custom timeout that makes testing go much faster.
+     * @throws IOException if the connection fails
+     */
+    public SignUpServer(int port, int timeout) throws IOException {
+        this.proxyPlayerList = new ArrayList<>();
+        this.server = new ServerSocket(port);
+        this.TIMEOUT = timeout;
     }
 
     @Override
@@ -63,14 +80,12 @@ public class SignUpServer implements Server {
             this.server.close();
             return null;
         }
-        Gson gson = new Gson();
         ManagerInterface tournament = new TournamentManager(this.proxyPlayerList);
         int winners = tournament.runTournament().size();
         int cheaters = tournament.getTournamentStatistics().get(PlayerStanding.CHEATER).size();
         JsonArray output = new JsonArray();
         output.add(winners);
         output.add(cheaters);
-        System.out.println(gson.toJson(output));
         this.server.close();
         return output;
     }
