@@ -18,6 +18,6 @@ use Gson object to parse.
 [X] Fix bug (if a player cheats on the first move, the GameState will recognize the game as having
 the incorrect number of penguins and all moves made are rejected
 
-[ ] README
+[X] README
 
-[ ] Tests baybee
+[X] Tests baybee
