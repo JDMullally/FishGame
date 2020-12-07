@@ -34,13 +34,6 @@ public class ClientProxy implements PlayerInterface {
     private final PlayerUtil util = new PlayerUtil();
     private List<Action> observedActions;
 
-    private JsonArray createFunctionObject(String func, JsonArray parameters) {
-        JsonArray function = new JsonArray();
-        function.add(func);
-        function.add(parameters);
-        return function;
-    }
-
     /**
      * This function creates the function based on the input string  func and the  JsonArray parameters
      * and sends it to the Client. It then reads back the response, converts it to JsonArray and
@@ -52,7 +45,7 @@ public class ClientProxy implements PlayerInterface {
      * @throws IOException if the connection is broken while reading or writing
      */
     private JsonArray callAndResponse(String func, JsonArray parameters) throws IOException {
-        JsonArray function = createFunctionObject(func, parameters);
+        JsonArray function = this.util.createFunctionObject(func, parameters);
         this.dos.writeUTF(this.gson.toJson(function));
         String response = this.dis.readUTF();
         return gson.fromJson(response, JsonArray.class);
@@ -134,7 +127,7 @@ public class ClientProxy implements PlayerInterface {
         try {
             JsonArray parameters = new JsonArray();
             parameters.add(true);
-            JsonArray function = createFunctionObject(Constants.startTournament, parameters);
+            JsonArray function = this.util.createFunctionObject(Constants.startTournament, parameters);
 
             this.dos.writeUTF(this.gson.toJson(function));
         } catch (IOException e) {
@@ -164,7 +157,7 @@ public class ClientProxy implements PlayerInterface {
         try {
             JsonArray parameters = new JsonArray();
             parameters.add(youWon);
-            JsonArray function = createFunctionObject(Constants.end, parameters);
+            JsonArray function = this.util.createFunctionObject(Constants.end, parameters);
 
             this.dos.writeUTF(this.gson.toJson(function));
         } catch (IOException e) {
@@ -178,7 +171,7 @@ public class ClientProxy implements PlayerInterface {
         try {
             JsonArray parameters = new JsonArray();
             parameters.add(ColorUtil.toColorString(color));
-            JsonArray function = createFunctionObject(Constants.playAs, parameters);
+            JsonArray function = this.util.createFunctionObject(Constants.playAs, parameters);
 
             this.dos.writeUTF(this.gson.toJson(function));
         } catch (IOException e) {
@@ -192,7 +185,7 @@ public class ClientProxy implements PlayerInterface {
             for (Color color : otherPlayers) {
                 parameters.add(ColorUtil.toColorString(color));
             }
-            JsonArray function = createFunctionObject(Constants.playWith, parameters);
+            JsonArray function = this.util.createFunctionObject(Constants.playWith, parameters);
             this.dos.writeUTF(this.gson.toJson(function));
         } catch (IOException e) {
         }
