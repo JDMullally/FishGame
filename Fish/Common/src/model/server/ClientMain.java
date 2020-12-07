@@ -67,7 +67,7 @@ public class ClientMain {
     private static void createPlayers(int port, int numberPlayers, String ip) throws IOException {
         List<Client> clients = new ArrayList<>();
         for (int i = 0; i < numberPlayers; i++) {
-            PlayerInterface player = new PlayerAI(new Strategy(), 2);
+            PlayerInterface player = new PlayerAI(new Strategy(), 1);
             Client newClient;
             if (ip.length() == 0) {
                 newClient = new Client(port, player);
