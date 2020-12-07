@@ -120,4 +120,12 @@ public class PlayerUtil {
         return pos;
     }
 
+
+    public JsonArray createFunctionObject(String func, JsonArray parameters) {
+        JsonArray function = new JsonArray();
+        function.add(func);
+        function.add(parameters);
+        return function;
+    }
+
 }
