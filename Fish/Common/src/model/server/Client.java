@@ -9,10 +9,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.util.List;
-import model.state.IPlayer;
 import model.tree.Action;
 import model.state.IGameState;
 import util.PlayerUtil;
@@ -32,6 +29,14 @@ public class Client extends Thread implements ClientInterface {
     private boolean running;
     private Gson gson;
 
+    /**
+     * Default constructor that takes in a Player Strategy, and ip and a port to connect to.
+     *
+     * @param port int that represents the port the Player is trying to connect to.
+     * @param ip String that represent the ip of the server the player is connecting to.
+     * @param player PlayerInterface that employs a standard Player Strategy
+     * @throws IOException
+     */
     public Client(int port, String ip, PlayerInterface player) throws IOException {
         if (player == null) {
             throw new IllegalArgumentException("Can't create a new client with a null name");
@@ -52,12 +57,22 @@ public class Client extends Thread implements ClientInterface {
 
     /**
      * Default constructor with localhost ip.
+     *
      * @param port int that represents port Client is connecting to ip at.
      * @param player the player interface
      * @throws IOException
      */
     public Client(int port, PlayerInterface player) throws IOException {
         this(port, "127.0.0.1", player);
+    }
+
+    /**
+     * Testing constructor
+     * @param player
+     */
+    public Client(PlayerInterface player) {
+        this.player = player;
+        this.util = new PlayerUtil();
     }
 
     @Override
@@ -77,15 +92,6 @@ public class Client extends Thread implements ClientInterface {
             }
 
         }
-    }
-
-    /**
-     * Testing constructor
-     * @param player
-     */
-    public Client(PlayerInterface player) {
-        this.player = player;
-        this.util = new PlayerUtil();
     }
 
     @Override
@@ -142,7 +148,9 @@ public class Client extends Thread implements ClientInterface {
 
         assert move != null;
         JsonArray placement = this.util.pointToJson(move.getToPosition());
-        this.dos.writeUTF(gson.toJson(placement));
+        if (this.socket != null && this.socket.isConnected()) {
+            this.dos.writeUTF(gson.toJson(placement));
+        }
         return placement;
     }
 
@@ -160,7 +168,9 @@ public class Client extends Thread implements ClientInterface {
             throw new RuntimeException(e.getMessage());
         }
         JsonArray action = this.util.moveToJson(move);
-        this.dos.writeUTF(gson.toJson(action));
+        if (this.socket != null && this.socket.isConnected()) {
+            this.dos.writeUTF(gson.toJson(action));
+        }
         return action;
     }
 
@@ -178,6 +188,5 @@ public class Client extends Thread implements ClientInterface {
         String str = this.player.getPlayerID();
         this.dos.writeUTF(str);
         return str;
-
     }
 }
