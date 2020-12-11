@@ -90,7 +90,6 @@ public class Client extends Thread implements ClientInterface {
             } catch (IOException e) {
                 throw new RuntimeException(e.getMessage());
             }
-
         }
     }
 

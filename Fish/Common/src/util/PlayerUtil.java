@@ -64,6 +64,12 @@ public class PlayerUtil {
         return new GameState(rows, columns, board, players, false);
     }
 
+    /**
+     * Returns a JsonArray that represents a List of Actions
+     *
+     * @param actions List of Action that represents all actions made by other players
+     * @return JsonArray that represents all actions made by other players
+     */
     public JsonArray GameActionsToJson(List<Action> actions) {
         JsonArray jsonActions = new JsonArray();
         for (Action action : actions) {
@@ -72,6 +78,12 @@ public class PlayerUtil {
         return jsonActions;
     }
 
+    /**
+     * Returns a JsonArray that represents a single Action in a game
+     *
+     * @param action Action
+     * @return JsonArray that represents a Json Formatted MovementAction
+     */
     public JsonArray moveToJson(Action action) {
         JsonArray jsonAction = new JsonArray();
         JsonArray from = pointToJson(action.getFromPosition());
@@ -81,6 +93,13 @@ public class PlayerUtil {
         return jsonAction;
     }
 
+    /**
+     * Returns an Action that represents a Json Placement made on the given state
+     *
+     * @param place JsonArray
+     * @param state IGameState
+     * @return Action
+     */
     public Action toPlacementAction(JsonArray place, IGameState state) {
         try {
             IPlayer player = state.playerTurn();
@@ -92,6 +111,13 @@ public class PlayerUtil {
         }
     }
 
+    /**
+     * Returns an Action that represents a Json Action that was made on the given state.
+     *
+     * @param action JsonArray
+     * @param state IGameState
+     * @return Action
+     */
     public Action toMoveAction(JsonArray action, IGameState state) {
         try {
             IPlayer player = state.playerTurn();
@@ -113,6 +139,12 @@ public class PlayerUtil {
         }
     }
 
+    /**
+     * Returns a Json Representation of a Placement from a given Point.
+     *
+     * @param point Point
+     * @return JsonArray
+     */
     public JsonArray pointToJson(Point point) {
         JsonArray pos = new JsonArray();
         pos.add(point.x);
@@ -120,7 +152,15 @@ public class PlayerUtil {
         return pos;
     }
 
-
+    /**
+     * Returns a JsonArray that represents a specified Json Function that is sent to remote Clients
+     * with a given String to represent the function name and a JsonArray that contains the
+     * parameters.
+     *
+     * @param func String
+     * @param parameters JsonArray
+     * @return JsonArray
+     */
     public JsonArray createFunctionObject(String func, JsonArray parameters) {
         JsonArray function = new JsonArray();
         function.add(func);
